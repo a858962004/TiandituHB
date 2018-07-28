@@ -37,4 +37,6 @@ dependencies {
     /** 控件注解                   **/
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
+    compile 'com.android.support:design:24.0.0'
 }
