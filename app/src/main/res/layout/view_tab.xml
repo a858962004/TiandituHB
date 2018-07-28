@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<ImageView
+    android:src="@mipmap/ic_launcher"
+    android:id="@+id/img_tab"
+    android:layout_centerHorizontal="true"
+    android:layout_width="30dp"
+    android:layout_height="30dp" />
+    <TextView
+        android:layout_below="@+id/img_tab"
+        android:id="@+id/tv_tab"
+        android:text="入口"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

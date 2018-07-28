@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_searchview"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="12dp"
+    android:background="@drawable/background_searchview"
+    android:orientation="horizontal"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    tools:showIn="@layout/activity_main">
+
+    <Button
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right|center_vertical"
+        android:layout_margin="10dp"
+        android:background="@mipmap/icon_search" />
+    <!-- 输入的搜索信息 -->
+    <TextView
+        android:id="@+id/et_search"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_weight="4"
+        android:background="@null"
+        android:gravity="center_vertical"
+        android:hint="输入内容进行搜索"
+        android:imeOptions="actionSearch"
+        android:singleLine="true"
+        android:textColor="#0e0e0e"
+        android:textColorHint="#b0c6ce"
+        android:textSize="17sp" />
+
+</LinearLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/tablayoutheight"
+    android:layout_alignParentBottom="true"
+    android:background="@color/white"
+    tools:showIn="@layout/activity_main">
+
+    <Button
+        android:id="@+id/bt_around"
+        style="@style/style_tab_map"
+        android:drawableStart="@mipmap/icon_around"
+        android:text="@string/tab_around" />
+
+    <TextView style="@style/style_line_vertical" />
+
+    <Button
+        android:id="@+id/bt_route"
+        style="@style/style_tab_map"
+        android:drawableStart="@mipmap/icon_rout"
+        android:text="@string/tab_route" />
+
+    <TextView style="@style/style_line_vertical" />
+
+    <Button
+        android:id="@+id/bt_set"
+        style="@style/style_tab_map"
+        android:drawableStart="@mipmap/icon_set"
+        android:text="@string/tab_set" />
+</LinearLayout>
