@@ -12,29 +12,16 @@ import android.widget.LinearLayout;
 
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
-import com.esri.android.map.event.OnSingleTapListener;
+import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.runtime.ArcGISRuntime;
-import com.esri.core.geometry.Envelope;
-import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
-import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
-import com.gangbeng.tiandituhb.bean.GeocoderBean;
-import com.gangbeng.tiandituhb.bean.SearchBean;
-import com.gangbeng.tiandituhb.constant.PubConst;
-import com.gangbeng.tiandituhb.presenter.GeocoderPresenter;
-import com.gangbeng.tiandituhb.presenter.SearchPresenter;
+import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
-import com.gangbeng.tiandituhb.utils.MyLogUtil;
-import com.google.gson.Gson;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,57 +41,54 @@ public class MainActivity extends BaseActivity implements BaseView {
     @BindView(R.id.bmapsView)
     MapView bmapsView;
 
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
-    private BasePresenter geocoderPresenter, searchPresenter;
-    private boolean isfirst = true;
-    private boolean isSingletap = false;
+    private ArcGISTiledMapServiceLayer arcGISTiledMapServiceLayer;
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_main);
         setToolbarVisibility(false);
-        geocoderPresenter = new GeocoderPresenter(this);
-        searchPresenter = new SearchPresenter(this);
         setMapView();
         locationGPS();
-
-        String result="{\"landmarkcount\":1,\"searchversion\":\"4.3.0\",\"count\":\"48\",\"engineversion\":\"20180412\",\"resultType\":1,\"pois\":[{\"eaddress\":\"\",\"ename\":\"Langfang Railway Northen Station\",\"address\":\"河北省廊坊市广阳区\",\"phone\":\"\",\"name\":\"廊坊北站\",\"hotPointID\":\"51DC41024B8B95D9\",\"url\":\"\",\"lonlat\":\"116.699688 39.512216\"}],\"dataversion\":\"2018-7-25 15:51:51\",\"prompt\":[{\"type\":4,\"admins\":[{\"name\":\"廊坊市\",\"adminCode\":156131000}]}],\"mclayer\":\"\",\"keyWord\":\"廊坊北站\"}";
-        Gson gson = new Gson();
-        SearchBean bean = gson.fromJson(result, SearchBean.class);
-        MyLogUtil.showLog(bean.getPois().get(0).getAddress());
-
-
     }
 
     private void setMapView() {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
+//        arcGISTiledMapServiceLayer=new ArcGISTiledMapServiceLayer("http://222.222.66.230/newmapserver4/tianditu/tianditu/lfgzvector/wmts?");
+//        bmapsView.addLayer(arcGISTiledMapServiceLayer);
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+        
+        map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
+        map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
         bmapsView.addLayer(mapRSServiceLayer, 2);
         bmapsView.addLayer(mapRStextLayer, 3);
+
+        bmapsView.addLayer(map_lf, 4);
+        bmapsView.addLayer(map_lf_text, 5);
+        bmapsView.addLayer(map_lfimg, 6);
+        bmapsView.addLayer(map_lfimg_text, 7);
+
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
+        map_lfimg.setVisible(false);
+        map_lfimg_text.setVisible(false);
         bmapsView.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
-                if (mapRStextLayer == o && status == STATUS.LAYER_LOADED) {
+                if (map_lfimg_text == o && status == STATUS.LAYER_LOADED) {
                     bmapsView.zoomToScale(new Point(116.70057500024, 39.51963700025), 50000);
                 }
-            }
-        });
-        bmapsView.setOnSingleTapListener(new OnSingleTapListener() {
-            @Override
-            public void onSingleTap(float v, float v1) {
-                Point point = bmapsView.toMapPoint(v, v1);
-                MyLogUtil.showLog(point.getX() + "," + point.getY());
-                isSingletap = true;
-                getCityInfo(point, isSingletap);
             }
         });
 
@@ -120,8 +104,6 @@ public class MainActivity extends BaseActivity implements BaseView {
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
-                    getCityInfo(ptCurrent, isfirst);
-                    isfirst = false;
                 }
 
                 @Override
@@ -143,20 +125,6 @@ public class MainActivity extends BaseActivity implements BaseView {
         }
     }
 
-    private void getCityInfo(Point point, boolean isfirst) {
-        if (isfirst) {
-            Map<String, Object> parameter = new HashMap<>();
-            Map<String, Object> postStr = new HashMap<>();
-            postStr.put("lon", point.getX());
-            postStr.put("lat", point.getY());
-            postStr.put("ver", 1);
-            MyLogUtil.showLog(postStr.toString());
-            parameter.put("postStr", postStr.toString());
-            parameter.put("type", "geocode");
-            geocoderPresenter.setRequest(parameter);
-        }
-
-    }
 
 
     @Override
@@ -178,16 +146,27 @@ public class MainActivity extends BaseActivity implements BaseView {
             case R.id.ll_searchview:
                 break;
             case R.id.change_map:
-                if (mapRSServiceLayer.isVisible()) {
+                if (map_lfimg.isVisible()) {
+                    map_lfimg.setVisible(false);
+                    map_lfimg_text.setVisible(false);
+                    map_lf.setVisible(true);
+                    map_lf_text.setVisible(true);
+
                     mapRSServiceLayer.setVisible(false);
                     mapRStextLayer.setVisible(false);
                     mapServiceLayer.setVisible(true);
                     maptextLayer.setVisible(true);
                 } else {
+                    map_lfimg.setVisible(true);
+                    map_lfimg_text.setVisible(true);
+                    map_lf.setVisible(false);
+                    map_lf_text.setVisible(false);
+
                     mapRSServiceLayer.setVisible(true);
                     mapRStextLayer.setVisible(true);
                     mapServiceLayer.setVisible(false);
                     maptextLayer.setVisible(false);
+
                 }
                 break;
         }
@@ -210,49 +189,6 @@ public class MainActivity extends BaseActivity implements BaseView {
 
     @Override
     public void setData(Object data) {
-        if (data instanceof GeocoderBean) {
-            GeocoderBean bean = (GeocoderBean) data;
-            String city = bean.getResult().getAddressComponent().getCity();
-            if (!city.contains("廊坊")) {
-                if (!isSingletap) showMsg("您所在位置不在廊坊市内");
-                if (isSingletap) showMsg("您所点击的位置不在廊坊市内");
-                return;
-            }
-            if (isSingletap) {
-                isSingletap = false;
-                GeocoderBean.ResultBean.AddressComponentBean addressComponent = bean.getResult().getAddressComponent();
-                String poi_distance = addressComponent.getPoi_distance();
-                Integer integer = Integer.valueOf(poi_distance);
-                MyLogUtil.showLog(integer);
-                if (integer < 20) {
-                    String poi = addressComponent.getPoi();
-                    Map<String, Object> postStr = new HashMap<>();
-                    postStr.put("keyWord", poi);
-                    postStr.put("level", "11");
-                    postStr.put("mapBound", PubConst.mapBound);
-                    postStr.put("queryType", "1");
-                    postStr.put("count", "1");
-                    postStr.put("start", "0");
-                    Map<String, Object> parameter = new HashMap<>();
-                    Gson gson = new Gson();
-                    String s = gson.toJson(postStr);
-                    MyLogUtil.showLog(s);
-                    parameter.put("postStr", s);
-                    parameter.put("type", "query");
-                    searchPresenter.setRequest(postStr);
-                }
-
-            }
-        }
-        if (data instanceof SearchBean) {
-            SearchBean bean = (SearchBean) data;
-            SearchBean.PoisBean poisBean = bean.getPois().get(0);
-            String lonlat = poisBean.getLonlat();
-            String[] split = lonlat.split(" ");
-            String lon = split[0];
-            String lat = split[1];
-            bmapsView.zoomToScale(new Point(Double.valueOf(lon), Double.valueOf(lat)), 10000);
-        }
 
     }
 }

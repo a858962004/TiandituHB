@@ -21,7 +21,7 @@ public interface MyServices {
     //逆地理编码查询
 
     @GET("search")
-    Observable<SearchBean> search(@Query("postStr")String postStr,@Query("type")String type);
+    Observable<SearchBean> search(@Query("postStr")String postStr, @Query("type")String type);
     //普通poi搜索
 
 }

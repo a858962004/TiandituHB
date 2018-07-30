@@ -8,6 +8,7 @@ import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.SpatialReference;
 import com.esri.core.io.UserCredentials;
+import com.gangbeng.tiandituhb.utils.MyLogUtil;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,24 +22,24 @@ import java.util.concurrent.RejectedExecutionException;
 /**
  * Created by admin on 2016/6/22.
  */
-public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
+public class TianDiTuLFServiceLayer extends TiledServiceLayer {
 
     private TianDiTuTiledMapServiceType _mapType;
     private TileInfo tiandituTileInfo;
 
-    public TianDiTuTiledMapServiceLayer() {
+    public TianDiTuLFServiceLayer() {
         this(null, null,true);
     }
 
-    public TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType mapType){
+    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType){
         this(mapType, null,true);
     }
 
-    public TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType mapType,UserCredentials usercredentials){
+    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials){
         this(mapType, usercredentials, true);
     }
 
-    public TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials, boolean flag){
+    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials, boolean flag){
         super("");
         this._mapType=mapType;
         setCredentials(usercredentials);
@@ -53,11 +54,11 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
                         a.initLayer();
                     }
 
-                    final TianDiTuTiledMapServiceLayer a;
+                    final TianDiTuLFServiceLayer a;
 
 
                     {
-                        a = TianDiTuTiledMapServiceLayer.this;
+                        a = TianDiTuLFServiceLayer.this;
                         //super();
                     }
                 });
@@ -73,9 +74,8 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
     protected void initLayer(){
         this.buildTileInfo();
         this.setFullExtent(new Envelope(-180,-90,180,90));
-//        this.setDefaultSpatialReference(SpatialReference.create(4490));   //CGCS2000
         this.setDefaultSpatialReference(SpatialReference.create(4326));
-        this.setInitialExtent(new Envelope(90.52,33.76,113.59,42.88));
+//        this.setInitialExtent(new Envelope(116.111139,38.470552,117.254155,40.082904));
         super.initLayer();
     }
 
@@ -99,11 +99,11 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
                         }
                 }
 
-                final TianDiTuTiledMapServiceLayer a;
+                final TianDiTuLFServiceLayer a;
 
 
                 {
-                    a = TianDiTuTiledMapServiceLayer.this;
+                    a = TianDiTuLFServiceLayer.this;
                     //super();
                 }
             });
@@ -126,7 +126,7 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
          * */
         byte[] result = null;
 
-        File file=new File(Environment.getExternalStorageDirectory()+File.separator+"Tianditu_LF"+ File.separator+"map_zg"+ File.separator+_mapType+ File.separator+level+col+row);
+        File file=new File(Environment.getExternalStorageDirectory()+ File.separator+"Tianditu_LF"+File.separator+"map_lf"+ File.separator+_mapType+ File.separator+level+col+row);
         Log.i("TAG","filePath"+file.getPath());
         File fileParent = file.getParentFile();
         if(!fileParent.exists()){
@@ -188,7 +188,8 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
      * */
     private String getTianDiMapUrl(int level, int col, int row){
 
-        String url=new TianDiTuUrl(this._mapType,level,col,row).generatUrl();
+        String url=new TianDiTuLFUrl(this._mapType,level,col,row).generatUrl();
+        MyLogUtil.showLog("url:"+url);
         return url;
     }
 

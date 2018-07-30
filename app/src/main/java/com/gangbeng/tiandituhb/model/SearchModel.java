@@ -5,7 +5,6 @@ import com.gangbeng.tiandituhb.base.OnCallBack;
 import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.https.RequestUtil;
 import com.gangbeng.tiandituhb.https.RetrofitManager;
-import com.gangbeng.tiandituhb.utils.MyLogUtil;
 
 import java.util.Map;
 
@@ -20,9 +19,9 @@ public class SearchModel implements BaseModel {
     public void setRequest(Map<String, Object> parameter, final OnCallBack back) {
         String postStr = String.valueOf(parameter.get("postStr"));
         String type = String.valueOf(parameter.get("type"));
-        Observable<SearchBean> query = RetrofitManager.builder().getService().search(postStr, "query");
-        RequestUtil<SearchBean> requestUtil=new RequestUtil<>();
-        requestUtil.setRequest(query, new RequestUtil.RequestCallback() {
+        Observable<SearchBean> search = RetrofitManager.builder().getService().search(postStr, type);
+        RequestUtil<SearchBean> requestUtil = new RequestUtil<>();
+        requestUtil.setRequest(search, new RequestUtil.RequestCallback() {
             @Override
             public void onSuccess(Object data) {
                 back.success(data);
