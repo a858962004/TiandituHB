@@ -10,6 +10,7 @@
         android:numColumns="4"
         android:background="@color/white"/>
     <ListView
+        android:id="@+id/lv_around"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         android:layout_below="@+id/source_around"

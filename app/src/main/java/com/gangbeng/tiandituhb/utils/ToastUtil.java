@@ -5,7 +5,7 @@ import android.os.Message;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.gangbeng.tiandituhb.MyApplication;
+import com.gangbeng.tiandituhb.application.MyApplication;
 
 
 public class ToastUtil {

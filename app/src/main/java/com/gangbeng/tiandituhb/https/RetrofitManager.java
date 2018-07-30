@@ -4,7 +4,7 @@ package com.gangbeng.tiandituhb.https;
 import android.content.Context;
 
 
-import com.gangbeng.tiandituhb.MyApplication;
+import com.gangbeng.tiandituhb.application.MyApplication;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.utils.NetUtil;
 
