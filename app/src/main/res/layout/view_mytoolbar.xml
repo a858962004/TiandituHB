@@ -3,21 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-
-    <EditText
-        android:id="@+id/toolbar_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:layout_marginRight="60dp"
-        android:drawableLeft="@mipmap/ic_search"
-        android:hint="请输入搜索内容"
-        android:background="@null"
-        android:visibility="gone"
-        />
-
     <TextView
         android:id="@+id/toolbar_textView"
         android:layout_width="wrap_content"
@@ -26,21 +11,23 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:text="主页"
-        android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="17sp"
         android:visibility="gone" />
 
-    <ImageButton
+    <Button
         android:id="@+id/toolbar_imgBtn"
-        android:background="@null"
-        android:layout_width="wrap_content"
+        android:background="@drawable/background_searchbutton"
+        android:text="确定"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@mipmap/ic_global"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
+        android:visibility="gone"
         />
 
     <ImageButton
@@ -65,6 +52,27 @@
         android:text="搜索"
         android:background="@mipmap/ic_search"
         android:padding="10dp"
+        android:visibility="gone"
+        />
+
+    <EditText
+        android:id="@+id/toolbar_editText"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:paddingLeft="10dp"
+        android:layout_gravity="center"
+        android:layout_toLeftOf="@+id/toolbar_imgBtn"
+        android:layout_toRightOf="@+id/toolbar_leftImgBtn"
+        android:drawableLeft="@mipmap/ic_search"
+        android:hint="请输入搜索内容"
+        android:textSize="15sp"
+        android:background="@drawable/background_searchview"
         android:visibility="gone"
         />
 

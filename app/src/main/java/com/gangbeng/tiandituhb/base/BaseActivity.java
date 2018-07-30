@@ -46,10 +46,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-        toolbar= (MyToolbar) findViewById(R.id.myToolbar);
-        relativeLayout= (RelativeLayout) findViewById(R.id.fragment_container);
+        toolbar = (MyToolbar) findViewById(R.id.myToolbar);
+        relativeLayout = (RelativeLayout) findViewById(R.id.fragment_container);
         setToolbarVisibility(true);
-        setToolbarRightIcon(R.mipmap.ic_global);
         setToolbarLeftIcon(R.mipmap.ic_back);
         setToolbarRightVisible(true);
         setToolbarLeftVisible(true);
@@ -74,13 +73,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 为内容区域添加布局
+     *
      * @param relId
      */
-    public void setContentLayout(int relId){
-        View contentView = LayoutInflater.from(this).inflate(relId,null);
+    public void setContentLayout(int relId) {
+        View contentView = LayoutInflater.from(this).inflate(relId, null);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         relativeLayout.addView(contentView, layoutParams);
         ButterKnife.bind(this);
@@ -90,19 +89,20 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 显示吐司
+     *
      * @param title
      */
-    public void ShowToast(String title){
+    public void ShowToast(String title) {
         toast = Toast.makeText(BaseActivity.this, title, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER,0,0);
+        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
 
     /**
      * 隐藏正在显示的吐司
      */
-    public void HideToast(){
-        if (toast!=null){
+    public void HideToast() {
+        if (toast != null) {
             toast.cancel();
         }
     }
@@ -132,7 +132,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     //此方法，如果显示则隐藏，如果隐藏则显示
     public void hintKbOne() {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         // 得到InputMethodManager的实例
         if (imm.isActive()) {
             // 如果开启
@@ -218,8 +218,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 功能 ：显示一个进度条对话框
      */
-    public void showProcessDialog(String title,String msg,boolean falg){
-        if(dialog==null){
+    public void showProcessDialog(String title, String msg, boolean falg) {
+        if (dialog == null) {
             dialog = new ProgressDialog(this);
         }
         dialog.setTitle(title);
@@ -231,8 +231,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 功能 ：取消一个进度条对话框
      */
-    protected void dismissProcessDialog(){
-        if(dialog!=null){
+    protected void dismissProcessDialog() {
+        if (dialog != null) {
             dialog.dismiss();
         }
     }
@@ -245,6 +245,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else {
             toolbar.setVisibility(View.GONE);
         }
+    }
+
+    //显示搜索框，默认隐藏
+    protected void showEditText() {
+        toolbar.showEditText();
     }
 
 
@@ -267,13 +272,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     //设置toolbar右侧按钮图标
-    protected void setToolbarRightIcon(int id) {
-        toolbar.setRightImageBtnResource(id);
-    }
-
-    //设置toolbar右侧按钮图标
     protected void setToolbarLeftIcon(int id) {
         toolbar.setLeftImageBtnDrawable(id);
+    }
+
+    protected void setRightImageBtnText(String string){
+        toolbar.setRightImageBtnText(string);
     }
 
     //设置toolbar文字
@@ -292,6 +296,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * 设置listview高度
+     *
      * @param listView
      */
     public void setListViewHeightBasedOnChildren(ListView listView) {
@@ -313,7 +318,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ViewGroup.LayoutParams params = listView.getLayoutParams();
 
         params.height = totalHeight
-                + (DensityUtil.dip2px(this, 1) * listAdapter.getCount() );
+                + (DensityUtil.dip2px(this, 1) * listAdapter.getCount());
 
         ((ViewGroup.MarginLayoutParams) params).setMargins(0, 0, 0, 0); // 可删除
 

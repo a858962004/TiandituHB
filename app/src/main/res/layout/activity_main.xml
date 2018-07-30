@@ -9,8 +9,7 @@
     <com.esri.android.map.MapView
         android:id="@+id/bmapsView"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginBottom="@dimen/tablayoutheight" />
+        android:layout_height="fill_parent" />
 
     <include layout="@layout/view_tab_map" />
 
@@ -18,18 +17,26 @@
 
     <android.support.v7.widget.CardView
         android:id="@+id/change_map"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
+        style="@style/style_cardview_map"
         android:layout_marginTop="100dp"
         app:cardCornerRadius="5dp">
 
         <TextView
-            android:layout_gravity="center"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            style="@style/style_cardtv_map"
             android:background="@mipmap/icon_change_map" />
     </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/location_map"
+        style="@style/style_cardview_map"
+        android:layout_below="@+id/change_map"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="5dp">
+
+        <TextView
+            style="@style/style_cardtv_map"
+            android:background="@mipmap/icon_location" />
+    </android.support.v7.widget.CardView>
+
 
 </RelativeLayout>

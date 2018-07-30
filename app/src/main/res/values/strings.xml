@@ -3,4 +3,5 @@
     <string name="tab_around">周边</string>
     <string name="tab_route">路线</string>
     <string name="tab_set">设置</string>
+    <string name="tab_navi">导航</string>
 </resources>

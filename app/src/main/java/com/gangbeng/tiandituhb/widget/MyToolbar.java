@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -35,7 +36,7 @@ public class MyToolbar extends Toolbar implements TextWatcher {
     private EditText toolbar_editText;
     private TextView toolbar_search;
     private TextView toolbar_textView;
-    private ImageButton toolbar_imgBtn;
+    private Button toolbar_imgBtn;
     private ImageButton toolbar_LeftimgBtn;
     private MyToolBarBtnListenter btnListenter;
     private MyToolBarEditTextListener editTextListener;
@@ -55,7 +56,7 @@ public class MyToolbar extends Toolbar implements TextWatcher {
 
         final TintTypedArray a = TintTypedArray.obtainStyledAttributes(getContext(), attrs,
                 R.styleable.MyToolBar, defStyleAttr, 0);
-        Drawable drawableRight = a.getDrawable(R.styleable.MyToolBar_RightImgButtonIcon);
+//        Drawable drawableRight = a.getDrawable(R.styleable.MyToolBar_RightImgButtonIcon);
         Drawable drawableLeft = a.getDrawable(R.styleable.MyToolBar_LeftImgButtonIcon);
         Drawable drawableText = a.getDrawable(R.styleable.MyToolBar_MiddleImgTextIcon);
         boolean aBoolean = a.getBoolean(R.styleable.MyToolBar_isShowEditText, false);
@@ -63,9 +64,9 @@ public class MyToolbar extends Toolbar implements TextWatcher {
         if(!TextUtils.isEmpty(hint)){
             toolbar_editText.setHint(hint);
         }
-        if (drawableRight != null) {
-            setRightImageBtnDrawable(drawableRight);
-        }
+//        if (drawableRight != null) {
+//            setRightImageBtnDrawable(drawableRight);
+//        }
         if (drawableLeft != null) {
             setLeftImageBtnDrawable(drawableLeft);
         }
@@ -94,7 +95,7 @@ public class MyToolbar extends Toolbar implements TextWatcher {
 
         toolbar_editText = (EditText) this.findViewById(R.id.toolbar_editText);
         toolbar_textView = (TextView) this.findViewById(R.id.toolbar_textView);
-        toolbar_imgBtn = (ImageButton) this.findViewById(R.id.toolbar_imgBtn);
+        toolbar_imgBtn = (Button) this.findViewById(R.id.toolbar_imgBtn);
         toolbar_LeftimgBtn = (ImageButton) this.findViewById(R.id.toolbar_leftImgBtn);
         toolbar_search = (TextView) this.findViewById(R.id.toolbar_search);
         toolbar_editText.addTextChangedListener(this);
@@ -222,15 +223,11 @@ public class MyToolbar extends Toolbar implements TextWatcher {
         toolbar_LeftimgBtn.setImageResource(resId);
     }
 
-    public void setRightImageBtnDrawable(Drawable resId) {
+    public void setRightImageBtnText(String text) {
         showRightBtnIcon();
-        toolbar_imgBtn.setImageDrawable(resId);
+        toolbar_imgBtn.setText(text);
     }
 
-    public void setRightImageBtnResource(int resId) {
-        showRightBtnIcon();
-        toolbar_imgBtn.setImageResource(resId);
-    }
 
 
     public void setMyToolBarBtnListenter(MyToolBarBtnListenter btnListenter) {

@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
-import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
@@ -40,12 +39,16 @@ public class MainActivity extends BaseActivity implements BaseView {
     CardView changeMap;
     @BindView(R.id.bmapsView)
     MapView bmapsView;
+    @BindView(R.id.bt_navi)
+    Button btNavi;
+    @BindView(R.id.location_map)
+    CardView locationMap;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
-    private ArcGISTiledMapServiceLayer arcGISTiledMapServiceLayer;
+    private boolean isFirstlocal = true;
 
     @Override
     protected void initView() {
@@ -63,7 +66,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
-        
+
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
@@ -87,7 +90,8 @@ public class MainActivity extends BaseActivity implements BaseView {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
                 if (map_lfimg_text == o && status == STATUS.LAYER_LOADED) {
-                    bmapsView.zoomToScale(new Point(116.70057500024, 39.51963700025), 50000);
+
+//                    bmapsView.zoomToScale(new Point(116.70057500024, 39.51963700025), 50000);
                 }
             }
         });
@@ -104,6 +108,8 @@ public class MainActivity extends BaseActivity implements BaseView {
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
+                    if (isFirstlocal) bmapsView.zoomToScale(ptCurrent, 50000);
+                    isFirstlocal = false;
                 }
 
                 @Override
@@ -126,7 +132,6 @@ public class MainActivity extends BaseActivity implements BaseView {
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,16 +139,22 @@ public class MainActivity extends BaseActivity implements BaseView {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_set, R.id.ll_searchview, R.id.change_map})
+    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_set, R.id.ll_searchview, R.id.change_map,R.id.bt_navi, R.id.location_map})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_around:
+                Bundle bundle = new Bundle();
+                bundle.putString("key","around");
+                skip(AroundActivity.class,bundle,false);
                 break;
             case R.id.bt_route:
                 break;
             case R.id.bt_set:
                 break;
             case R.id.ll_searchview:
+                Bundle bundle2 = new Bundle();
+                bundle2.putString("key","search");
+                skip(AroundActivity.class,bundle2,false);
                 break;
             case R.id.change_map:
                 if (map_lfimg.isVisible()) {
@@ -169,6 +180,12 @@ public class MainActivity extends BaseActivity implements BaseView {
 
                 }
                 break;
+            case R.id.bt_navi:
+
+                break;
+            case R.id.location_map:
+                bmapsView.zoomToScale(ptCurrent, 50000);
+                break;
         }
     }
 
@@ -191,4 +208,5 @@ public class MainActivity extends BaseActivity implements BaseView {
     public void setData(Object data) {
 
     }
+
 }

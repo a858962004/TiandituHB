@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/tablayoutheight"
     android:layout_alignParentBottom="true"
-    android:background="@color/white"
+    android:background="@null"
     tools:showIn="@layout/activity_main">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/background_searchview"
+        android:orientation="horizontal">
 
     <Button
         android:id="@+id/bt_around"
@@ -24,10 +30,18 @@
         android:text="@string/tab_route" />
 
     <TextView style="@style/style_line_vertical" />
+    <Button
+        android:id="@+id/bt_navi"
+        style="@style/style_tab_map"
+        android:drawableStart="@mipmap/icon_navi"
+        android:text="@string/tab_navi" />
+
+    <TextView style="@style/style_line_vertical" />
 
     <Button
         android:id="@+id/bt_set"
         style="@style/style_tab_map"
         android:drawableStart="@mipmap/icon_set"
         android:text="@string/tab_set" />
-</LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
