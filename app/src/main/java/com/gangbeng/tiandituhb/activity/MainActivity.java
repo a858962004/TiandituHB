@@ -18,9 +18,12 @@ import com.esri.core.geometry.Point;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BaseView;
+import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,8 +63,6 @@ public class MainActivity extends BaseActivity implements BaseView {
 
     private void setMapView() {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
-//        arcGISTiledMapServiceLayer=new ArcGISTiledMapServiceLayer("http://222.222.66.230/newmapserver4/tianditu/tianditu/lfgzvector/wmts?");
-//        bmapsView.addLayer(arcGISTiledMapServiceLayer);
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
@@ -108,7 +109,10 @@ public class MainActivity extends BaseActivity implements BaseView {
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
-                    if (isFirstlocal) bmapsView.zoomToScale(ptCurrent, 50000);
+                    if (isFirstlocal) {
+                        bmapsView.zoomToScale(ptCurrent, 50000);
+
+                    }
                     isFirstlocal = false;
                 }
 
@@ -143,9 +147,14 @@ public class MainActivity extends BaseActivity implements BaseView {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_around:
+                PointBean pointBean = new PointBean();
+                pointBean.setX(String.valueOf(ptCurrent.getX()));
+                pointBean.setY(String.valueOf(ptCurrent.getY()));
+                EventBus.getDefault().postSticky(pointBean);
                 Bundle bundle = new Bundle();
                 bundle.putString("key","around");
                 skip(AroundActivity.class,bundle,false);
+
                 break;
             case R.id.bt_route:
                 break;
@@ -162,7 +171,6 @@ public class MainActivity extends BaseActivity implements BaseView {
                     map_lfimg_text.setVisible(false);
                     map_lf.setVisible(true);
                     map_lf_text.setVisible(true);
-
                     mapRSServiceLayer.setVisible(false);
                     mapRStextLayer.setVisible(false);
                     mapServiceLayer.setVisible(true);
@@ -172,7 +180,6 @@ public class MainActivity extends BaseActivity implements BaseView {
                     map_lfimg_text.setVisible(true);
                     map_lf.setVisible(false);
                     map_lf_text.setVisible(false);
-
                     mapRSServiceLayer.setVisible(true);
                     mapRStextLayer.setVisible(true);
                     mapServiceLayer.setVisible(false);

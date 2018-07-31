@@ -8,5 +8,4 @@ import android.widget.TextView;
 
 public class AroundHolder {
     public static TextView textView;
-    public static TextView clearTV;
 }

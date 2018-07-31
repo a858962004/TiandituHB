@@ -8,10 +8,10 @@
     android:gravity="center">
     <com.gangbeng.tiandituhb.widget.CircleImageView
         android:id="@+id/grid_view_iv"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginTop="10dp"
-        app:border_width="2dp"
+        app:border_width="1dp"
         app:border_color="#ccc"
         android:src="@mipmap/ic_launcher"/>
     <TextView

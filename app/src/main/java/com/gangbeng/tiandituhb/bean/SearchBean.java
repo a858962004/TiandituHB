@@ -1,12 +1,13 @@
 package com.gangbeng.tiandituhb.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Administrator on 2018/7/29.
  */
 
-public class SearchBean {
+public class SearchBean implements Serializable {
 
     /**
      * landmarkcount : 1
@@ -112,7 +113,7 @@ public class SearchBean {
         this.prompt = prompt;
     }
 
-    public static class PoisBean {
+    public static class PoisBean implements Serializable {
         /**
          * eaddress :
          * ename : Langfang Railway Northen Station
@@ -198,7 +199,7 @@ public class SearchBean {
         }
     }
 
-    public static class PromptBean {
+    public static class PromptBean  implements Serializable{
         /**
          * type : 4
          * admins : [{"name":"廊坊市","adminCode":156131000}]
@@ -223,7 +224,7 @@ public class SearchBean {
             this.admins = admins;
         }
 
-        public static class AdminsBean {
+        public static class AdminsBean implements Serializable {
             /**
              * name : 廊坊市
              * adminCode : 156131000

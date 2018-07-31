@@ -11,5 +11,4 @@ import android.widget.TextView;
 public class SortGridViewHolder {
     public static ImageView imageView;
     public static TextView textView;
-
 }

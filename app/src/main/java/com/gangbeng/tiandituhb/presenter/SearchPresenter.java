@@ -23,16 +23,19 @@ public class SearchPresenter implements BasePresenter, OnCallBack {
 
     @Override
     public void setRequest(Map<String, Object> parameter) {
+        view.showLoadingDialog("请稍等","正在搜索数据...",false);
         model.setRequest(parameter, this);
     }
 
     @Override
     public void success(Object bean) {
+        view.canelLoadingDialog();
         view.setData(bean);
     }
 
     @Override
     public void failed(String failReason) {
+        view.canelLoadingDialog();
         view.showMsg(failReason);
     }
 }

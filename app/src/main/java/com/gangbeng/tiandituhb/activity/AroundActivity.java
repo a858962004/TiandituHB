@@ -4,36 +4,58 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
-//import com.gangbeng.tiandituhb.adpter.AroundLVAdapter;
-import com.gangbeng.tiandituhb.application.MyApplication;
 import com.gangbeng.tiandituhb.R;
+import com.gangbeng.tiandituhb.adpter.AroundLVAdapter;
 import com.gangbeng.tiandituhb.adpter.SortGridViewAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.base.BasePresenter;
+import com.gangbeng.tiandituhb.base.BaseView;
+import com.gangbeng.tiandituhb.bean.PointBean;
+import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.presenter.SearchPresenter;
+import com.gangbeng.tiandituhb.utils.DensityUtil;
+import com.gangbeng.tiandituhb.utils.SharedUtil;
+import com.gangbeng.tiandituhb.widget.MyToolbar;
 import com.gangbeng.tiandituhb.widget.SourcePanel;
+import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+//import com.gangbeng.tiandituhb.adpter.AroundLVAdapter;
 
 /**
  * @author zhanghao
  * @date 2018-07-30
  */
 
-public class AroundActivity extends BaseActivity {
+public class AroundActivity extends BaseActivity implements BaseView {
 
     @BindView(R.id.source_around)
     SourcePanel sourceAround;
     @BindView(R.id.lv_around)
     ListView lvAround;
+    @BindView(R.id.tv_clear)
+    TextView tvClear;
 
     private SortGridViewAdapter gridViewAdapter;
-//    private SearchRecord searchRecord;
-//    private SearchRecordDao searchRecordDao;
-//    private AroundLVAdapter aroundLVAdapter;
+    private AroundLVAdapter aroundLVAdapter;
+    private MyToolbar toolbar;
+    private BasePresenter presenter;
 
     private int[] sortImgs = new int[]{R.mipmap.icon_cfood, R.mipmap.icon_wfood, R.mipmap.icon_coffee, R.mipmap.icon_starthotail
             , R.mipmap.icon_hotail, R.mipmap.icon_car, R.mipmap.icon_ktv, R.mipmap.icon_relax
@@ -42,67 +64,192 @@ public class AroundActivity extends BaseActivity {
     private String[] sortStrs = new String[]{"中餐馆", "西餐馆", "咖啡馆", "星级酒店", "连锁酒店", "汽车服务", "娱乐场所", "休闲场所"
             , "公园广场", "风景名胜", "购物中心", "超市", "体育场馆", "医院", "学校", "科技场馆"};
 
+    private List<String> data = new ArrayList<>();
+    private String key;
+    private PointBean ptpoint;
+    private String keyword;
+
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_around);
         setToolbarVisibility(true);
+        toolbar = getToolBar();
+        presenter = new SearchPresenter(this);
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
-        String key = bundleExtra.getString("key");
+        key = bundleExtra.getString("key");
         if (key.equals("search")) {
-            setRightImageBtnText("取消");
+            setRightImageBtnText("搜索");
             showEditText();
         } else {
             setToolbarRightVisible(false);
-            setToolbarTitle("以当前位置为中心");
+            setToolbarTitle("当前位置周边");
         }
         gridViewAdapter = new SortGridViewAdapter(this, sortImgs, sortStrs);
         sourceAround.setAdapter(gridViewAdapter);
         sourceAround.setOnItemClickListener(sourceclick);
-//        searchRecord = new SearchRecord();
-//        searchRecordDao = MyApplication.getInstance().getDaoSession().getSearchRecordDao();
-        getRecord();
+        List<String> record = (List<String>) SharedUtil.getSerializeObject("record");
+        if (record != null) {
+            data.addAll(record);
+            Collections.reverse(record);
+            aroundLVAdapter = new AroundLVAdapter(this, record);
+            lvAround.setAdapter(aroundLVAdapter);
+            DensityUtil.getTotalHeightofListView(lvAround);
+            tvClear.setVisibility(View.VISIBLE);
+        }
+        lvAround.setOnItemClickListener(listitem);
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
     }
 
+    /**
+     * eventbus接收返回对象
+     *
+     * @param pointBean
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetPoint(PointBean pointBean) {
+        ptpoint = pointBean;
+    }
+
+    @Override
+    protected void setRightClickListen() {
+        String editText = String.valueOf(toolbar.getEditText());
+        if (editText.equals("")){
+            showMsg("输入内容为空");
+            return;
+        }
+        keyword=editText;
+        for (String s : data) {
+            if (keyword.equals(s)) {
+                data.remove(s);
+                break;
+            }
+        }
+        data.add(keyword);
+        List<String> adpterdata = new ArrayList<>();
+        adpterdata.addAll(data);
+        Collections.reverse(adpterdata);
+        if (adpterdata == null) return;
+        aroundLVAdapter = new AroundLVAdapter(AroundActivity.this, adpterdata);
+        lvAround.setAdapter(aroundLVAdapter);
+        DensityUtil.getTotalHeightofListView(lvAround);
+        tvClear.setVisibility(View.VISIBLE);
+        SharedUtil.saveSerializeObject("record", data);
+        tvClear.setVisibility(View.VISIBLE);
+        SharedUtil.saveSerializeObject("record", data);
+        requestData(keyword);
+    }
+
     AdapterView.OnItemClickListener sourceclick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String sortStr = sortStrs[position];
-//            addRecord(sortStr);
+            keyword=sortStrs[position];
+            for (String s : data) {
+                if (keyword.equals(s)) {
+                    data.remove(s);
+                    break;
+                }
+            }
+            data.add(keyword);
+            List<String> adpterdata = new ArrayList<>();
+            adpterdata.addAll(data);
+            Collections.reverse(adpterdata);
+            aroundLVAdapter = new AroundLVAdapter(AroundActivity.this, adpterdata);
+            lvAround.setAdapter(aroundLVAdapter);
+            DensityUtil.getTotalHeightofListView(lvAround);
+            tvClear.setVisibility(View.VISIBLE);
+            SharedUtil.saveSerializeObject("record", data);
+            requestData(sortStrs[position]);
         }
     };
 
-//    private void addRecord(String sortStr) {
-//        List<SearchRecord> searchRecords = searchRecordDao.loadAll();
-//        if (searchRecords.size() > 0) {
-//            for (SearchRecord record : searchRecords) {
-//                if (record.getName().equals(sortStr)) {
-//                    searchRecordDao.delete(record);
-//                }
-//            }
-//        }
-//        searchRecord.setName(sortStr);
-//        searchRecordDao.insert(searchRecord);
-//        if (aroundLVAdapter != null) {
-//            aroundLVAdapter.addData(searchRecord);
-//        }else {
-//            searchRecords.add(searchRecord);
-//            aroundLVAdapter=new AroundLVAdapter(this,searchRecords);
-//        }
-//
-//    }
+    AdapterView.OnItemClickListener listitem=new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            String item = (String) aroundLVAdapter.getItem(position);
+            requestData(item);
+        }
+    };
 
-    private void getRecord() {
-//        List<SearchRecord> searchRecords = searchRecordDao.loadAll();
-//        if (searchRecords.size()>0) aroundLVAdapter=new AroundLVAdapter(this,searchRecords);
+    private void requestData(String item) {
+        String postStr = "";
+        Map<String, String> post = new HashMap<>();
+        Gson gson = new Gson();
+        if (key.equals("search")) {
+            post.put("keyWord", item);
+            post.put("level", "11");
+            post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
+            post.put("queryType", "1");
+            post.put("count", "20");
+            post.put("start", "0");
+            postStr = gson.toJson(post);
+        } else {
+            post.put("keyWord", item);
+            post.put("level", "11");
+            post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
+            post.put("queryType", "3");
+            post.put("pointLonlat", ptpoint.getX() + "," + ptpoint.getY());
+            post.put("queryRadius", "10000");
+            post.put("count", "20");
+            post.put("start", "0");
+            postStr = gson.toJson(post);
+        }
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("postStr", postStr);
+        parameter.put("type", "query");
+        presenter.setRequest(parameter);
     }
 
+    @OnClick(R.id.tv_clear)
+    public void onViewClicked() {
+        data.clear();
+        aroundLVAdapter.removeAll();
+        DensityUtil.getTotalHeightofListView(lvAround);
+        tvClear.setVisibility(View.GONE);
+        SharedUtil.removeData("record");
+    }
+
+    @Override
+    public void showMsg(String msg) {
+        ShowToast(msg);
+    }
+
+    @Override
+    public void showLoadingDialog(String title, String msg, boolean flag) {
+        showProcessDialog(title, msg, flag);
+    }
+
+    @Override
+    public void canelLoadingDialog() {
+        dismissProcessDialog();
+    }
+
+    @Override
+    public void setData(Object data) {
+        if (data instanceof SearchBean) {
+            SearchBean bean=(SearchBean)data;
+            String count = bean.getCount();
+            if (count.equals("0")){
+                showMsg("为查找到相应数据");
+                return;
+            }
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data", bean);
+            bundle.putString("key",key);
+            bundle.putString("keywords",keyword);
+            skip(SearchResultActivity.class,bundle,false);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().removeStickyEvent(PointBean.class);
+    }
 }

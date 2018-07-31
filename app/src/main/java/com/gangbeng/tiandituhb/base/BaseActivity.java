@@ -324,4 +324,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         listView.setLayoutParams(params);
     }
+
+    public MyToolbar getToolBar(){
+        return this.toolbar;
+    }
 }

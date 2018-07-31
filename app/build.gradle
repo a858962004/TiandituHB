@@ -32,27 +32,6 @@ repositories {
     }
 }
 
-////数据库添加
-//buildscript {
-//    repositories {
-//        jcenter()
-//        mavenCentral()
-//    }
-//    dependencies {
-//        classpath 'com.android.tools.build:gradle:2.1.0'
-//        classpath 'org.greenrobot:greendao-gradle-plugin:3.1.0'
-//    }
-//
-//}
-//
-//apply plugin: 'org.greenrobot.greendao'
-//
-//greendao{
-//    schemaVersion 1
-//    daoPackage'com.gangbeng.tiandituhb.greendao.gen'
-//    targetGenDir'src/main/java'
-//}
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -83,8 +62,7 @@ dependencies {
     /** okhttp                   **/
     compile 'com.squareup.okhttp3:okhttp:3.3.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'
-//    //数据库导入
-//    compile 'org.greenrobot:greendao:3.1.0'
-//    compile 'org.greenrobot:greendao-generator:3.1.0'
-//    compile 'com.android.support:multidex:1.0.0'
+
+    //下拉刷新
+    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-12'
 }
