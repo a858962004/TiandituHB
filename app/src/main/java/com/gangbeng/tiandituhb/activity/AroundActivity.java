@@ -62,7 +62,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
             , R.mipmap.icon_park, R.mipmap.icon_tourist, R.mipmap.icon_center, R.mipmap.icon_shop
             , R.mipmap.icon_football, R.mipmap.icon_hospital, R.mipmap.icon_school, R.mipmap.icon_science};
     private String[] sortStrs = new String[]{"中餐馆", "西餐馆", "咖啡馆", "星级酒店", "连锁酒店", "汽车服务", "娱乐场所", "休闲场所"
-            , "公园广场", "风景名胜", "购物中心", "超市", "体育场馆", "医院", "学校", "科技场馆"};
+            , "公园广场", "风景名胜", "购物中心", "超市", "体育场馆", "医院", "学校", "图书馆"};
 
     private List<String> data = new ArrayList<>();
     private String key;
@@ -235,8 +235,8 @@ public class AroundActivity extends BaseActivity implements BaseView {
         if (data instanceof SearchBean) {
             SearchBean bean=(SearchBean)data;
             String count = bean.getCount();
-            if (count.equals("0")){
-                showMsg("为查找到相应数据");
+            if (count.equals("0")||bean.getPois()==null||bean.getPois().size()==0){
+                showMsg("未查找到相应数据");
                 return;
             }
             Bundle bundle = new Bundle();
