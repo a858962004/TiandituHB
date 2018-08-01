@@ -1,5 +1,6 @@
 package com.gangbeng.tiandituhb.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -68,6 +69,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
     private String key;
     private PointBean ptpoint;
     private String keyword;
+    private SearchBean.PoisBean bean;
 
     @Override
     protected void initView() {
@@ -76,13 +78,8 @@ public class AroundActivity extends BaseActivity implements BaseView {
         toolbar = getToolBar();
         presenter = new SearchPresenter(this);
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
-        key = bundleExtra.getString("key");
-        if (key.equals("search")) {
-            setRightImageBtnText("搜索");
-            showEditText();
-        } else {
-            setToolbarRightVisible(false);
-            setToolbarTitle("当前位置周边");
+        if (bundleExtra != null) {
+            setView(bundleExtra);
         }
         gridViewAdapter = new SortGridViewAdapter(this, sortImgs, sortStrs);
         sourceAround.setAdapter(gridViewAdapter);
@@ -108,13 +105,23 @@ public class AroundActivity extends BaseActivity implements BaseView {
     }
 
     /**
-     * eventbus接收返回对象
+     * eventbus接收定位信息
      *
      * @param pointBean
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onGetPoint(PointBean pointBean) {
         ptpoint = pointBean;
+    }
+
+    /**
+     * eventbus接收定位信息
+     *
+     * @param bean
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetPoint(SearchBean.PoisBean bean) {
+        this.bean = bean;
     }
 
     @Override
@@ -190,11 +197,17 @@ public class AroundActivity extends BaseActivity implements BaseView {
             post.put("start", "0");
             postStr = gson.toJson(post);
         } else {
+            String Lonlat="";
+            if (bean != null) {
+                Lonlat=bean.getLonlat().replace(" ",",");
+            }else {
+                Lonlat=ptpoint.getX() + "," + ptpoint.getY();
+            }
             post.put("keyWord", item);
             post.put("level", "11");
             post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
             post.put("queryType", "3");
-            post.put("pointLonlat", ptpoint.getX() + "," + ptpoint.getY());
+            post.put("pointLonlat", Lonlat);
             post.put("queryRadius", "10000");
             post.put("count", "20");
             post.put("start", "0");
@@ -251,5 +264,26 @@ public class AroundActivity extends BaseActivity implements BaseView {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().removeStickyEvent(PointBean.class);
+        EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Bundle bundleExtra = intent.getBundleExtra(PubConst.DATA);
+        setView(bundleExtra);
+    }
+
+    private void setView(Bundle bundleExtra) {
+        key = bundleExtra.getString("key");
+        if (key.equals("search")) {
+            setRightImageBtnText("搜索");
+            showEditText();
+        } else {
+            String address = bundleExtra.getString("address");
+            setToolbarRightVisible(false);
+            setToolbarTitle(address+"周边");
+        }
     }
 }

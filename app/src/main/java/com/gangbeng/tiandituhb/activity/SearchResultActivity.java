@@ -1,5 +1,6 @@
 package com.gangbeng.tiandituhb.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.ListView;
@@ -12,6 +13,7 @@ import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.presenter.SearchPresenter;
 import com.google.gson.Gson;
@@ -59,6 +61,10 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
         setToolbarTitle("查询结果");
         setToolbarRightVisible(false);
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
+        setView(bundleExtra);
+    }
+
+    private void setView(Bundle bundleExtra) {
         SearchBean bean = (SearchBean)bundleExtra.getSerializable("data");
         key = bundleExtra.getString("key");
         keywords = bundleExtra.getString("keywords");
@@ -71,6 +77,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
         }
         presenter = new SearchPresenter(this);
         adpter=new SearchResultAdpter(this,bean.getPois());
+        adpter.setCallBack(callBack);
         listEssence.setAdapter(adpter);
         refreshLayout.setOnRefreshListener(onRefreshListener);
         refreshLayout.setOnLoadMoreListener(onLoadMoreListener);
@@ -164,5 +171,36 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
             adpter.addData(bean.getPois());
             refreshLayout.finishLoadMore();
         }
+    }
+
+    SearchAdpterCallBack callBack=new SearchAdpterCallBack() {
+        @Override
+        public void aroundclick(SearchBean.PoisBean bean) {
+            EventBus.getDefault().postSticky(bean);
+            Bundle bundle = new Bundle();
+            bundle.putString("key","around");
+            bundle.putString("address",bean.getName());
+            skip(AroundActivity.class,bundle,false);
+        }
+
+        @Override
+        public void routeclick(SearchBean.PoisBean bean) {
+
+        }
+
+        @Override
+        public void itemclick(SearchBean.PoisBean bean) {
+            Bundle bundle = new Bundle();
+            bundle.putString("key","point");
+            bundle.putSerializable("data",bean);
+            skip(MapActivity.class,bundle,false);
+        }
+    };
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Bundle bundleExtra = intent.getBundleExtra(PubConst.DATA);
+        setView(bundleExtra);
     }
 }

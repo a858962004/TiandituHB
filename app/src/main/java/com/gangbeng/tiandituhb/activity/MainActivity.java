@@ -153,6 +153,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                 EventBus.getDefault().postSticky(pointBean);
                 Bundle bundle = new Bundle();
                 bundle.putString("key","around");
+                bundle.putString("address","当前位置");
                 skip(AroundActivity.class,bundle,false);
 
                 break;

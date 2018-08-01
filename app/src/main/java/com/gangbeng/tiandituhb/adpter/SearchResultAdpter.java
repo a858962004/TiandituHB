@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
 import com.gangbeng.tiandituhb.utils.Util;
 
 import java.util.List;
@@ -23,10 +24,15 @@ import java.util.List;
 public class SearchResultAdpter extends BaseAdapter {
     private Context context;
     private List<SearchBean.PoisBean> data;
+    private SearchAdpterCallBack callBack;
 
     public SearchResultAdpter(Context context, List<SearchBean.PoisBean> data) {
         this.context = context;
         this.data = data;
+    }
+
+    public void setCallBack(SearchAdpterCallBack callBack){
+        this.callBack=callBack;
     }
 
     @Override
@@ -93,6 +99,28 @@ public class SearchResultAdpter extends BaseAdapter {
                 Util.cancelCollect(data.get(position));
             }
         });
+
+        if (callBack!=null){
+            holder.itemRL.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBack.itemclick(data.get(position));
+                }
+            });
+            holder.aroundTV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBack.aroundclick(data.get(position));
+                }
+            });
+            holder.routeTV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBack.routeclick(data.get(position));
+                }
+            });
+
+        }
         return convertView;
     }
 
@@ -105,4 +133,5 @@ public class SearchResultAdpter extends BaseAdapter {
         ImageView collectIMG;
         ImageView collect2IMG;
     }
+
 }

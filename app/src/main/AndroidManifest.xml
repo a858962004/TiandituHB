@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gangbeng.tiandituhb">
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,8 +25,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.AroundActivity" />
-        <activity android:name=".activity.SearchResultActivity" />
+        <activity
+            android:name=".activity.AroundActivity"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".activity.SearchResultActivity"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".activity.MapActivity"
+            android:launchMode="singleInstance" />
 
     </application>
 
