@@ -15,6 +15,7 @@ import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
 import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.presenter.DrivePresenter;
 import com.gangbeng.tiandituhb.presenter.SearchPresenter;
 import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -76,6 +77,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
             allpage=total/20+1;
         }
         presenter = new SearchPresenter(this);
+//        drivepresenter=new DrivePresenter(this);
         adpter=new SearchResultAdpter(this,bean.getPois());
         adpter.setCallBack(callBack);
         listEssence.setAdapter(adpter);
@@ -185,7 +187,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
 
         @Override
         public void routeclick(SearchBean.PoisBean bean) {
-
+//            drivepresenter.setRequest(new HashMap<String, Object>());
         }
 
         @Override

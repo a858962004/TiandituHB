@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,9 +25,10 @@ public class ParserXMLWithPull {
     private static List<Goods> goodsList = null;
     private static Goods goods = null;
     private static DriveRouteBean routeBean;
+    private static List<DriveRouteBean.StreetLatLonBean> streetLatLon;
     private static InputStream is;
 
-    public static List<Goods> getXmlContentForPull(String xml) {
+    public static DriveRouteBean getXmlContentForPull(String xml) {
         try {
             is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -39,6 +41,7 @@ public class ParserXMLWithPull {
                     case XmlPullParser.START_DOCUMENT: {
                         //开始解析时的初始化
                         routeBean=new DriveRouteBean();
+                        streetLatLon=new ArrayList<>();
 //                        goodsList = new ArrayList<Goods>();
                         Log.d("PULL", "开始解析");
                     }
@@ -48,31 +51,34 @@ public class ParserXMLWithPull {
                             case "distance":
                                 routeBean.setDistance(xmlPullParser.nextText());
                                 break;
-
+                            case "duration":
+                                routeBean.setDuration(xmlPullParser.nextText());
+                                break;
+                            case "center":
+                                routeBean.setCenter(xmlPullParser.nextText());
+                                break;
+                            case "scale":
+                                routeBean.setScale(xmlPullParser.nextText());
+                                break;
+                            case "streetLatLon":
+                                String s = xmlPullParser.nextText();
+                                String[] split = s.split(";");
+                                if (split.length>0) {
+                                    for (int i = 0; i < split.length; i++) {
+                                        DriveRouteBean.StreetLatLonBean streetLatLonBean = new DriveRouteBean.StreetLatLonBean();
+                                        String s1 = split[i];
+                                        String[] split1 = s1.split(",");
+                                        streetLatLonBean.setX(Double.valueOf(split1[0]));
+                                        streetLatLonBean.setX(Double.valueOf(split1[1]));
+                                        streetLatLon.add(streetLatLonBean);
+                                    }
+                                }
+                                break;
                         }
-//                        if ("task".equals(nodeName)) {
-//                            goods = new Goods();
-//                        } else if ("name".equals(nodeName)) {
-//                            goods.setName(xmlPullParser.nextText());
-//                            Log.d("PULL", "--START_TAG()--" + "name");
-//                        } else if ("refercode".equals(nodeName)) {
-//                            goods.setRefercode(xmlPullParser.nextText());
-//                            Log.d("PULL", "--START_TAG()--" + "refercode");
-//                        } else if ("status".equals(nodeName)) {
-//                            goods.setStatus(xmlPullParser.nextText());
-//                            Log.d("PULL", "--START_TAG()--" + "status");
-//                        } else {
-//                            Log.d("PULL", "--START_TAG()");
-//                        }
                     }
                     break;
                     case XmlPullParser.END_TAG: {
-//                        if ("task".equals(nodeName)) {
-//                            goodsList.add(goods);
-//                            Log.d("PULL", "--END_TAG()--" + "status");
-//                        } else {
-//                            Log.d("PULL", "--END_TAG()");
-//                        }
+                        routeBean.setStreetLatLon(streetLatLon);
                     }
                     break;
                     case XmlPullParser.END_DOCUMENT: {
@@ -94,6 +100,6 @@ public class ParserXMLWithPull {
             e.printStackTrace();
             Log.d("PULL", "IOException");
         }
-        return goodsList;
+        return routeBean;
     }
 }
