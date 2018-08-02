@@ -164,7 +164,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
                 post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
                 post.put("queryType", "1");
                 post.put("count", "20");
-                post.put("start", start+"");
+                post.put("startView", start+"");
                 postStr = gson.toJson(post);
             } else {
                 post.put("keyWord", keywords);
@@ -174,7 +174,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
                 post.put("pointLonlat", ptpoint.getX() + "," + ptpoint.getY());
                 post.put("queryRadius", "10000");
                 post.put("count", "20");
-                post.put("start", start+"");
+                post.put("startView", start+"");
                 postStr = gson.toJson(post);
             }
             Map<String, Object> parameter = new HashMap<>();

@@ -1,11 +1,13 @@
 package com.gangbeng.tiandituhb.event;
 
+import java.io.Serializable;
+
 /**
  * @author zhanghao
  * @date 2018-08-02
  */
 
-public class EndPoint {
+public class EndPoint implements Serializable {
     private String x;
     private String y;
     private String name;

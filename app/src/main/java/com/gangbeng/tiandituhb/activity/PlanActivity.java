@@ -1,23 +1,37 @@
 package com.gangbeng.tiandituhb.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gangbeng.tiandituhb.R;
+import com.gangbeng.tiandituhb.adpter.AroundLVAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.bean.PointBean;
+import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.event.IsStart;
 import com.gangbeng.tiandituhb.event.StartPoint;
+import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
+import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
+import com.gangbeng.tiandituhb.utils.DensityUtil;
+import com.gangbeng.tiandituhb.utils.SharedUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,9 +44,9 @@ import butterknife.OnClick;
 
 public class PlanActivity extends BaseActivity {
     @BindView(R.id.start)
-    TextView start;
+    TextView startView;
     @BindView(R.id.end)
-    TextView end;
+    TextView endView;
     @BindView(R.id.relative_select_address)
     RelativeLayout relativeSelectAddress;
     @BindView(R.id.lv_plan)
@@ -45,6 +59,10 @@ public class PlanActivity extends BaseActivity {
     private ChannelEvent channelEvent;
     private StartPoint startPoint;
     private EndPoint endPoint;
+    private List<String> data = new ArrayList<>();
+    private AroundLVAdapter aroundLVAdapter;
+    private ArrayList<String> strings;
+    private List<Map<String, Object>> record;
 
     @Override
     protected void initView() {
@@ -53,11 +71,30 @@ public class PlanActivity extends BaseActivity {
         if (channel.equals("route")) {
             setToolbarTitle("路线规划");
             setRightImageBtnText("搜索");
-            if (startPoint != null)
-                start.setText(startPoint.getName());
-            if (endPoint != null)
-                end.setText(endPoint.getName());
+        } else {
+            setToolbarTitle("导航");
+            setRightImageBtnText("开始");
         }
+        if (startPoint != null)
+            startView.setText(startPoint.getName());
+        if (endPoint != null)
+            endView.setText(endPoint.getName());
+        record = (List<Map<String, Object>>) SharedUtil.getSerializeObject("routerecord");
+        if (record != null) {
+            List<String> strings = new ArrayList<>();
+            for (Map<String, Object> stringObjectMap : record) {
+                StartPoint start = (StartPoint) stringObjectMap.get("startView");
+                EndPoint end = (EndPoint) stringObjectMap.get("endView");
+                strings.add(start.getName() + "-" + end.getName());
+            }
+            data.addAll(strings);
+            Collections.reverse(strings);
+            aroundLVAdapter = new AroundLVAdapter(this, strings);
+            lvPlan.setAdapter(aroundLVAdapter);
+            DensityUtil.getTotalHeightofListView(lvPlan);
+            tvClearPlan.setVisibility(View.VISIBLE);
+        }
+        lvPlan.setOnItemClickListener(listitem);
     }
 
     @Override
@@ -104,8 +141,8 @@ public class PlanActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onGetStartpoint(StartPoint startPoint) {
         this.startPoint = startPoint;
-        if (start != null)
-            start.setText(startPoint.getName());
+        if (startView != null)
+            startView.setText(startPoint.getName());
     }
 
     /**
@@ -116,21 +153,62 @@ public class PlanActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onGetEndpoint(EndPoint endPoint) {
         this.endPoint = endPoint;
-        if (end != null)
-            end.setText(endPoint.getName());
+        if (endView != null)
+            endView.setText(endPoint.getName());
     }
 
+    @Override
+    protected void setRightClickListen() {
+        if (endPoint == null) {
+            ShowToast("请先选择终点");
+            return;
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("startView", startPoint);
+        map.put("endView", endPoint);
+        if (record == null) record = new ArrayList<>();
+        for (Map<String, Object> stringObjectMap : record) {
+            StartPoint start = (StartPoint) stringObjectMap.get("startView");
+            EndPoint end = (EndPoint) stringObjectMap.get("endView");
+            if (start.getName().equals(startPoint.getName()) && end.getName().equals(endPoint.getName())) {
+                record.remove(stringObjectMap);
+                break;
+            }
+        }
+        record.add(map);
+        SharedUtil.saveSerializeObject("routerecord", record);
+        List<String> strings = new ArrayList<>();
+        for (Map<String, Object> stringObjectMap : record) {
+            StartPoint start = (StartPoint) stringObjectMap.get("startView");
+            EndPoint end = (EndPoint) stringObjectMap.get("endView");
+            strings.add(start.getName() + "-" + end.getName());
+        }
+        data.addAll(strings);
+        Collections.reverse(strings);
+        aroundLVAdapter = new AroundLVAdapter(this, strings);
+        lvPlan.setAdapter(aroundLVAdapter);
+        DensityUtil.getTotalHeightofListView(lvPlan);
+        tvClearPlan.setVisibility(View.VISIBLE);
+        Gps startGps = PositionUtil.gps84_To_Gcj02(Double.valueOf(startPoint.getY()), Double.valueOf(startPoint.getX()));
+        Gps endGps = PositionUtil.gps84_To_Gcj02(Double.valueOf(endPoint.getY()), Double.valueOf(endPoint.getX()));
+        if (startGps!=null&&endGps!=null){
+            Contant.ins().setStartGps(startGps);
+            Contant.ins().setEndGps(endGps);
+            Intent intent = new Intent(this, GPSNaviActivity.class);
+            startActivity(intent);
+        }
+    }
 
-    @OnClick({R.id.start, R.id.end, R.id.tv_clear_plan,R.id.img_change})
+    @OnClick({R.id.start, R.id.end, R.id.tv_clear_plan, R.id.img_change})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_change:
-                if (endPoint==null){
+                if (endPoint == null) {
                     ShowToast("请先选择终点");
                     return;
                 }
-                end.setText(startPoint.getName());
-                start.setText(endPoint.getName());
+                endView.setText(startPoint.getName());
+                startView.setText(endPoint.getName());
                 StartPoint startPoint = new StartPoint();
                 startPoint.setName(this.startPoint.getName());
                 startPoint.setX(this.startPoint.getX());
@@ -152,8 +230,31 @@ public class PlanActivity extends BaseActivity {
                 skip(AroundActivity.class, false);
                 break;
             case R.id.tv_clear_plan:
+                data.clear();
+                record.clear();
+                aroundLVAdapter.removeAll();
+                DensityUtil.getTotalHeightofListView(lvPlan);
+                tvClearPlan.setVisibility(View.GONE);
+                SharedUtil.removeData("routerecord");
                 break;
         }
     }
+
+    AdapterView.OnItemClickListener listitem = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Map<String, Object> stringObjectMap = record.get(record.size() - position - 1);
+            StartPoint start = (StartPoint) stringObjectMap.get("startView");
+            EndPoint end = (EndPoint) stringObjectMap.get("endView");
+            if (!start.getName().equals("当前位置")) {
+                startPoint = start;
+            }
+            if (!end.getName().equals("当前位置")) {
+                endPoint = end;
+            }
+            startView.setText(startPoint.getName());
+            endView.setText(endPoint.getName());
+        }
+    };
 
 }

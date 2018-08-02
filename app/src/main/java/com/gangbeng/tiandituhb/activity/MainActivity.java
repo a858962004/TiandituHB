@@ -186,6 +186,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                 break;
             case R.id.bt_navi:
                 setEventBus("navi");
+                skip(PlanActivity.class,false);
                 break;
             case R.id.location_map:
                 bmapsView.zoomToScale(ptCurrent, 50000);
@@ -202,7 +203,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         EventBus.getDefault().postSticky(pointBean);
         StartPoint startPoint = new StartPoint();
         startPoint.setX(String.valueOf(ptCurrent.getX()));
-        startPoint.setY(String.valueOf(ptCurrent.getX()));
+        startPoint.setY(String.valueOf(ptCurrent.getY()));
         startPoint.setName("当前位置");
         EventBus.getDefault().postSticky(startPoint);
     }

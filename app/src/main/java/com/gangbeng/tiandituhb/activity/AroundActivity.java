@@ -164,8 +164,6 @@ public class AroundActivity extends BaseActivity implements BaseView {
         DensityUtil.getTotalHeightofListView(lvAround);
         tvClear.setVisibility(View.VISIBLE);
         SharedUtil.saveSerializeObject("record", data);
-        tvClear.setVisibility(View.VISIBLE);
-        SharedUtil.saveSerializeObject("record", data);
         requestData(keyword);
     }
 
@@ -210,7 +208,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
             post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
             post.put("queryType", "1");
             post.put("count", "20");
-            post.put("start", "0");
+            post.put("startView", "0");
             postStr = gson.toJson(post);
         } else {
             String Lonlat = "";
@@ -226,7 +224,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
             post.put("pointLonlat", Lonlat);
             post.put("queryRadius", "10000");
             post.put("count", "20");
-            post.put("start", "0");
+            post.put("startView", "0");
             postStr = gson.toJson(post);
         }
         Map<String, Object> parameter = new HashMap<>();
