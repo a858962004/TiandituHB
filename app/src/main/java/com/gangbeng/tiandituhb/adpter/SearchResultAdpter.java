@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,10 +26,12 @@ public class SearchResultAdpter extends BaseAdapter {
     private Context context;
     private List<SearchBean.PoisBean> data;
     private SearchAdpterCallBack callBack;
+    private boolean isvisible;
 
-    public SearchResultAdpter(Context context, List<SearchBean.PoisBean> data) {
+    public SearchResultAdpter(Context context, List<SearchBean.PoisBean> data,boolean isvisible) {
         this.context = context;
         this.data = data;
+        this.isvisible=isvisible;
     }
 
     public void setCallBack(SearchAdpterCallBack callBack){
@@ -69,6 +72,7 @@ public class SearchResultAdpter extends BaseAdapter {
             holder.collect2IMG=convertView.findViewById(R.id.img_collect2);
             holder.aroundTV = convertView.findViewById(R.id.tv_around);
             holder.routeTV = convertView.findViewById(R.id.tv_route);
+            holder.ll=convertView.findViewById(R.id.ll_button);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -121,6 +125,11 @@ public class SearchResultAdpter extends BaseAdapter {
             });
 
         }
+        if (isvisible){
+            holder.ll.setVisibility(View.VISIBLE);
+        }else {
+            holder.ll.setVisibility(View.GONE);
+        }
         return convertView;
     }
 
@@ -132,6 +141,7 @@ public class SearchResultAdpter extends BaseAdapter {
         TextView routeTV;
         ImageView collectIMG;
         ImageView collect2IMG;
+        LinearLayout ll;
     }
 
 }

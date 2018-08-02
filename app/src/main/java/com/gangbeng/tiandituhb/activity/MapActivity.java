@@ -25,6 +25,8 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.event.ChannelEvent;
+import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
@@ -213,13 +215,25 @@ public class MapActivity extends BaseActivity {
                 zoom2bean(bean);
                 break;
             case R.id.tv_around:
+                AroundActivity.getInstence().finish();
+                SearchResultActivity.getInstence().finish();
                 EventBus.getDefault().postSticky(bean);
-                Bundle bundle = new Bundle();
-                bundle.putString("key","around");
-                bundle.putString("address",bean.getName());
-                skip(AroundActivity.class,bundle,false);
+                EventBus.getDefault().postSticky(new ChannelEvent("around"));
+                skip(AroundActivity.class,true);
                 break;
             case R.id.tv_route:
+                AroundActivity.getInstence().finish();
+                SearchResultActivity.getInstence().finish();
+                EndPoint endPoint = new EndPoint();
+                endPoint.setName(bean.getName());
+                String lonlat = bean.getLonlat();
+                String x=lonlat.substring(0,lonlat.indexOf(" "));
+                String y=lonlat.substring(lonlat.indexOf(" "),lonlat.length());
+                endPoint.setX(x);
+                endPoint.setY(y);
+                EventBus.getDefault().postSticky(endPoint);
+                EventBus.getDefault().postSticky(new ChannelEvent("route"));
+                skip(PlanActivity.class,true);
                 break;
         }
     }

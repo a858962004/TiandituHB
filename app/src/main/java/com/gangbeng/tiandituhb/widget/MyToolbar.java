@@ -155,6 +155,10 @@ public class MyToolbar extends Toolbar {
         toolbar_editText.setVisibility(View.VISIBLE);
     }
 
+    public void hideEdiText(){
+        toolbar_editText.setVisibility(View.GONE);
+    }
+
     public void showRightBtnIcon() {
         toolbar_imgBtn.setVisibility(View.VISIBLE);
     }

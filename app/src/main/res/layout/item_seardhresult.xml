@@ -84,6 +84,7 @@
             android:background="@color/grey2" />
 
         <LinearLayout
+            android:id="@+id/ll_button"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_below="@+id/rl_item"

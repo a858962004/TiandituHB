@@ -252,6 +252,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         toolbar.showEditText();
     }
 
+    //显示搜索框，默认隐藏
+    protected void hideEditText() {
+        toolbar.hideEdiText();
+    }
+
 
     //设置toolbar左侧按钮显示隐藏
     protected void setToolbarLeftVisible(boolean b) {

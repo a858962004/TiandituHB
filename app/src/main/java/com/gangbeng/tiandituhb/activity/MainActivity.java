@@ -19,6 +19,9 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.PointBean;
+import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.event.ChannelEvent;
+import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
@@ -147,24 +150,18 @@ public class MainActivity extends BaseActivity implements BaseView {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_around:
-                PointBean pointBean = new PointBean();
-                pointBean.setX(String.valueOf(ptCurrent.getX()));
-                pointBean.setY(String.valueOf(ptCurrent.getY()));
-                EventBus.getDefault().postSticky(pointBean);
-                Bundle bundle = new Bundle();
-                bundle.putString("key","around");
-                bundle.putString("address","当前位置");
-                skip(AroundActivity.class,bundle,false);
-
+                setEventBus("around");
+                skip(AroundActivity.class,false);
                 break;
             case R.id.bt_route:
+                setEventBus("route");
+                skip(PlanActivity.class,false);
                 break;
             case R.id.bt_set:
                 break;
             case R.id.ll_searchview:
-                Bundle bundle2 = new Bundle();
-                bundle2.putString("key","search");
-                skip(AroundActivity.class,bundle2,false);
+                setEventBus("search");
+                skip(AroundActivity.class,false);
                 break;
             case R.id.change_map:
                 if (map_lfimg.isVisible()) {
@@ -185,16 +182,29 @@ public class MainActivity extends BaseActivity implements BaseView {
                     mapRStextLayer.setVisible(true);
                     mapServiceLayer.setVisible(false);
                     maptextLayer.setVisible(false);
-
                 }
                 break;
             case R.id.bt_navi:
-
+                setEventBus("navi");
                 break;
             case R.id.location_map:
                 bmapsView.zoomToScale(ptCurrent, 50000);
                 break;
         }
+    }
+
+    private void setEventBus(String route) {
+        ChannelEvent channelEvent = new ChannelEvent(route);
+        EventBus.getDefault().postSticky(channelEvent);
+        PointBean pointBean = new PointBean();
+        pointBean.setX(String.valueOf(ptCurrent.getX()));
+        pointBean.setY(String.valueOf(ptCurrent.getY()));
+        EventBus.getDefault().postSticky(pointBean);
+        StartPoint startPoint = new StartPoint();
+        startPoint.setX(String.valueOf(ptCurrent.getX()));
+        startPoint.setY(String.valueOf(ptCurrent.getX()));
+        startPoint.setName("当前位置");
+        EventBus.getDefault().postSticky(startPoint);
     }
 
     @Override
@@ -217,4 +227,9 @@ public class MainActivity extends BaseActivity implements BaseView {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
+    }
 }

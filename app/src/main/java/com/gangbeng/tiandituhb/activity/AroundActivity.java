@@ -1,6 +1,5 @@
 package com.gangbeng.tiandituhb.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,7 +14,7 @@ import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
-import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.presenter.SearchPresenter;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
@@ -57,6 +56,12 @@ public class AroundActivity extends BaseActivity implements BaseView {
     private AroundLVAdapter aroundLVAdapter;
     private MyToolbar toolbar;
     private BasePresenter presenter;
+    private static AroundActivity activity;
+    private ChannelEvent channelEvent;
+
+    public static AroundActivity getInstence() {
+        return activity;
+    }
 
     private int[] sortImgs = new int[]{R.mipmap.icon_cfood, R.mipmap.icon_wfood, R.mipmap.icon_coffee, R.mipmap.icon_starthotail
             , R.mipmap.icon_hotail, R.mipmap.icon_car, R.mipmap.icon_ktv, R.mipmap.icon_relax
@@ -73,14 +78,13 @@ public class AroundActivity extends BaseActivity implements BaseView {
 
     @Override
     protected void initView() {
+        activity = this;
         setContentLayout(R.layout.activity_around);
         setToolbarVisibility(true);
         toolbar = getToolBar();
         presenter = new SearchPresenter(this);
-        Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
-        if (bundleExtra != null) {
-            setView(bundleExtra);
-        }
+        key=channelEvent.getChannel();
+        setView(channelEvent.getChannel());
         gridViewAdapter = new SortGridViewAdapter(this, sortImgs, sortStrs);
         sourceAround.setAdapter(gridViewAdapter);
         sourceAround.setOnItemClickListener(sourceclick);
@@ -120,18 +124,30 @@ public class AroundActivity extends BaseActivity implements BaseView {
      * @param bean
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onGetPoint(SearchBean.PoisBean bean) {
+    public void onGetPoi(SearchBean.PoisBean bean) {
         this.bean = bean;
     }
+
+
+    /**
+     * eventbus接收channel
+     *
+     * @param channelEvent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetChannel(ChannelEvent channelEvent) {
+        this.channelEvent = channelEvent;
+    }
+
 
     @Override
     protected void setRightClickListen() {
         String editText = String.valueOf(toolbar.getEditText());
-        if (editText.equals("")){
+        if (editText.equals("")) {
             showMsg("输入内容为空");
             return;
         }
-        keyword=editText;
+        keyword = editText;
         for (String s : data) {
             if (keyword.equals(s)) {
                 data.remove(s);
@@ -156,7 +172,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
     AdapterView.OnItemClickListener sourceclick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            keyword=sortStrs[position];
+            keyword = sortStrs[position];
             for (String s : data) {
                 if (keyword.equals(s)) {
                     data.remove(s);
@@ -176,7 +192,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
         }
     };
 
-    AdapterView.OnItemClickListener listitem=new AdapterView.OnItemClickListener() {
+    AdapterView.OnItemClickListener listitem = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String item = (String) aroundLVAdapter.getItem(position);
@@ -188,7 +204,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
         String postStr = "";
         Map<String, String> post = new HashMap<>();
         Gson gson = new Gson();
-        if (key.equals("search")) {
+        if (key.equals("search")||key.equals("route")||key.equals("navi")) {
             post.put("keyWord", item);
             post.put("level", "11");
             post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
@@ -197,11 +213,11 @@ public class AroundActivity extends BaseActivity implements BaseView {
             post.put("start", "0");
             postStr = gson.toJson(post);
         } else {
-            String Lonlat="";
+            String Lonlat = "";
             if (bean != null) {
-                Lonlat=bean.getLonlat().replace(" ",",");
-            }else {
-                Lonlat=ptpoint.getX() + "," + ptpoint.getY();
+                Lonlat = bean.getLonlat().replace(" ", ",");
+            } else {
+                Lonlat = ptpoint.getX() + "," + ptpoint.getY();
             }
             post.put("keyWord", item);
             post.put("level", "11");
@@ -246,44 +262,30 @@ public class AroundActivity extends BaseActivity implements BaseView {
     @Override
     public void setData(Object data) {
         if (data instanceof SearchBean) {
-            SearchBean bean=(SearchBean)data;
+            SearchBean bean = (SearchBean) data;
             String count = bean.getCount();
-            if (count.equals("0")||bean.getPois()==null||bean.getPois().size()==0){
+            if (count.equals("0") || bean.getPois() == null || bean.getPois().size() == 0) {
                 showMsg("未查找到相应数据");
                 return;
             }
             Bundle bundle = new Bundle();
             bundle.putSerializable("data", bean);
-            bundle.putString("key",key);
-            bundle.putString("keywords",keyword);
-            skip(SearchResultActivity.class,bundle,false);
+            bundle.putString("key", key);
+            bundle.putString("keywords", keyword);
+            skip(SearchResultActivity.class, bundle, false);
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().removeStickyEvent(PointBean.class);
-        EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
-    }
-
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Bundle bundleExtra = intent.getBundleExtra(PubConst.DATA);
-        setView(bundleExtra);
-    }
-
-    private void setView(Bundle bundleExtra) {
-        key = bundleExtra.getString("key");
-        if (key.equals("search")) {
+    private void setView(String channel) {
+        if (channel.equals("search") || channel.equals("route") || channel.equals("navi")) {
             setRightImageBtnText("搜索");
             showEditText();
         } else {
-            String address = bundleExtra.getString("address");
+            String address = "当前位置";
+            if (bean != null) address = bean.getName();
             setToolbarRightVisible(false);
-            setToolbarTitle(address+"周边");
+            hideEditText();
+            setToolbarTitle(address + "周边");
         }
     }
 }
