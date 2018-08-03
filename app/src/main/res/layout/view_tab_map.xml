@@ -39,9 +39,9 @@
     <TextView style="@style/style_line_vertical" />
 
     <Button
-        android:id="@+id/bt_set"
+        android:id="@+id/bt_more"
         style="@style/style_tab_map"
-        android:drawableStart="@mipmap/icon_set"
-        android:text="@string/tab_set" />
+        android:drawableStart="@mipmap/icon_more"
+        android:text="@string/tab_more" />
     </LinearLayout>
 </RelativeLayout>

@@ -37,7 +37,7 @@ public class MainActivity extends BaseActivity implements BaseView {
     Button btAround;
     @BindView(R.id.bt_route)
     Button btRoute;
-    @BindView(R.id.bt_set)
+    @BindView(R.id.bt_more)
     Button btSet;
     @BindView(R.id.ll_searchview)
     LinearLayout llSearchview;
@@ -146,7 +146,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_set, R.id.ll_searchview, R.id.change_map,R.id.bt_navi, R.id.location_map})
+    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,R.id.bt_navi, R.id.location_map})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_around:
@@ -157,7 +157,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                 setEventBus("route");
                 skip(PlanActivity.class,false);
                 break;
-            case R.id.bt_set:
+            case R.id.bt_more:
                 break;
             case R.id.ll_searchview:
                 setEventBus("search");

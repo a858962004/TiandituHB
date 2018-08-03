@@ -2,7 +2,7 @@
     <string name="app_name">天地图-廊坊</string>
     <string name="tab_around">周边</string>
     <string name="tab_route">路线</string>
-    <string name="tab_set">设置</string>
+    <string name="tab_more">更多</string>
     <string name="tab_navi">导航</string>
     <string name="preference_default_tts_role">xiaoyan</string>
     <string name="preference_key_tts_speed">tts_speed</string>
