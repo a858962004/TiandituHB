@@ -1,18 +1,5 @@
 package com.gangbeng.tiandituhb.https;
 
-import android.os.Handler;
-import android.os.Looper;
-
-
-import com.gangbeng.tiandituhb.utils.MyLogUtil;
-
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.Subject;
-
 /**
  * @author zhanghao
  * @fileName RequestUtil
@@ -20,86 +7,86 @@ import io.reactivex.subjects.Subject;
  */
 
 public class RequestUtil<T> {
-
-    public void setRequest(final Observable<T> data, final RequestCallback callback){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                data.subscribeOn(Schedulers.newThread());
-                data.observeOn(AndroidSchedulers.mainThread());
-                data.subscribe(new Subject<T>() {
-                    @Override
-                    public boolean hasObservers() {
-
-                        return false;
-                    }
-
-                    @Override
-                    public boolean hasThrowable() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean hasComplete() {
-                        return false;
-                    }
-
-                    @Override
-                    public Throwable getThrowable() {
-                        return null;
-                    }
-
-                    @Override
-                    protected void subscribeActual(Observer<? super T> observer) {
-
-                    }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(final T value) {
-                        Handler mainHandler = new Handler(Looper.getMainLooper());
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //已在主线程中，可以更新UI
-                                MyLogUtil.showLog(value.toString());
-                                String s = value.toString();
-                                callback.onSuccess(value);
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onError(final Throwable e) {
-                        Handler mainHandler = new Handler(Looper.getMainLooper());
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //已在主线程中，可以更新UI
-                                MyLogUtil.showLog(e);
-                                callback.onFailed("服务器连接失败");
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-            }
-        }).start();
-
-    }
-
-    public interface RequestCallback{
-        void onSuccess(Object data);
-        void onFailed(String error);
-    }
+//
+//    public void setRequest(final Observable<T> data, final RequestCallback callback){
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                data.subscribeOn(Schedulers.newThread());
+//                data.observeOn(AndroidSchedulers.mainThread());
+//                data.subscribe(new Subject<T>() {
+//                    @Override
+//                    public boolean hasObservers() {
+//
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean hasThrowable() {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean hasComplete() {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public Throwable getThrowable() {
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    protected void subscribeActual(Observer<? super T> observer) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(final T value) {
+//                        Handler mainHandler = new Handler(Looper.getMainLooper());
+//                        mainHandler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                //已在主线程中，可以更新UI
+//                                MyLogUtil.showLog(value.toString());
+//                                String s = value.toString();
+//                                callback.onSuccess(value);
+//                            }
+//                        });
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(final Throwable e) {
+//                        Handler mainHandler = new Handler(Looper.getMainLooper());
+//                        mainHandler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                //已在主线程中，可以更新UI
+//                                MyLogUtil.showLog(e);
+//                                callback.onFailed("服务器连接失败");
+//                            }
+//                        });
+//
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                });
+//            }
+//        }).start();
+//
+//    }
+//
+//    public interface RequestCallback{
+//        void onSuccess(Object data);
+//        void onFailed(String error);
+//    }
 }

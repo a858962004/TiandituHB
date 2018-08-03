@@ -1,9 +1,11 @@
 package com.gangbeng.tiandituhb.gaodenaviutil;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2016/8/12.
  */
-public class Gps {
+public class Gps implements Serializable {
 
     private double wgLat;
     private double wgLon;

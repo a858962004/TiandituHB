@@ -1,6 +1,5 @@
 package com.gangbeng.tiandituhb.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,7 +12,6 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.AroundLVAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.bean.PointBean;
-import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.event.IsStart;
@@ -27,6 +25,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -189,13 +188,15 @@ public class PlanActivity extends BaseActivity {
         lvPlan.setAdapter(aroundLVAdapter);
         DensityUtil.getTotalHeightofListView(lvPlan);
         tvClearPlan.setVisibility(View.VISIBLE);
-        Gps startGps = PositionUtil.gps84_To_Gcj02(Double.valueOf(startPoint.getY()), Double.valueOf(startPoint.getX()));
-        Gps endGps = PositionUtil.gps84_To_Gcj02(Double.valueOf(endPoint.getY()), Double.valueOf(endPoint.getX()));
-        if (startGps!=null&&endGps!=null){
-            Contant.ins().setStartGps(startGps);
-            Contant.ins().setEndGps(endGps);
-            Intent intent = new Intent(this, GPSNaviActivity.class);
-            startActivity(intent);
+        if (channelEvent.getChannel().equals("navi")){
+            Gps startGps = PositionUtil.gps84_To_Gcj02(Double.valueOf(startPoint.getY()), Double.valueOf(startPoint.getX()));
+            Gps endGps = PositionUtil.gps84_To_Gcj02(Double.valueOf(endPoint.getY()), Double.valueOf(endPoint.getX()));
+            List<Gps>points=new ArrayList<>();
+            points.add(startGps);
+            points.add(endGps);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data", (Serializable) points);
+            skip(GPSNaviActivity.class,bundle,false);
         }
     }
 
@@ -226,7 +227,7 @@ public class PlanActivity extends BaseActivity {
                 if (view.getId() == R.id.start) isStart.setIsstart(true);
                 if (view.getId() == R.id.end) isStart.setIsstart(false);
                 EventBus.getDefault().postSticky(isStart);
-                EventBus.getDefault().postSticky(new ChannelEvent("route"));
+//                EventBus.getDefault().postSticky(new ChannelEvent("route"));
                 skip(AroundActivity.class, false);
                 break;
             case R.id.tv_clear_plan:

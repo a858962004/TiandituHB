@@ -1,12 +1,6 @@
 package com.gangbeng.tiandituhb.https;
 
 
-import com.gangbeng.tiandituhb.bean.SearchBean;
-
-import io.reactivex.Observable;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
-
 /**
  * @author zhanghao
  * @fileName MyServices
@@ -14,9 +8,9 @@ import retrofit2.http.Query;
  */
 
 public interface MyServices {
-
-    @GET("search")
-    Observable<SearchBean> search(@Query("postStr")String postStr, @Query("type")String type);
+//
+//    @GET("search")
+//    Observable<SearchBean> search(@Query("postStr")String postStr, @Query("type")String type);
     //poi搜索
 
 }

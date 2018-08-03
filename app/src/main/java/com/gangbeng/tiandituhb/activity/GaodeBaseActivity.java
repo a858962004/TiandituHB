@@ -18,7 +18,7 @@ import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.autonavi.tbt.TrafficFacilityInfo;
-import com.gangbeng.tiandituhb.constant.Contant;
+import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.TTSController;
 
@@ -48,8 +48,12 @@ public class GaodeBaseActivity extends Activity implements AMapNaviListener, AMa
         mTtsManager = TTSController.getInstance(getApplicationContext());
         mTtsManager.init();
         mTtsManager.startSpeaking();
-        startgps= Contant.ins().getStartGps();
-        endgps=Contant.ins().getEndGps();
+//        startgps= Contant.ins().getStartGps();
+//        endgps=Contant.ins().getEndGps();
+        Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
+        List<Gps>points = (List<Gps>) bundleExtra.getSerializable("data");
+        startgps = points.get(0);
+        endgps = points.get(1);
         mEndLatlng=new NaviLatLng(endgps.getWgLat(),endgps.getWgLon());
         mStartLatlng= new NaviLatLng(startgps.getWgLat(),startgps.getWgLon());
         //为了尽最大可能避免内存泄露问题，建议这么写
