@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <service android:name="com.amap.api.location.APSService"></service>
     <application
         android:name=".application.MyApplication"
@@ -25,6 +26,7 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="0dd1759970fb5e8b275818abcd971675" />
+
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,10 +43,16 @@
         <activity
             android:name=".activity.MapActivity"
             android:launchMode="singleTask" />
-        <activity android:name=".activity.PlanActivity"
-            android:launchMode="singleTask"/>
-        <activity android:name=".activity.GPSNaviActivity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name=".activity.PlanActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.GPSNaviActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.MoreActivity"
+            android:launchMode="singleTask" />
+        <activity android:name=".activity.CollectActivity" />
     </application>
 
 </manifest>

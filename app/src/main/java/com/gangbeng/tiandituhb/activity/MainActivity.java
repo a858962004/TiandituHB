@@ -158,6 +158,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                 skip(PlanActivity.class,false);
                 break;
             case R.id.bt_more:
+                skip(MoreActivity.class,false);
                 break;
             case R.id.ll_searchview:
                 setEventBus("search");

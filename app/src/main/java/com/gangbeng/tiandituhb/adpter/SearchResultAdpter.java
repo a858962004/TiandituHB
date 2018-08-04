@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.callback.SearchAdpaterCancelBack;
 import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
 import com.gangbeng.tiandituhb.utils.Util;
 
@@ -26,6 +27,7 @@ public class SearchResultAdpter extends BaseAdapter {
     private Context context;
     private List<SearchBean.PoisBean> data;
     private SearchAdpterCallBack callBack;
+    private SearchAdpaterCancelBack cancelBack;
     private boolean isvisible;
 
     public SearchResultAdpter(Context context, List<SearchBean.PoisBean> data,boolean isvisible) {
@@ -36,6 +38,10 @@ public class SearchResultAdpter extends BaseAdapter {
 
     public void setCallBack(SearchAdpterCallBack callBack){
         this.callBack=callBack;
+    }
+
+    public void setCancalBack(SearchAdpaterCancelBack cancalBack){
+        this.cancelBack=cancalBack;
     }
 
     @Override
@@ -55,6 +61,11 @@ public class SearchResultAdpter extends BaseAdapter {
 
     public void addData(List<SearchBean.PoisBean> data) {
         this.data.addAll(data);
+        notifyDataSetChanged();
+    }
+
+    public void removeData(int position){
+        this.data.remove(position);
         notifyDataSetChanged();
     }
 
@@ -101,6 +112,9 @@ public class SearchResultAdpter extends BaseAdapter {
                 finalHolder.collectIMG.setVisibility(View.VISIBLE);
                 finalHolder.collect2IMG.setVisibility(View.GONE);
                 Util.cancelCollect(data.get(position));
+                if (cancelBack!=null){
+                    cancelBack.cancalCollect(position);
+                }
             }
         });
 
