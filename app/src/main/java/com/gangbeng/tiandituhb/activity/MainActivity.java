@@ -94,7 +94,6 @@ public class MainActivity extends BaseActivity implements BaseView {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
                 if (map_lfimg_text == o && status == STATUS.LAYER_LOADED) {
-
 //                    bmapsView.zoomToScale(new Point(116.70057500024, 39.51963700025), 50000);
                 }
             }

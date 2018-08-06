@@ -53,6 +53,7 @@
             android:name=".activity.MoreActivity"
             android:launchMode="singleTask" />
         <activity android:name=".activity.CollectActivity" />
+        <activity android:name=".activity.CalculateMapActivity" />
     </application>
 
 </manifest>

@@ -154,4 +154,6 @@
     <color name="grey2">#33000000</color>
     <color name="personbg">#3ea4ed</color>
     <color name="nocolor">#00000000</color>
+    <color name="link">#0a80d1</color>
+    <color name="bblue">#E6F9FF</color>
 </resources>

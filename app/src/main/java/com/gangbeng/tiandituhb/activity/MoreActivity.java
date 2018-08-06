@@ -57,9 +57,18 @@ public class MoreActivity extends BaseActivity {
     AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Bundle bundle = new Bundle();
             switch (names[position]) {
                 case "收藏夹":
                     skip(CollectActivity.class, false);
+                    break;
+                case "点距测量":
+                    bundle.putString("activity","点距测量");
+                    skip(CalculateMapActivity.class,bundle,false);
+                    break;
+                case "面积测量":
+                    bundle.putString("activity","面积测量");
+                    skip(CalculateMapActivity.class,bundle,false);
                     break;
                 default:
                     ShowToast("正在建设中...");

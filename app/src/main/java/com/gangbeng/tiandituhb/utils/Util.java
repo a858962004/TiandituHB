@@ -43,4 +43,20 @@ public class Util {
         }
         SharedUtil.saveSerializeObject("collectpoint", data);
     }
+
+    public static String saveTwoU(String s) {
+        int i = s.length() - s.indexOf(".");
+        if (!"".equals(s)) {
+            if (s.indexOf(".") > 0 && i > 2) {
+                s = s.substring(0, s.indexOf(".") + 3);
+            } else if (s.indexOf(".") > 0 && i == 2) {
+                s = s + "0";
+            } else if (s.indexOf(".") < 0) {
+                s = s + ".00";
+            }
+        }else {
+            s="0.00";
+        }
+        return s;
+    }
 }
