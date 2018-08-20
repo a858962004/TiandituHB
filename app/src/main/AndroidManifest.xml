@@ -54,6 +54,7 @@
             android:launchMode="singleTask" />
         <activity android:name=".activity.CollectActivity" />
         <activity android:name=".activity.CalculateMapActivity" />
+        <activity android:name=".activity.RoutActivity" />
     </application>
 
 </manifest>

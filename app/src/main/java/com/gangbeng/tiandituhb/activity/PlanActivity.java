@@ -198,6 +198,9 @@ public class PlanActivity extends BaseActivity {
             bundle.putSerializable("data", (Serializable) points);
             skip(GPSNaviActivity.class,bundle,false);
         }
+        if (channelEvent.getChannel().equals("route")){
+            skip(RoutActivity.class,false);
+        }
     }
 
     @OnClick({R.id.start, R.id.end, R.id.tv_clear_plan, R.id.img_change})
