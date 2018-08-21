@@ -20,10 +20,11 @@ import okhttp3.Call;
 public class BusModel implements BaseModel {
     @Override
     public void setRequest(Map<String, Object> parameter, final OnCallBack back) {
+        String postStr = String.valueOf(parameter.get("postStr"));
         OkHttpUtils.get()
                 .url(PubConst.url+"transit")
                 .addParams("type","busline")
-                .addParams("postStr","")
+                .addParams("postStr",postStr)
                 .build()
                 .execute(new StringCallback() {
                     @Override

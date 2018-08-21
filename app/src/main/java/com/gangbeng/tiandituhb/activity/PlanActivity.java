@@ -199,7 +199,20 @@ public class PlanActivity extends BaseActivity {
             skip(GPSNaviActivity.class,bundle,false);
         }
         if (channelEvent.getChannel().equals("route")){
-            skip(RoutActivity.class,false);
+//            Gps startGps = PositionUtil.gps84_To_Gcj02(Double.valueOf(startPoint.getY()), Double.valueOf(startPoint.getX()));
+//            Gps endGps = PositionUtil.gps84_To_Gcj02(Double.valueOf(endPoint.getY()), Double.valueOf(endPoint.getX()));
+            Gps startGps=new Gps(Double.parseDouble(startPoint.getY()),Double.parseDouble(startPoint.getX()));
+            Gps endGps =new Gps(Double.parseDouble(endPoint.getY()),Double.parseDouble(endPoint.getX()));
+//            startGps.setWgLat(Double.parseDouble(startPoint.getY()));
+//            startGps.setWgLon(Double.parseDouble(startPoint.getX()));
+//            endGps.setWgLat(Double.parseDouble(endPoint.getY()));
+//            endGps.setWgLon(Double.parseDouble(endPoint.getX()));
+            List<Gps>points=new ArrayList<>();
+            points.add(startGps);
+            points.add(endGps);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data", (Serializable) points);
+            skip(RoutActivity.class,bundle,false);
         }
     }
 

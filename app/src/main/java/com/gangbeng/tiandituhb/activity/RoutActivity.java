@@ -9,8 +9,10 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.ViewpagerFragmentAdapter;
 import com.gangbeng.tiandituhb.adpter.viewholder.FragmentHolder;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.fragment.BusFragment;
 import com.gangbeng.tiandituhb.fragment.CarFragment;
+import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.widget.CustomViewPager;
 
 import java.util.ArrayList;
@@ -42,14 +44,15 @@ public class RoutActivity extends BaseActivity {
     protected void initView() {
         setContentLayout(R.layout.activity_rout);
         setToolbarVisibility(false);
-
+        Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
+        List<Gps> points = (List<Gps>) bundleExtra.getSerializable("data");
         FragmentHolder holder = new FragmentHolder();
         holder.setTitle("公交");
-        holder.setFragment(BusFragment.newInstance());
+        holder.setFragment(BusFragment.newInstance(points));
         holders.add(holder);
         FragmentHolder holder2 = new FragmentHolder();
         holder2.setTitle("驾车");
-        holder2.setFragment(CarFragment.newInstance());
+        holder2.setFragment(CarFragment.newInstance(points));
         holders.add(holder2);
         adapter = new ViewpagerFragmentAdapter(getSupportFragmentManager(), holders);
         customRout.setOffscreenPageLimit(1);

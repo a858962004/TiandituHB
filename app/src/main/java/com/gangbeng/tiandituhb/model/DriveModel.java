@@ -4,11 +4,11 @@ import com.gangbeng.tiandituhb.base.BaseModel;
 import com.gangbeng.tiandituhb.base.OnCallBack;
 import com.gangbeng.tiandituhb.bean.DriveRouteBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.xmlparser.ParserXMLWithPull;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
-import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -27,10 +27,11 @@ public class DriveModel implements BaseModel {
                 .addParams("postStr",postStr)
                 .addParams("type","search")
                 .build()
-                .writeTimeOut(20000)
+                .connTimeOut(50000)
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
+                        MyLogUtil.showLog("faild:"+e.getMessage());
                         back.failed(e.getMessage());
                     }
 
