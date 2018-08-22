@@ -1,5 +1,6 @@
 package com.gangbeng.tiandituhb.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public class BusBean {
             this.lines = lines;
         }
 
-        public static class LinesBean {
+        public static class LinesBean implements Serializable {
 
             private String lineName;
             private List<SegmentsBean> segments;
@@ -79,7 +80,7 @@ public class BusBean {
                 this.segments = segments;
             }
 
-            public static class SegmentsBean {
+            public static class SegmentsBean implements Serializable {
                 /**
                  * segmentLine : [{"segmentStationCount":"","segmentTime":3,"segmentDistance":131,"direction":"","linePoint":"116.32142909541093,39.89988988242982;116.322947,39.899697;","lineName":"","byuuid":""}]
                  * stationEnd : {"lonlat":"116.322947,39.899697","name":"北蜂窝路","uuid":"132911"}
@@ -124,7 +125,7 @@ public class BusBean {
                     this.segmentLine = segmentLine;
                 }
 
-                public static class StationEndBean {
+                public static class StationEndBean implements Serializable {
                     /**
                      * lonlat : 116.322947,39.899697
                      * name : 北蜂窝路
@@ -160,7 +161,7 @@ public class BusBean {
                     }
                 }
 
-                public static class StationStartBean {
+                public static class StationStartBean implements Serializable {
                     /**
                      * lonlat : 116.32142909541093,39.89988988242982
                      * name :
@@ -196,7 +197,7 @@ public class BusBean {
                     }
                 }
 
-                public static class SegmentLineBean {
+                public static class SegmentLineBean implements Serializable {
                     /**
                      * segmentStationCount :
                      * segmentTime : 3

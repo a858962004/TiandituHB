@@ -5,9 +5,11 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.gangbeng.tiandituhb.R;
+import com.gangbeng.tiandituhb.activity.RoutMapActivity;
 import com.gangbeng.tiandituhb.adpter.BusResultAdapter;
 import com.gangbeng.tiandituhb.base.BaseFragment;
 import com.gangbeng.tiandituhb.base.BasePresenter;
@@ -37,6 +39,7 @@ public class BusFragment extends BaseFragment implements BaseView {
     Unbinder unbinder;
     private BasePresenter presenter;
     private List<Gps> points;
+    private List<BusBean.ResultsBean.LinesBean> lines;
 
     public static BusFragment newInstance(List<Gps> points) {
         Bundle args = new Bundle();
@@ -62,6 +65,8 @@ public class BusFragment extends BaseFragment implements BaseView {
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("postStr", postStr);
         presenter.setRequest(parameter);
+
+        lvBusrout.setOnItemClickListener(onItemClickListener);
     }
 
     @Override
@@ -90,7 +95,7 @@ public class BusFragment extends BaseFragment implements BaseView {
             BusBean bean = (BusBean) data;
             List<BusBean.ResultsBean> results = bean.getResults();
             BusBean.ResultsBean resultsBean = results.get(0);
-            List<BusBean.ResultsBean.LinesBean> lines = resultsBean.getLines();
+            lines = resultsBean.getLines();
             BusResultAdapter adapter=new BusResultAdapter(getActivity(),lines);
             lvBusrout.setAdapter(adapter);
         }
@@ -119,4 +124,15 @@ public class BusFragment extends BaseFragment implements BaseView {
         super.onDestroyView();
         unbinder.unbind();
     }
+
+    AdapterView.OnItemClickListener onItemClickListener=new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            BusBean.ResultsBean.LinesBean linesBean = lines.get(position);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data",linesBean);
+            skip(RoutMapActivity.class,bundle,false);
+
+        }
+    };
 }
