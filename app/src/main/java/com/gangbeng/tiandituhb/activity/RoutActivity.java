@@ -55,7 +55,7 @@ public class RoutActivity extends BaseActivity {
         holder2.setFragment(CarFragment.newInstance(points));
         holders.add(holder2);
         adapter = new ViewpagerFragmentAdapter(getSupportFragmentManager(), holders);
-        customRout.setOffscreenPageLimit(1);
+        customRout.setOffscreenPageLimit(0);
         customRout.setAdapter(adapter);
     }
 

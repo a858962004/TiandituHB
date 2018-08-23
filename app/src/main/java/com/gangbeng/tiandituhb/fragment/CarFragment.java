@@ -49,7 +49,7 @@ public class CarFragment extends BaseFragment implements BaseView {
                 + endgps.getWgLon() + "," + endgps.getWgLat() + "\",\"style\":\"0\"} ";
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("postStr", postStr);
-//        presenter.setRequest(parameter);
+        presenter.setRequest(parameter);
     }
 
     @Override

@@ -69,7 +69,7 @@ public class ParserXMLWithPull {
                                         String s1 = split[i];
                                         String[] split1 = s1.split(",");
                                         streetLatLonBean.setX(Double.valueOf(split1[0]));
-                                        streetLatLonBean.setX(Double.valueOf(split1[1]));
+                                        streetLatLonBean.setY(Double.valueOf(split1[1]));
                                         streetLatLon.add(streetLatLonBean);
                                     }
                                 }
