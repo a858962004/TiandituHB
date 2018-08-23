@@ -51,6 +51,9 @@ public class RoutMapActivity extends BaseActivity {
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm;
     private GraphicsLayer graphicsLayer, pointLayer;
+    private BusBean.ResultsBean.LinesBean linesBean;
+    private String start,end;
+
 
     @Override
     protected void initView() {
@@ -59,8 +62,10 @@ public class RoutMapActivity extends BaseActivity {
         setToolbarRightVisible(false);
         setMapView();
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
-        BusBean.ResultsBean.LinesBean linesBean =
+        linesBean =
                 (BusBean.ResultsBean.LinesBean) bundleExtra.getSerializable("data");
+        start=bundleExtra.getString("start");
+        end=bundleExtra.getString("end");
         List<BusBean.ResultsBean.LinesBean.SegmentsBean> segments = linesBean.getSegments();
         setBottomView(linesBean);
         setPolyLine(segments);
@@ -149,6 +154,8 @@ public class RoutMapActivity extends BaseActivity {
             int segmentType = segments.get(i).getSegmentType();
             List<BusBean.ResultsBean.LinesBean.SegmentsBean.SegmentLineBean> segmentLine = segments.get(i).getSegmentLine();
             if (segmentLine.size() > 0) {
+                Polyline polyline = new Polyline();
+                Polyline polyline2 = new Polyline();
                 String linePoint = segmentLine.get(0).getLinePoint();
                 String[] split = linePoint.split(";");
                 for (int i2 = 0; i2 < split.length - 1; i2++) {
@@ -184,19 +191,17 @@ public class RoutMapActivity extends BaseActivity {
                         Graphic graphic3 = new Graphic(polyline3, lineSymbol3);
                         graphicsLayer.addGraphic(graphic3);
                     } else {
-                        Polyline polyline = new Polyline();
-                        Polyline polyline2 = new Polyline();
                         polyline.addSegment(line, false);
                         polyline2.addSegment(line, false);
                         allpoPolyline.addSegment(line, false);
-                        SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.RED, 10, SimpleLineSymbol.STYLE.SOLID);
-                        SimpleLineSymbol lineSymbol2 = new SimpleLineSymbol(Color.BLACK, 5, SimpleLineSymbol.STYLE.DOT);
-                        Graphic graphic = new Graphic(polyline, lineSymbol);
-                        Graphic graphic2 = new Graphic(polyline2, lineSymbol2);
-                        graphicsLayer.addGraphic(graphic);
-                        graphicsLayer.addGraphic(graphic2);
                     }
                 }
+                SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.RED, 10, SimpleLineSymbol.STYLE.SOLID);
+                SimpleLineSymbol lineSymbol2 = new SimpleLineSymbol(Color.BLACK, 5, SimpleLineSymbol.STYLE.DOT);
+                Graphic graphic = new Graphic(polyline, lineSymbol);
+                Graphic graphic2 = new Graphic(polyline2, lineSymbol2);
+                graphicsLayer.addGraphic(graphic);
+                graphicsLayer.addGraphic(graphic2);
             }
         }
 
@@ -206,6 +211,12 @@ public class RoutMapActivity extends BaseActivity {
 
     @OnClick(R.id.ditail_busitem)
     public void onViewClicked() {
-        ShowToast("详情");
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("data",linesBean);
+        bundle.putString("name",String.valueOf(tvBusitem.getText()));
+        bundle.putString("distence",String.valueOf(tv2Busitem.getText()));
+        bundle.putString("start",start);
+        bundle.putString("end",end);
+        skip(BusDitailActivity.class,bundle,false);
     }
 }

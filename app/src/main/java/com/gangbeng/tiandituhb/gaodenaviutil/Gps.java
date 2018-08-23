@@ -9,10 +9,19 @@ public class Gps implements Serializable {
 
     private double wgLat;
     private double wgLon;
+    private String name;
 
     public Gps(double wgLat, double wgLon) {
         setWgLat(wgLat);
         setWgLon(wgLon);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getWgLat() {

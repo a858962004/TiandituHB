@@ -40,10 +40,13 @@ public class BusFragment extends BaseFragment implements BaseView {
     private BasePresenter presenter;
     private List<Gps> points;
     private List<BusBean.ResultsBean.LinesBean> lines;
+    private String start,end;
 
-    public static BusFragment newInstance(List<Gps> points) {
+    public static BusFragment newInstance(List<Gps> points,String start,String end) {
         Bundle args = new Bundle();
         args.putSerializable("points", (Serializable) points);
+        args.putString("start",start);
+        args.putString("end",end);
         BusFragment fragment = new BusFragment();
         fragment.setArguments(args);
         return fragment;
@@ -108,6 +111,8 @@ public class BusFragment extends BaseFragment implements BaseView {
         Bundle bundle = getArguments();
         if (bundle != null) {
             points = (List<Gps>) bundle.getSerializable("points");
+            start=bundle.getString("start");
+            end=bundle.getString("end");
         }
     }
 
@@ -131,6 +136,8 @@ public class BusFragment extends BaseFragment implements BaseView {
             BusBean.ResultsBean.LinesBean linesBean = lines.get(position);
             Bundle bundle = new Bundle();
             bundle.putSerializable("data",linesBean);
+            bundle.putString("start",start);
+            bundle.putString("end",end);
             skip(RoutMapActivity.class,bundle,false);
 
         }

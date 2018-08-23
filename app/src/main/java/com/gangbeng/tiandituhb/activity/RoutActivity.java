@@ -48,7 +48,7 @@ public class RoutActivity extends BaseActivity {
         List<Gps> points = (List<Gps>) bundleExtra.getSerializable("data");
         FragmentHolder holder = new FragmentHolder();
         holder.setTitle("公交");
-        holder.setFragment(BusFragment.newInstance(points));
+        holder.setFragment(BusFragment.newInstance(points,points.get(0).getName(),points.get(1).getName()));
         holders.add(holder);
         FragmentHolder holder2 = new FragmentHolder();
         holder2.setTitle("驾车");

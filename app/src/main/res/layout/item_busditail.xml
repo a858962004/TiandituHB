@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/rl1_busitem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv1_busitem"
+            android:background="@mipmap/icon_point"
+            android:layout_margin="20dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+        <TextView
+            android:text="起点（我的位置）"
+            android:textColor="@color/black"
+            android:layout_toRightOf="@+id/tv1_busitem"
+            android:id="@+id/tv2_busitem"
+            android:layout_marginTop="20dp"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl2_busitem"
+        android:layout_below="@+id/rl1_busitem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/line"
+            android:layout_marginLeft="30dp"
+            android:layout_width="2dp"
+            android:layout_height="100dp"
+            android:background="@color/skyblue"/>
+        <TextView
+            android:id="@+id/tv3_busitem"
+            android:layout_toRightOf="@+id/line"
+            android:layout_centerVertical="true"
+            android:text="步行30米"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@+id/rl2_busitem"
+        android:id="@+id/rl3_busitem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv4_busitem"
+            android:background="@mipmap/icon_point"
+            android:layout_margin="20dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+        <TextView
+            android:text="终点（我的位置）"
+            android:textColor="@color/black"
+            android:layout_toRightOf="@+id/tv4_busitem"
+            android:id="@+id/tv5_busitem"
+            android:layout_marginTop="20dp"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+</RelativeLayout>
