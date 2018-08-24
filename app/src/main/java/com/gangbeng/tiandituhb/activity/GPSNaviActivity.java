@@ -7,9 +7,6 @@ import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.enums.PathPlanningStrategy;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.constant.PubConst;
-import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
-
-import java.util.List;
 
 
 public class GPSNaviActivity extends GaodeBaseActivity {
@@ -20,15 +17,13 @@ public class GPSNaviActivity extends GaodeBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basic_navi);
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
-        List<Gps> points = (List<Gps>) bundleExtra.getSerializable("data");
+//        List<Gps> points = (List<Gps>) bundleExtra.getSerializable("data");
         mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
         mAMapNaviView.onCreate(savedInstanceState);
         mAMapNaviView.setAMapNaviViewListener(this);
     }
 
     private void noStartCalculate() {
-
-
         if (mAMapNavi.isGpsReady())
             mAMapNavi.calculateDriveRoute(mEndList, mWayPointList, PathPlanningStrategy.DRIVING_DEFAULT);
     }

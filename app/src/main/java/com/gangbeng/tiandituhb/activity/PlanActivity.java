@@ -261,12 +261,23 @@ public class PlanActivity extends BaseActivity {
             EndPoint end = (EndPoint) stringObjectMap.get("endView");
             if (!start.getName().equals("当前位置")) {
                 startPoint = start;
+            }else {
+                startPoint=new StartPoint();
+                startPoint.setX(ptpoint.getX());
+                startPoint.setY(ptpoint.getY());
+                startPoint.setName("当前位置");
             }
             if (!end.getName().equals("当前位置")) {
                 endPoint = end;
+            }else {
+                endPoint=new EndPoint();
+                endPoint.setX(ptpoint.getX());
+                endPoint.setY(ptpoint.getY());
+                endPoint.setName("当前位置");
             }
             startView.setText(startPoint.getName());
             endView.setText(endPoint.getName());
+
         }
     };
 

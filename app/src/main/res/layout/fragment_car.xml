@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
+    <com.esri.android.map.MapView
+        android:id="@+id/map_carfragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <include
+            layout="@layout/view_bottom_carmap"/>
+    </RelativeLayout>
+
     <TextView
+        android:text="未搜索到驾车路线，建议乘坐公交或步行"
+        android:visibility="gone"
         android:layout_centerInParent="true"
-        android:text="驾车规划"
+        android:id="@+id/tv_nodata"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
 
 </RelativeLayout>

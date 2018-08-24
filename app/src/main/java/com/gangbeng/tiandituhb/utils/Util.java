@@ -59,4 +59,19 @@ public class Util {
         }
         return s;
     }
+
+    public static String secondToHour(String second){
+        String time="";
+        double aDouble = Double.valueOf(second);
+        long h = (long) (aDouble/3600);
+        if (h==0){
+            long m = (long)(aDouble/60);
+            time=m+"分钟";
+        }else {
+            aDouble=aDouble-h*3600;
+            long m = (long)(aDouble/60);
+            time=h+"小时"+m+"分钟";
+        }
+        return time;
+    }
 }
