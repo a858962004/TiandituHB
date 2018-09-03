@@ -71,6 +71,9 @@ public class MoreActivity extends BaseActivity {
                     bundle.putString("activity","面积测量");
                     skip(CalculateMapActivity.class,bundle,false);
                     break;
+                case "地图对比":
+                    skip(ComparisonActivity.class,false);
+                    break;
                 default:
                     ShowToast("正在建设中...");
                     break;
