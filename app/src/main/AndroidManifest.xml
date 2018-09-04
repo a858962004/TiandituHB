@@ -58,6 +58,7 @@
         <activity android:name=".activity.BusDitailActivity" />
         <activity android:name=".activity.ComparisonActivity" />
         <activity android:name=".activity.PaintActivity" />
+        <activity android:name=".activity.FeedBackActivity" />
     </application>
 
 </manifest>

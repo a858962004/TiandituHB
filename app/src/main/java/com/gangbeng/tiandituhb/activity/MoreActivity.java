@@ -74,11 +74,14 @@ public class MoreActivity extends BaseActivity {
                 case "绘图板":
                     skip(PaintActivity.class,false);
                     break;
+                case "卷帘对比":
+                    ShowToast("正在建设中");
+                    break;
                 case "地图对比":
                     skip(ComparisonActivity.class,false);
                     break;
-                default:
-                    ShowToast("正在建设中...");
+                case "信息反馈":
+                    skip(FeedBackActivity.class,false);
                     break;
             }
         }

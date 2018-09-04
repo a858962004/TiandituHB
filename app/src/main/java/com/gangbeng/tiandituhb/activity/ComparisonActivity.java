@@ -125,7 +125,7 @@ public class ComparisonActivity extends BaseActivity {
             public void postPointerUp(float v, float v1, float v2, float v3) {
                 MyLogUtil.showLog("postPointerUp");
                 try {
-                    Thread.sleep(350);
+                    Thread.sleep(400);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -224,7 +224,7 @@ public class ComparisonActivity extends BaseActivity {
             public void postPointerUp(float v, float v1, float v2, float v3) {
                 MyLogUtil.showLog("postPointerUp");
                 try {
-                    Thread.sleep(350);
+                    Thread.sleep(400);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

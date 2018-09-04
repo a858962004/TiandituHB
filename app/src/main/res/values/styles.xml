@@ -57,4 +57,26 @@
         <item name="android:layout_marginBottom">5dp</item>
     </style>
 
+    <style name="style_feed_tv">
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1.5</item>
+    </style>
+
+    <style name="style_feed_ed">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:layout_weight">5</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:background">@drawable/background_searchview</item>
+    </style>
+
 </resources>
