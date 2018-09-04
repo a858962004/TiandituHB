@@ -41,7 +41,7 @@ public class CollectActivity extends BaseActivity {
 
     private void setData() {
         List<SearchBean.PoisBean> data = (List<SearchBean.PoisBean>) SharedUtil.getSerializeObject("collectpoint");
-        if (data.size() != 0 && data != null) {
+        if (data != null&&data.size() != 0) {
             tvNote.setVisibility(View.GONE);
             adpter = new SearchResultAdpter(this, data, false);
             lvCollect.setAdapter(adpter);
