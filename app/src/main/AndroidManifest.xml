@@ -57,6 +57,7 @@
         <activity android:name=".activity.RoutMapActivity" />
         <activity android:name=".activity.BusDitailActivity" />
         <activity android:name=".activity.ComparisonActivity" />
+        <activity android:name=".activity.PaintActivity" />
     </application>
 
 </manifest>

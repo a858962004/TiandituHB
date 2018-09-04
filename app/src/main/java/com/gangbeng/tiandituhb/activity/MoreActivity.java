@@ -27,9 +27,9 @@ public class MoreActivity extends BaseActivity {
     ListView lvMore;
     MoreLVAdapter adapter;
 
-    String[] names = new String[]{"收藏夹", "点距测量", "面积测量","绘图板","卷帘对比","地图对比"};
+    String[] names = new String[]{"收藏夹", "点距测量", "面积测量","绘图板","卷帘对比","地图对比","信息反馈"};
     int[] resource = new int[]{R.mipmap.icon_collect, R.mipmap.icon_length, R.mipmap.icon_area,
-            R.mipmap.icon_paint,R.mipmap.icon_rollershutters,R.mipmap.icon_comparison};
+            R.mipmap.icon_paint,R.mipmap.icon_rollershutters,R.mipmap.icon_comparison,R.mipmap.icon_feedback};
 
     @Override
     protected void initView() {
@@ -70,6 +70,9 @@ public class MoreActivity extends BaseActivity {
                 case "面积测量":
                     bundle.putString("activity","面积测量");
                     skip(CalculateMapActivity.class,bundle,false);
+                    break;
+                case "绘图板":
+                    skip(PaintActivity.class,false);
                     break;
                 case "地图对比":
                     skip(ComparisonActivity.class,false);
