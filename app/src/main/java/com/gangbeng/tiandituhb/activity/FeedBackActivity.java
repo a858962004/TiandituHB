@@ -46,7 +46,7 @@ public class FeedBackActivity extends BaseActivity {
             ShowToast("请输入信息内容");
             return;
         }
-        ShowToast("提交失败");
+//        ShowToast("提交失败");
 
     }
 
