@@ -63,12 +63,11 @@ public class AroundActivity extends BaseActivity implements BaseView {
         return activity;
     }
 
-    private int[] sortImgs = new int[]{R.mipmap.icon_cfood, R.mipmap.icon_wfood, R.mipmap.icon_coffee, R.mipmap.icon_starthotail
-            , R.mipmap.icon_hotail, R.mipmap.icon_car, R.mipmap.icon_ktv, R.mipmap.icon_relax
-            , R.mipmap.icon_park, R.mipmap.icon_tourist, R.mipmap.icon_center, R.mipmap.icon_shop
-            , R.mipmap.icon_football, R.mipmap.icon_hospital, R.mipmap.icon_school, R.mipmap.icon_science};
-    private String[] sortStrs = new String[]{"中餐馆", "西餐馆", "咖啡馆", "星级酒店", "连锁酒店", "汽车服务", "娱乐场所", "休闲场所"
-            , "公园广场", "风景名胜", "购物中心", "超市", "体育场馆", "医院", "学校", "图书馆"};
+    private int[] sortImgs = new int[]{R.mipmap.icon_gggl, R.mipmap.icon_zzcy, R.mipmap.icon_jrbx, R.mipmap.icon_jtrs
+            , R.mipmap.icon_fclp, R.mipmap.icon_shfw, R.mipmap.icon_xxyl, R.mipmap.icon_lyfw
+            , R.mipmap.icon_ylws, R.mipmap.icon_whmt, R.mipmap.icon_qthy};
+    private String[] sortStrs = new String[]{"公共管理", "住宿餐饮", "金融保险", "交通运输", "房产楼盘", "生活服务", "休闲娱乐", "旅游服务"
+            , "医疗卫生", "文化媒体", "其他行业"};
 
     private List<String> data = new ArrayList<>();
     private String key;
