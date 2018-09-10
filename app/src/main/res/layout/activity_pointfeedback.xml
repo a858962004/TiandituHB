@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <RelativeLayout style="@style/rl_addphoto">
+
+                <TextView
+                    android:id="@+id/tv_name_photo"
+                    style="@style/tv_addphoto"
+                    android:text="地址名称：" />
+
+                <EditText
+                    android:id="@+id/ed_name_feed"
+                    style="@style/ed_addphoto"
+                    android:layout_toRightOf="@+id/tv_name_photo" />
+            </RelativeLayout>
+
+            <TextView style="@style/horizonline" />
+
+            <RelativeLayout style="@style/rl_addphoto">
+
+                <TextView
+                    android:id="@+id/tv_time_photo"
+                    style="@style/tv_addphoto"
+                    android:text="坐标  X:" />
+
+                <TextView
+                    android:id="@+id/ed_loc_feed"
+                    style="@style/ed_addphoto"
+                    android:layout_toRightOf="@+id/tv_time_photo"
+                    android:inputType="date" />
+            </RelativeLayout>
+
+            <TextView style="@style/horizonline" />
+
+            <RelativeLayout style="@style/rl_addphoto">
+
+                <TextView
+                    android:id="@+id/tv_city_photo"
+                    style="@style/tv_addphoto"
+                    android:text="坐标  Y:" />
+
+                <TextView
+                    android:id="@+id/ed2_loc_feed"
+                    style="@style/ed_addphoto"
+                    android:layout_toRightOf="@+id/tv_city_photo" />
+            </RelativeLayout>
+
+            <TextView style="@style/horizonline" />
+
+            <GridView
+                android:id="@+id/grid_feed"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:horizontalSpacing="5dp"
+                android:numColumns="3" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <!--<ScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:scrollbars="none">-->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:orientation="vertical">-->
+
+
+            <!--<LinearLayout style="@style/rl_addphoto">-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/tv_name_photo"-->
+                    <!--style="@style/tv_addphoto"-->
+                    <!--android:text="地址名称：" />-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/ed_name_feed"-->
+                    <!--style="@style/ed_addphoto"-->
+                    <!--android:layout_toRightOf="@+id/tv_name_photo" />-->
+            <!--</LinearLayout>-->
+
+            <!--<TextView style="@style/horizonline" />-->
+
+            <!--<LinearLayout style="@style/rl_addphoto">-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/tv_time_feed"-->
+                    <!--style="@style/tv_addphoto"-->
+                    <!--android:text="联系电话：" />-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/ed_phone_feed"-->
+                    <!--style="@style/ed_addphoto"-->
+                    <!--android:layout_toRightOf="@+id/tv_time_feed"-->
+                    <!--android:inputType="date" />-->
+            <!--</LinearLayout>-->
+            <!--<TextView style="@style/horizonline" />-->
+
+            <!--<LinearLayout style="@style/rl_addphoto">-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/tv_loc_photo"-->
+                    <!--style="@style/tv_addphoto"-->
+                    <!--android:text="坐标 x：" />-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/ed_loc_feed"-->
+                    <!--style="@style/ed_addphoto"-->
+                    <!--android:layout_toEndOf="@+id/tv_loc_photo"-->
+                    <!--android:layout_marginStart="18dp" />-->
+            <!--</LinearLayout>-->
+            <!--<TextView style="@style/horizonline" />-->
+            <!--<LinearLayout style="@style/rl_addphoto">-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/tv2_loc_photo"-->
+                    <!--style="@style/tv_addphoto"-->
+                    <!--android:text="坐标 y：" />-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/ed2_loc_feed"-->
+                    <!--style="@style/ed_addphoto"-->
+                    <!--android:layout_toEndOf="@+id/tv2_loc_photo"-->
+                    <!--android:layout_marginStart="18dp" />-->
+            <!--</LinearLayout>-->
+
+            <!--<TextView style="@style/horizonline" />-->
+
+            <!--<GridView-->
+                <!--android:id="@+id/grid_feed"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="100dp"-->
+                <!--android:layout_marginLeft="5dp"-->
+                <!--android:layout_marginRight="5dp"-->
+                <!--android:layout_marginTop="5dp"-->
+                <!--android:horizontalSpacing="5dp"-->
+                <!--android:numColumns="3" />-->
+
+        <!--</LinearLayout>-->
+    <!--</ScrollView>-->
+
+</LinearLayout>

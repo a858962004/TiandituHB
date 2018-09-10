@@ -59,6 +59,8 @@
         <activity android:name=".activity.ComparisonActivity" />
         <activity android:name=".activity.PaintActivity" />
         <activity android:name=".activity.FeedBackActivity" />
+        <activity android:name=".activity.PointBackActivity" />
+        <activity android:name=".activity.ShowPhotosActivity" />
     </application>
 
 </manifest>

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
+import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
@@ -70,8 +71,10 @@ public class MapActivity extends BaseActivity {
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private GraphicsLayer pointlayer;
     private LocationDisplayManager ldm;
-    private Point ptCurrent;
+    private Point ptCurrent,choosePoint;
     private SearchBean.PoisBean bean;
+    private String key;
+    private boolean isFirstlocal=true;
 
     @Override
     protected void initView() {
@@ -81,10 +84,37 @@ public class MapActivity extends BaseActivity {
         setMapView();
         locationGPS();
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
-        String key = bundleExtra.getString("key");
+        key = bundleExtra.getString("key");
         if (key.equals("point")) {
             bean = (SearchBean.PoisBean) bundleExtra.getSerializable("data");
             setbottom(bean);
+        }else if (key.equals("addPoint")){
+            setToolbarTitle("添加信息点");
+            setRightImageBtnText("完成");
+            Drawable drawable = getResources().getDrawable(R.mipmap.icon_choosepoint);
+            Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 130, 130);
+            final PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
+            idMap.setOnSingleTapListener(new OnSingleTapListener() {
+                @Override
+                public void onSingleTap(float v, float v1) {
+                    pointlayer.removeAll();
+                    Point point = idMap.toMapPoint(v, v1);
+                    choosePoint=point;
+                    Graphic graphic = new Graphic(point, picSymbol);
+                    pointlayer.addGraphic(graphic);
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void setRightClickListen() {
+        if (choosePoint == null) {
+            ShowToast("请先选择位置");
+        }else {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("point",choosePoint);
+            skip(PointBackActivity.class,bundle,false);
         }
     }
 
@@ -159,7 +189,7 @@ public class MapActivity extends BaseActivity {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
                 if (map_lfimg_text == o && status == STATUS.LAYER_LOADED) {
-                    zoom2bean(bean);
+                    if (key.equals("point")) zoom2bean(bean);
                 }
             }
         });
@@ -176,7 +206,11 @@ public class MapActivity extends BaseActivity {
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
+                    if (isFirstlocal) {
+                        idMap.zoomToScale(ptCurrent, 50000);
 
+                    }
+                    isFirstlocal = false;
                 }
 
                 @Override
