@@ -156,4 +156,9 @@
     <color name="nocolor">#00000000</color>
     <color name="link">#0a80d1</color>
     <color name="bblue">#E6F9FF</color>
+    <color name="toolbar">#5485f7</color>
+    <color name="verticalline">#d3dde6</color>
+    <color name="textcolor">#333333</color>
+    <color name="text8a">#8a8a8a</color>
+    <color name="appbg">#eff1f3</color>
 </resources>

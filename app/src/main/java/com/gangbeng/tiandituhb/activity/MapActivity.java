@@ -91,9 +91,10 @@ public class MapActivity extends BaseActivity {
         }else if (key.equals("addPoint")){
             setToolbarTitle("添加信息点");
             setRightImageBtnText("完成");
-            Drawable drawable = getResources().getDrawable(R.mipmap.icon_choosepoint);
-            Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 130, 130);
+            Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
+            Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
             final PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
+            picSymbol.setOffsetY(drawable1.getIntrinsicHeight()/2);
             idMap.setOnSingleTapListener(new OnSingleTapListener() {
                 @Override
                 public void onSingleTap(float v, float v1) {
@@ -122,9 +123,10 @@ public class MapActivity extends BaseActivity {
         pointlayer.removeAll();
         rlBottom.setVisibility(View.VISIBLE);
         Point point = zoom2bean(bean);
-        Drawable drawable = getResources().getDrawable(R.mipmap.icon_maplocation_red);
-        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 130, 130);
+        Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
+        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
         PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
+        picSymbol.setOffsetY(drawable1.getIntrinsicHeight()/2);
         Graphic g = new  Graphic(point, picSymbol);
         pointlayer.addGraphic(g);
         tvName.setText(bean.getName());

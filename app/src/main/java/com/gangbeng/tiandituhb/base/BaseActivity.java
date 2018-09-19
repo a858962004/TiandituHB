@@ -49,7 +49,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         toolbar = (MyToolbar) findViewById(R.id.myToolbar);
         relativeLayout = (RelativeLayout) findViewById(R.id.fragment_container);
         setToolbarVisibility(true);
-        setToolbarLeftIcon(R.mipmap.ic_back);
         setToolbarRightVisible(true);
         setToolbarLeftVisible(true);
         setToolbarTitle("");

@@ -6,42 +6,85 @@
     android:layout_alignParentBottom="true"
     android:background="@null"
     tools:showIn="@layout/activity_main">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
         android:background="@drawable/background_searchview"
         android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/bt_around"
-        style="@style/style_tab_map"
-        android:drawableStart="@mipmap/icon_around"
-        android:text="@string/tab_around" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
-    <TextView style="@style/style_line_vertical" />
+            <ImageView
+                android:background="@mipmap/icon_zhoubian"
+                style="@style/style_maptab_img" />
 
-    <Button
-        android:id="@+id/bt_route"
-        style="@style/style_tab_map"
-        android:drawableStart="@mipmap/icon_rout"
-        android:text="@string/tab_route" />
+            <Button
+                android:id="@+id/bt_around"
+                style="@style/style_tab_map"
+                android:text="@string/tab_around" />
+        </LinearLayout>
 
-    <TextView style="@style/style_line_vertical" />
-    <Button
-        android:id="@+id/bt_navi"
-        style="@style/style_tab_map"
-        android:drawableStart="@mipmap/icon_navi"
-        android:text="@string/tab_navi" />
 
-    <TextView style="@style/style_line_vertical" />
+        <TextView style="@style/style_line_vertical" />
 
-    <Button
-        android:id="@+id/bt_more"
-        style="@style/style_tab_map"
-        android:drawableStart="@mipmap/icon_more"
-        android:text="@string/tab_more" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:background="@mipmap/icon_luxian"
+                style="@style/style_maptab_img" />
+
+            <Button
+                android:id="@+id/bt_route"
+                style="@style/style_tab_map"
+                android:text="@string/tab_route" />
+        </LinearLayout>
+
+        <TextView style="@style/style_line_vertical" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:background="@mipmap/icon_daohang"
+                style="@style/style_maptab_img" />
+
+            <Button
+                android:id="@+id/bt_navi"
+                style="@style/style_tab_map"
+                android:text="@string/tab_navi" />
+        </LinearLayout>
+
+        <TextView style="@style/style_line_vertical" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:background="@mipmap/icon_more"
+                style="@style/style_maptab_img" />
+
+            <Button
+                android:id="@+id/bt_more"
+                style="@style/style_tab_map"
+                android:text="@string/tab_more" />
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

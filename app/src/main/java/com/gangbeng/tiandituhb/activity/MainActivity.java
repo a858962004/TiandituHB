@@ -25,6 +25,7 @@ import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
+import com.gangbeng.tiandituhb.utils.MyLogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -93,11 +94,13 @@ public class MainActivity extends BaseActivity implements BaseView {
         bmapsView.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
-                if (map_lfimg_text == o && status == STATUS.LAYER_LOADED) {
-//                    bmapsView.zoomToScale(new Point(116.70057500024, 39.51963700025), 50000);
-                }
+                MyLogUtil.showLog("tag",o.toString()+":"+status);
+//                if (map_lfimg_text == o && status == STATUS.LAYER_LOADED) {
+////                    bmapsView.zoomToScale(new Point(116.70057500024, 39.51963700025), 50000);
+//                }
             }
         });
+
 
     }
 

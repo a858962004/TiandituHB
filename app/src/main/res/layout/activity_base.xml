@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".base.BaseActivity">
+
     <com.gangbeng.tiandituhb.widget.MyToolbar
         android:id="@+id/myToolbar"
         android:layout_width="match_parent"
@@ -12,9 +13,12 @@
         android:background="@color/white"
         app:isShowEditText="false"
         app:title="@string/app_name" />
+
     <RelativeLayout
-        android:layout_below="@+id/myToolbar"
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_container"></RelativeLayout>
+        android:layout_below="@+id/myToolbar"
+        android:background="@color/appbg"
+        ></RelativeLayout>
 </RelativeLayout>

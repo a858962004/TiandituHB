@@ -11,11 +11,9 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -35,7 +33,7 @@ public class MyToolbar extends Toolbar {
     private EditText toolbar_editText;
     private TextView toolbar_search;
     private TextView toolbar_textView;
-    private Button toolbar_imgBtn;
+    private TextView toolbar_imgBtn;
     private ImageButton toolbar_LeftimgBtn;
     private MyToolBarBtnListenter btnListenter;
     private MyToolBarEditTextListener editTextListener;
@@ -51,7 +49,7 @@ public class MyToolbar extends Toolbar {
     public MyToolbar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView();
-//        setContentInsetsRelative(100,100);
+        setContentInsetsRelative(0,0);
 
         final TintTypedArray a = TintTypedArray.obtainStyledAttributes(getContext(), attrs,
                 R.styleable.MyToolBar, defStyleAttr, 0);
@@ -89,12 +87,12 @@ public class MyToolbar extends Toolbar {
     private void initView() {
         View view = View.inflate(getContext(), R.layout.view_mytoolbar, null);
 
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         addView(view, params);
 
         toolbar_editText = (EditText) this.findViewById(R.id.toolbar_editText);
         toolbar_textView = (TextView) this.findViewById(R.id.toolbar_textView);
-        toolbar_imgBtn = (Button) this.findViewById(R.id.toolbar_imgBtn);
+        toolbar_imgBtn = (TextView) this.findViewById(R.id.toolbar_imgBtn);
         toolbar_LeftimgBtn = (ImageButton) this.findViewById(R.id.toolbar_leftImgBtn);
         toolbar_search = (TextView) this.findViewById(R.id.toolbar_search);
 //        toolbar_editText.addTextChangedListener(this);
