@@ -20,6 +20,10 @@ public enum TianDiTuTiledMapServiceType {
     /**
      * 天地图影像标注
      * */
-    CIA_C
+    CIA_C,
+    /**
+     * 行政区边界
+     */
+    XZQ_C
 
 }

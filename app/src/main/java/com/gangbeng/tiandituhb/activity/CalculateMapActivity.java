@@ -65,7 +65,7 @@ public class CalculateMapActivity extends BaseActivity {
     @BindView(R.id.btnclear)
     TextView btnclear;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_lfimg,map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private GraphicsLayer drawPointLayer, drawLayer;
     private LocationDisplayManager ldm;
@@ -111,7 +111,7 @@ public class CalculateMapActivity extends BaseActivity {
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         drawPointLayer = new GraphicsLayer();
         drawLayer = new GraphicsLayer();
 
@@ -123,7 +123,7 @@ public class CalculateMapActivity extends BaseActivity {
         mapCalculate.addLayer(map_lf, 4);
         mapCalculate.addLayer(map_lf_text, 5);
         mapCalculate.addLayer(map_lfimg, 6);
-        mapCalculate.addLayer(map_lfimg_text, 7);
+        mapCalculate.addLayer(map_xzq,7);
 
         mapCalculate.addLayer(drawPointLayer, 8);
         mapCalculate.addLayer(drawLayer, 9);
@@ -131,7 +131,6 @@ public class CalculateMapActivity extends BaseActivity {
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
-        map_lfimg_text.setVisible(false);
         mapCalculate.setOnSingleTapListener(onSingleTapListener);
 
         fillSymbol = new SimpleFillSymbol(Color.RED);
@@ -206,18 +205,14 @@ public class CalculateMapActivity extends BaseActivity {
             case R.id.change_calulate:
                 if (map_lfimg.isVisible()) {
                     map_lfimg.setVisible(false);
-                    map_lfimg_text.setVisible(false);
                     map_lf.setVisible(true);
-                    map_lf_text.setVisible(true);
                     mapRSServiceLayer.setVisible(false);
                     mapRStextLayer.setVisible(false);
                     mapServiceLayer.setVisible(true);
                     maptextLayer.setVisible(true);
                 } else {
                     map_lfimg.setVisible(true);
-                    map_lfimg_text.setVisible(true);
                     map_lf.setVisible(false);
-                    map_lf_text.setVisible(false);
                     mapRSServiceLayer.setVisible(true);
                     mapRStextLayer.setVisible(true);
                     mapServiceLayer.setVisible(false);

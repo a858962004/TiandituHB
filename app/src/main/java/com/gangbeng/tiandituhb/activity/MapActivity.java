@@ -67,8 +67,8 @@ public class MapActivity extends BaseActivity {
     @BindView(R.id.rl_bottom)
     RelativeLayout rlBottom;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
-    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_xzq;
+    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer;
     private GraphicsLayer pointlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent,choosePoint;
@@ -163,34 +163,33 @@ public class MapActivity extends BaseActivity {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+//        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+//        mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
         pointlayer=new GraphicsLayer();
 
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+//        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         idMap.addLayer(mapServiceLayer, 0);
         idMap.addLayer(maptextLayer, 1);
-        idMap.addLayer(mapRSServiceLayer, 2);
-        idMap.addLayer(mapRStextLayer, 3);
+//        idMap.addLayer(mapRSServiceLayer, 2);
+//        idMap.addLayer(mapRStextLayer, 3);
 
-        idMap.addLayer(map_lf, 4);
-        idMap.addLayer(map_lf_text, 5);
-        idMap.addLayer(map_lfimg, 6);
-        idMap.addLayer(map_lfimg_text, 7);
-        idMap.addLayer(pointlayer,8);
+        idMap.addLayer(map_lf, 2);
+        idMap.addLayer(map_lf_text, 3);
+//        idMap.addLayer(map_lfimg, 6);
+        idMap.addLayer(map_xzq,4);
+        idMap.addLayer(pointlayer,5);
 
-        mapRSServiceLayer.setVisible(false);
-        mapRStextLayer.setVisible(false);
-        map_lfimg.setVisible(false);
-        map_lfimg_text.setVisible(false);
+//        mapRSServiceLayer.setVisible(false);
+//        mapRStextLayer.setVisible(false);
+//        map_lfimg.setVisible(false);
         idMap.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
-                if (map_lfimg_text == o && status == STATUS.LAYER_LOADED) {
+                if (map_xzq == o && status == STATUS.LAYER_LOADED) {
                     if (key.equals("point")) zoom2bean(bean);
                 }
             }

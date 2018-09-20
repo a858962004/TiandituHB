@@ -34,7 +34,7 @@ public class ComparisonActivity extends BaseActivity {
     @BindView(R.id.mapview2_comparison)
     MapView mapview2Comparison;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_lfimg,map_xzq,map_lf_text2,map_xzq2;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm,ldm2;
     private boolean isFirstlocal = true;
@@ -67,18 +67,21 @@ public class ComparisonActivity extends BaseActivity {
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
-
+        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map_xzq2=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         mapview1Comparison.addLayer(mapServiceLayer, 0);
         mapview1Comparison.addLayer(maptextLayer, 1);
         mapview1Comparison.addLayer(map_lf, 2);
-        mapview1Comparison.addLayer(map_lf_text, 3);
+        mapview1Comparison.addLayer(map_xzq,3);
+        mapview1Comparison.addLayer(map_lf_text, 4);
 
         mapview2Comparison.addLayer(mapRSServiceLayer, 0);
         mapview2Comparison.addLayer(mapRStextLayer, 1);
         mapview2Comparison.addLayer(map_lfimg, 2);
-        mapview2Comparison.addLayer(map_lfimg_text, 3);
+        mapview2Comparison.addLayer(map_xzq2,3);
+        mapview2Comparison.addLayer(map_lf_text2, 4);
 
         mapview1Comparison.setOnZoomListener(new OnZoomListener() {
             @Override

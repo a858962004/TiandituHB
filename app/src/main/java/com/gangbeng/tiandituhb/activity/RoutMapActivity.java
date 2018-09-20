@@ -49,8 +49,8 @@ public class RoutMapActivity extends BaseActivity {
     @BindView(R.id.tv2_busitem)
     TextView tv2Busitem;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
-    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_xzq;
+    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer;
     private LocationDisplayManager ldm;
     private GraphicsLayer graphicsLayer, pointLayer;
     private BusBean.ResultsBean.LinesBean linesBean;
@@ -85,32 +85,31 @@ public class RoutMapActivity extends BaseActivity {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+//        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+//        mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
         graphicsLayer = new GraphicsLayer();
         pointLayer = new GraphicsLayer();
 
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+//        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         idRoutmap.addLayer(mapServiceLayer, 0);
         idRoutmap.addLayer(maptextLayer, 1);
-        idRoutmap.addLayer(mapRSServiceLayer, 2);
-        idRoutmap.addLayer(mapRStextLayer, 3);
+//        idRoutmap.addLayer(mapRSServiceLayer, 2);
+//        idRoutmap.addLayer(mapRStextLayer, 3);
 
-        idRoutmap.addLayer(map_lf, 4);
-        idRoutmap.addLayer(map_lf_text, 5);
-        idRoutmap.addLayer(map_lfimg, 6);
-        idRoutmap.addLayer(map_lfimg_text, 7);
-        idRoutmap.addLayer(graphicsLayer, 8);
-        idRoutmap.addLayer(pointLayer, 9);
+        idRoutmap.addLayer(map_lf, 2);
+        idRoutmap.addLayer(map_lf_text, 3);
+//        idRoutmap.addLayer(map_lfimg, 6);
+        idRoutmap.addLayer(map_xzq, 4);
+        idRoutmap.addLayer(graphicsLayer, 5);
+        idRoutmap.addLayer(pointLayer, 6);
 
-        mapRSServiceLayer.setVisible(false);
-        mapRStextLayer.setVisible(false);
-        map_lfimg.setVisible(false);
-        map_lfimg_text.setVisible(false);
+//        mapRSServiceLayer.setVisible(false);
+//        mapRStextLayer.setVisible(false);
+//        map_lfimg.setVisible(false);
 
     }
 

@@ -51,7 +51,7 @@ public class MainActivity extends BaseActivity implements BaseView {
     @BindView(R.id.location_map)
     CardView locationMap;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_lfimg,map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
@@ -75,7 +75,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
@@ -85,12 +85,11 @@ public class MainActivity extends BaseActivity implements BaseView {
         bmapsView.addLayer(map_lf, 4);
         bmapsView.addLayer(map_lf_text, 5);
         bmapsView.addLayer(map_lfimg, 6);
-        bmapsView.addLayer(map_lfimg_text, 7);
+        bmapsView.addLayer(map_xzq,7);
 
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
-        map_lfimg_text.setVisible(false);
         bmapsView.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
@@ -169,18 +168,14 @@ public class MainActivity extends BaseActivity implements BaseView {
             case R.id.change_map:
                 if (map_lfimg.isVisible()) {
                     map_lfimg.setVisible(false);
-                    map_lfimg_text.setVisible(false);
                     map_lf.setVisible(true);
-                    map_lf_text.setVisible(true);
                     mapRSServiceLayer.setVisible(false);
                     mapRStextLayer.setVisible(false);
                     mapServiceLayer.setVisible(true);
                     maptextLayer.setVisible(true);
                 } else {
                     map_lfimg.setVisible(true);
-                    map_lfimg_text.setVisible(true);
                     map_lf.setVisible(false);
-                    map_lf_text.setVisible(false);
                     mapRSServiceLayer.setVisible(true);
                     mapRStextLayer.setVisible(true);
                     mapServiceLayer.setVisible(false);

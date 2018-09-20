@@ -67,8 +67,8 @@ public class CarFragment extends BaseFragment implements BaseView {
     Unbinder unbinder;
     private List<Gps> points;
     private BasePresenter presenter;
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
-    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_xzq;
+    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer;
     private GraphicsLayer graphicsLayer, pointLayer;
 
     public static CarFragment newInstance(List<Gps> points) {
@@ -96,32 +96,31 @@ public class CarFragment extends BaseFragment implements BaseView {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+//        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+//        mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
         graphicsLayer = new GraphicsLayer();
         pointLayer = new GraphicsLayer();
 
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+//        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         mapCarfragment.addLayer(mapServiceLayer, 0);
         mapCarfragment.addLayer(maptextLayer, 1);
-        mapCarfragment.addLayer(mapRSServiceLayer, 2);
-        mapCarfragment.addLayer(mapRStextLayer, 3);
+//        mapCarfragment.addLayer(mapRSServiceLayer, 2);
+//        mapCarfragment.addLayer(mapRStextLayer, 3);
 
-        mapCarfragment.addLayer(map_lf, 4);
-        mapCarfragment.addLayer(map_lf_text, 5);
-        mapCarfragment.addLayer(map_lfimg, 6);
-        mapCarfragment.addLayer(map_lfimg_text, 7);
-        mapCarfragment.addLayer(graphicsLayer, 8);
-        mapCarfragment.addLayer(pointLayer, 9);
+        mapCarfragment.addLayer(map_lf, 2);
+        mapCarfragment.addLayer(map_lf_text, 3);
+        mapCarfragment.addLayer(map_xzq,4);
+//        mapCarfragment.addLayer(map_lfimg, 6);
+        mapCarfragment.addLayer(graphicsLayer, 5);
+        mapCarfragment.addLayer(pointLayer, 6);
 
-        mapRSServiceLayer.setVisible(false);
-        mapRStextLayer.setVisible(false);
-        map_lfimg.setVisible(false);
-        map_lfimg_text.setVisible(false);
+//        mapRSServiceLayer.setVisible(false);
+//        mapRStextLayer.setVisible(false);
+//        map_lfimg.setVisible(false);
     }
 
     private void getData() {
