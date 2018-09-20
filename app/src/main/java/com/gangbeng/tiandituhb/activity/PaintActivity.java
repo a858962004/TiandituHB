@@ -52,12 +52,12 @@ public class PaintActivity extends BaseActivity {
     CardView changeMap;
     @BindView(R.id.location_map)
     CardView locationMap;
-    @BindView(R.id.save_paint)
-    CardView savePaint;
-    @BindView(R.id.quit_paint)
-    CardView quitPaint;
     @BindView(R.id.toolbar_paint)
     MyToolbar toolbarPaint;
+    @BindView(R.id.save_paint)
+    LinearLayout savePaint;
+    @BindView(R.id.quit_paint)
+    LinearLayout quitPaint;
 
     private PathView pathView = null;
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;

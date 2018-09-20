@@ -4,6 +4,11 @@
     <string name="tab_route">路线</string>
     <string name="tab_more">更多</string>
     <string name="tab_navi">导航</string>
+    <string name="tab_bishua">笔刷</string>
+    <string name="tab_yanliao">颜料</string>
+    <string name="tab_xiangpi">橡皮</string>
+    <string name="tab_chexiao">撤销</string>
+
     <string name="preference_default_tts_role">xiaoyan</string>
     <string name="preference_key_tts_speed">tts_speed</string>
     <string name="preference_title_tts_speed">语速</string>

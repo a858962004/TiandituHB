@@ -161,4 +161,8 @@
     <color name="textcolor">#333333</color>
     <color name="text8a">#8a8a8a</color>
     <color name="appbg">#eff1f3</color>
+    <color name="rout">#0e932e</color>
+    <color name="color64">#6491f7</color>
+    <color name="colord1">#d1d1d1</color>
+    <color name="colorff">#ffb734</color>
 </resources>

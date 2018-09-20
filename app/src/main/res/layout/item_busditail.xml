@@ -8,13 +8,13 @@
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/tv1_busitem"
-            android:background="@mipmap/icon_point"
+            android:background="@mipmap/icon_qidian2"
             android:layout_margin="20dp"
             android:layout_width="20dp"
             android:layout_height="20dp" />
         <TextView
             android:text="起点（我的位置）"
-            android:textColor="@color/black"
+            android:textColor="@color/textcolor"
             android:layout_toRightOf="@+id/tv1_busitem"
             android:id="@+id/tv2_busitem"
             android:layout_marginTop="20dp"
@@ -32,13 +32,14 @@
             android:id="@+id/line"
             android:layout_marginLeft="30dp"
             android:layout_width="2dp"
-            android:layout_height="100dp"
-            android:background="@color/skyblue"/>
+            android:layout_height="80dp"
+            android:background="@color/color64"/>
         <TextView
             android:id="@+id/tv3_busitem"
             android:layout_toRightOf="@+id/line"
             android:layout_centerVertical="true"
             android:text="步行30米"
+            android:textColor="@color/text8a"
             android:layout_marginLeft="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -50,13 +51,13 @@
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/tv4_busitem"
-            android:background="@mipmap/icon_point"
+            android:background="@mipmap/icon_zhogndian2"
             android:layout_margin="20dp"
             android:layout_width="20dp"
             android:layout_height="20dp" />
         <TextView
             android:text="终点（我的位置）"
-            android:textColor="@color/black"
+            android:textColor="@color/textcolor"
             android:layout_toRightOf="@+id/tv4_busitem"
             android:id="@+id/tv5_busitem"
             android:layout_marginTop="20dp"

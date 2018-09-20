@@ -18,16 +18,14 @@
 
             <TextView
                 android:layout_centerVertical="true"
-                android:drawableLeft="@mipmap/icon_navi_car"
+                android:drawableLeft="@mipmap/icon_daohang"
                 android:id="@+id/tv_navi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
-                android:text="导航"
                 android:gravity="center"
-                android:textColor="@color/skyblue"
-                android:textSize="20sp" />
+                />
             <TextView
                 android:id="@+id/tv_distence"
                 android:layout_toLeftOf="@+id/tv_navi"

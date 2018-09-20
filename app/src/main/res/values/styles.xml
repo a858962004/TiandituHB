@@ -23,7 +23,7 @@
     <style name="style_line_vertical_rout">
         <item name="android:layout_width">1dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/grey2</item>
+        <item name="android:background">@color/white</item>
     </style>
 
     <style name="style_cardview_map">
@@ -56,9 +56,9 @@
 
     <style name="style_feed_tv">
         <item name="android:layout_marginLeft">20dp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/textcolor</item>
         <item name="android:gravity">center</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1.5</item>

@@ -28,8 +28,8 @@ public class MoreActivity extends BaseActivity {
     MoreLVAdapter adapter;
 
     String[] names = new String[]{"收藏夹", "点距测量", "面积测量","绘图板","地图对比","添加信息点","信息反馈"};
-    int[] resource = new int[]{R.mipmap.icon_collect, R.mipmap.icon_length, R.mipmap.icon_area,
-            R.mipmap.icon_paint,R.mipmap.icon_comparison,R.mipmap.icon_feedback,R.mipmap.icon_feedback};
+    int[] resource = new int[]{R.mipmap.icon_shoucang1, R.mipmap.icon_dianju, R.mipmap.icon_mianji,
+            R.mipmap.icon_huitu,R.mipmap.icon_duibi,R.mipmap.icon_fankui,R.mipmap.icon_fankui};
 
     @Override
     protected void initView() {

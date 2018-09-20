@@ -2,7 +2,9 @@ package com.gangbeng.tiandituhb.activity;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.widget.TextView;
 
@@ -55,6 +57,7 @@ public class RoutMapActivity extends BaseActivity {
     private String start,end;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void initView() {
         setContentLayout(R.layout.acitivity_routmap);
@@ -111,6 +114,7 @@ public class RoutMapActivity extends BaseActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setBottomView(BusBean.ResultsBean.LinesBean linesBean) {
         ditailBusitem.setVisibility(View.VISIBLE);
         String lineName = linesBean.getLineName();
@@ -148,6 +152,7 @@ public class RoutMapActivity extends BaseActivity {
         tv2Busitem.setText("总长" + length + ";共" + stations + "站");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void setPolyLine(List<BusBean.ResultsBean.LinesBean.SegmentsBean> segments) {
         Polyline allpoPolyline = new Polyline();
         for (int i = 0; i < segments.size(); i++) {
@@ -165,17 +170,19 @@ public class RoutMapActivity extends BaseActivity {
                     String y2 = split[i2 + 1].substring(split[i2 + 1].indexOf(",") + 1, split[i2 + 1].length());
                     if (i == 0 && i2 == 0) {
                         Point point = new Point(Double.valueOf(x), Double.valueOf(y));
-                        Drawable drawable = getResources().getDrawable(R.mipmap.icon_startpoint);
-                        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 130, 130);
+                        Drawable drawable = getResources().getDrawable(R.mipmap.icon_qidian);
+                        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
                         PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
+                        picSymbol.setOffsetY(drawable1.getIntrinsicHeight()/2);
                         Graphic startgraphic = new Graphic(point, picSymbol);
                         pointLayer.addGraphic(startgraphic);
                     }
                     if (i == segments.size() - 1 && i2 == split.length - 2) {
                         Point point = new Point(Double.valueOf(x2), Double.valueOf(y2));
-                        Drawable drawable = getResources().getDrawable(R.mipmap.icon_endpoint);
-                        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 130, 130);
+                        Drawable drawable = getResources().getDrawable(R.mipmap.icon_zhongdian);
+                        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
                         PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
+                        picSymbol.setOffsetY(drawable1.getIntrinsicHeight()/2);
                         Graphic startgraphic = new Graphic(point, picSymbol);
                         pointLayer.addGraphic(startgraphic);
                     }
@@ -196,8 +203,8 @@ public class RoutMapActivity extends BaseActivity {
                         allpoPolyline.addSegment(line, false);
                     }
                 }
-                SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.RED, 10, SimpleLineSymbol.STYLE.SOLID);
-                SimpleLineSymbol lineSymbol2 = new SimpleLineSymbol(Color.BLACK, 5, SimpleLineSymbol.STYLE.DOT);
+                SimpleLineSymbol lineSymbol = new SimpleLineSymbol(getColor(R.color.rout), 10, SimpleLineSymbol.STYLE.SOLID);
+                SimpleLineSymbol lineSymbol2 = new SimpleLineSymbol(Color.BLACK, 3, SimpleLineSymbol.STYLE.DOT);
                 Graphic graphic = new Graphic(polyline, lineSymbol);
                 Graphic graphic2 = new Graphic(polyline2, lineSymbol2);
                 graphicsLayer.addGraphic(graphic);

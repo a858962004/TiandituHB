@@ -22,9 +22,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:text="详情"
-                android:textColor="@color/deepskyblue"
-                android:textSize="18sp"
+                android:background="@mipmap/icon_gegnduo"
                 android:visibility="gone"/>
 
             <TextView
@@ -34,8 +32,8 @@
                 android:layout_margin="10dp"
                 android:layout_toLeftOf="@+id/ditail_busitem"
                 android:layout_marginRight="5dp"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textColor="@color/textcolor"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tv2_busitem"
@@ -47,7 +45,8 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_toLeftOf="@+id/ditail_busitem"
-                android:textSize="15sp" />
+                android:textColor="@color/text8a"
+                android:textSize="16sp" />
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>

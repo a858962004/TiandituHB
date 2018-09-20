@@ -10,7 +10,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -57,16 +56,18 @@ public class CalculateMapActivity extends BaseActivity {
     TextView textTvjieguo;
     @BindView(R.id.measureLin)
     LinearLayout measureLin;
-    @BindView(R.id.btnclear)
-    ImageButton btnclear;
+    //    @BindView(R.id.btnclear)
+//    ImageButton btnclear;
     @BindView(R.id.change_calulate)
     CardView changeCalulate;
     @BindView(R.id.location_calculate)
     CardView locationCalculate;
+    @BindView(R.id.btnclear)
+    TextView btnclear;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg_text, map_lfimg;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-    private GraphicsLayer drawPointLayer,drawLayer;
+    private GraphicsLayer drawPointLayer, drawLayer;
     private LocationDisplayManager ldm;
     private String activity;
     private boolean isFirstlocal = true;
@@ -75,12 +76,11 @@ public class CalculateMapActivity extends BaseActivity {
     private Point ptCurrent;
     private Point ptPrevious = null;//上一个点
     private Point ptStart = null;//起点
-    private PictureMarkerSymbol markerSymbolred,markerSymbolblue;
+    private PictureMarkerSymbol markerSymbolred, markerSymbolblue;
     private SimpleFillSymbol fillSymbol;
     private SimpleLineSymbol lineSymbol;
     private Polyline polyline;
     private Polygon polygon = null;//记录绘制过程中的多边形
-
 
 
     @Override
@@ -90,10 +90,10 @@ public class CalculateMapActivity extends BaseActivity {
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         activity = bundleExtra.getString("activity");
         setToolbarTitle(activity);
-        if (activity.equals("点距测量")){
+        if (activity.equals("点距测量")) {
             textTvjuli.setText("距离");
             textTvjieguo.setText("0.0米");
-        }else if (activity.equals("面积测量")){
+        } else if (activity.equals("面积测量")) {
             textTvjuli.setText("面积");
             textTvjieguo.setText("0.0平方米");
         }
@@ -125,8 +125,8 @@ public class CalculateMapActivity extends BaseActivity {
         mapCalculate.addLayer(map_lfimg, 6);
         mapCalculate.addLayer(map_lfimg_text, 7);
 
-        mapCalculate.addLayer(drawPointLayer,8);
-        mapCalculate.addLayer(drawLayer,9);
+        mapCalculate.addLayer(drawPointLayer, 8);
+        mapCalculate.addLayer(drawLayer, 9);
 
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
@@ -230,7 +230,7 @@ public class CalculateMapActivity extends BaseActivity {
         }
     }
 
-    OnSingleTapListener onSingleTapListener=new OnSingleTapListener() {
+    OnSingleTapListener onSingleTapListener = new OnSingleTapListener() {
         @Override
         public void onSingleTap(float v, float v1) {
             ptCurrent = mapCalculate.toMapPoint(new Point(v, v1));
@@ -269,13 +269,13 @@ public class CalculateMapActivity extends BaseActivity {
                     Polygon polygonNow = (Polygon) GeometryEngine.project(polygon, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
                     Log.d("tag", String.valueOf(mapCalculate.getSpatialReference()));
                     String sArea = getAreaString(polygonNow.calculateArea2D());
-                    Log.d("tag",polygonNow.calculateArea2D()+"");
+                    Log.d("tag", polygonNow.calculateArea2D() + "");
                     textTvjieguo.setText(sArea);
                 }
             }
             ptPrevious = ptCurrent;
         }
-        };
+    };
 
     //测量距离
     private void getlength(GraphicsLayer drawLayer) {
@@ -323,7 +323,7 @@ public class CalculateMapActivity extends BaseActivity {
             double dArea = area / 1000000.0;
             String string = Double.toString(dArea);
             sArea = Util.saveTwoU(string) + " 平方公里";
-        } else{
+        } else {
             String string = Double.toString(area);
             sArea = Util.saveTwoU(string) + " 平方米";
         }

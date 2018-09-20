@@ -9,45 +9,53 @@
         android:id="@+id/mapview_paint"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
     <com.gangbeng.tiandituhb.widget.MyToolbar
         android:id="@+id/toolbar_paint"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/white"/>
+        android:background="@color/white" />
+
     <RelativeLayout
-        android:visibility="gone"
         android:id="@+id/mainRootView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <android.support.v7.widget.CardView
-        android:visibility="gone"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <LinearLayout
         android:id="@+id/save_paint"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
-        android:foreground="@mipmap/icon_save"
-        app:cardCornerRadius="5dp"/>
-    <android.support.v7.widget.CardView
-        android:visibility="gone"
-        android:id="@+id/quit_paint"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        app:cardCornerRadius="5dp"
-        >
+        android:background="@drawable/background_searchview"
+        android:visibility="gone">
+
         <TextView
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="退出"
-            android:textSize="20sp"
-            />
-    </android.support.v7.widget.CardView>
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@mipmap/icon_baocun" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/quit_paint"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/background_searchview"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@mipmap/icon_tuichu" />
+
+    </LinearLayout>
 
     <android.support.v7.widget.CardView
         android:id="@+id/change_map"
@@ -73,11 +81,11 @@
     </android.support.v7.widget.CardView>
 
     <RelativeLayout
-        android:clickable="true"
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_alignParentBottom="true"
+        android:clickable="true"
         android:visibility="gone">
 
         <com.gangbeng.tiandituhb.workbox.PenStrockAndColorSelect
@@ -87,40 +95,43 @@
             android:layout_marginBottom="20dp"
             android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/ll_btn_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp">
 
-            <android.support.v7.widget.CardView
-                style="@style/style_paint_caardview"
-                android:foreground="@mipmap/icon_stroke"
-                android:onClick="stroke"
-                app:cardCornerRadius="5dp"/>
+        <include
+            layout="@layout/view_tab_paint" />
+        <!--<LinearLayout-->
+        <!--android:id="@+id/ll_btn_group"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="20dp">-->
 
-            <android.support.v7.widget.CardView
-                style="@style/style_paint_caardview"
-                android:layout_marginLeft="20dp"
-                android:foreground="@mipmap/icon_color"
-                android:onClick="color"
-                app:cardCornerRadius="5dp" />
+        <!--<android.support.v7.widget.CardView-->
+        <!--style="@style/style_paint_caardview"-->
+        <!--android:foreground="@mipmap/icon_bishua"-->
+        <!--android:onClick="stroke"-->
+        <!--app:cardCornerRadius="5dp"/>-->
 
-            <android.support.v7.widget.CardView
-                style="@style/style_paint_caardview"
-                android:layout_marginLeft="20dp"
-                android:foreground="@mipmap/icon_eraser"
-                android:onClick="eraser"
-                app:cardCornerRadius="5dp" />
+        <!--<android.support.v7.widget.CardView-->
+        <!--style="@style/style_paint_caardview"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:foreground="@mipmap/icon_yanliao"-->
+        <!--android:onClick="color"-->
+        <!--app:cardCornerRadius="5dp" />-->
 
-            <android.support.v7.widget.CardView
-                style="@style/style_paint_caardview"
-                android:layout_marginLeft="20dp"
-                android:foreground="@mipmap/icon_undo"
-                android:onClick="undo"
-                app:cardCornerRadius="5dp" />
-        </LinearLayout>
+        <!--<android.support.v7.widget.CardView-->
+        <!--style="@style/style_paint_caardview"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:foreground="@mipmap/icon_xiangpi"-->
+        <!--android:onClick="eraser"-->
+        <!--app:cardCornerRadius="5dp" />-->
+
+        <!--<android.support.v7.widget.CardView-->
+        <!--style="@style/style_paint_caardview"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:foreground="@mipmap/icon_chexiao"-->
+        <!--android:onClick="undo"-->
+        <!--app:cardCornerRadius="5dp" />-->
+        <!--</LinearLayout>-->
 
     </RelativeLayout>
 

@@ -17,7 +17,8 @@
             android:paddingRight="10dp"
             android:layout_gravity="center_vertical"
             android:text="距离"
-            android:textColor="@color/link"
+            android:textColor="@color/white"
+            android:alpha="0.5"
             android:textSize="15sp" />
 
         <TextView
@@ -27,20 +28,27 @@
             android:text="0.0米"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textColor="@color/bblue"
+            android:textColor="@color/colorff"
             android:textSize="15sp" />
     </LinearLayout>
     <LinearLayout
         android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/measureLin"
+        android:background="@mipmap/icon_clear"
+        android:alpha="0.7"
         >
-        <ImageButton
+        <TextView
             android:id="@+id/btnclear"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@mipmap/icon_clear" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:gravity="center"
+            android:background="@mipmap/icon_shanchu"
+
+             />
     </LinearLayout>
 
 </RelativeLayout>

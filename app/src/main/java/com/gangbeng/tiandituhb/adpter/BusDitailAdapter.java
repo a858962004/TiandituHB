@@ -72,7 +72,7 @@ public class BusDitailAdapter extends BaseAdapter {
         }
         switch (data.get(position).getSegmentType()) {
             case 1: //步行
-                viewHolder.line.setBackgroundColor(context.getColor(R.color.grey));
+                viewHolder.line.setBackgroundColor(context.getColor(R.color.colord1));
                 String direction = data.get(position).getSegmentLine().get(0).getSegmentDistance();
                 String length = "";
                 float distence = 0;
@@ -90,7 +90,7 @@ public class BusDitailAdapter extends BaseAdapter {
                 viewHolder.tv5.setText(data.get(position).getStationEnd().getName() + "上车");
                 break;
             default:
-                viewHolder.line.setBackgroundColor(context.getColor(R.color.skyblue));
+                viewHolder.line.setBackgroundColor(context.getColor(R.color.color64));
                 String text = "";
                 if (position > 0 && data.get(position - 1).getSegmentType() == 1) {
                     text = data.get(position).getSegmentLine().get(0).getLineName()
@@ -104,17 +104,17 @@ public class BusDitailAdapter extends BaseAdapter {
                 break;
         }
         if (position == 0) {
-            viewHolder.tv1.setBackground(context.getResources().getDrawable(R.mipmap.icon_point));
+            viewHolder.tv1.setBackground(context.getResources().getDrawable(R.mipmap.icon_qidian2));
             viewHolder.rl1.setVisibility(View.VISIBLE);
             viewHolder.tv2.setText("起点（"+start+"）");
-            viewHolder.tv4.setBackground(context.getResources().getDrawable(R.mipmap.icon_buspoint));
+            viewHolder.tv4.setBackground(context.getResources().getDrawable(R.mipmap.icon_gongjiao3));
         } else if (position == data.size() - 1) {
             viewHolder.rl1.setVisibility(View.GONE);
-            viewHolder.tv4.setBackground(context.getResources().getDrawable(R.mipmap.icon_point));
+            viewHolder.tv4.setBackground(context.getResources().getDrawable(R.mipmap.icon_zhogndian2));
             viewHolder.tv5.setText("终点（"+end+"）");
         } else {
             viewHolder.rl1.setVisibility(View.GONE);
-            viewHolder.tv4.setBackground(convertView.getResources().getDrawable(R.mipmap.icon_buspoint));
+            viewHolder.tv4.setBackground(convertView.getResources().getDrawable(R.mipmap.icon_gongjiao3));
         }
         return convertView;
     }

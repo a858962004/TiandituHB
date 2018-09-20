@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/tablayoutheight"
+    android:layout_alignParentBottom="true"
+    android:background="@null"
+    tools:showIn="@layout/activity_paint">
+
+    <LinearLayout
+        android:id="@+id/ll_btn_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/background_searchview"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:background="@mipmap/icon_bishua"
+                style="@style/style_maptab_img" />
+
+            <Button
+                android:onClick="stroke"
+                android:id="@+id/bt_around"
+                style="@style/style_tab_map"
+                android:text="@string/tab_bishua" />
+        </LinearLayout>
+
+
+        <TextView style="@style/style_line_vertical" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:background="@mipmap/icon_yanliao"
+                style="@style/style_maptab_img" />
+
+            <Button
+                android:onClick="color"
+                android:id="@+id/bt_route"
+                style="@style/style_tab_map"
+                android:text="@string/tab_yanliao" />
+        </LinearLayout>
+
+        <TextView style="@style/style_line_vertical" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:background="@mipmap/icon_xiangpi"
+                style="@style/style_maptab_img" />
+
+            <Button
+                android:onClick="eraser"
+                android:id="@+id/bt_navi"
+                style="@style/style_tab_map"
+                android:text="@string/tab_xiangpi" />
+        </LinearLayout>
+
+        <TextView style="@style/style_line_vertical" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:background="@mipmap/icon_chexiao"
+                style="@style/style_maptab_img" />
+
+            <Button
+                android:onClick="undo"
+                android:id="@+id/bt_more"
+                style="@style/style_tab_map"
+                android:text="@string/tab_chexiao" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

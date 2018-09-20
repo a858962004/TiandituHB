@@ -70,13 +70,13 @@ public class RoutActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_bus:
-                imgBus.setImageResource(R.mipmap.icon_bus_press);
-                imgCar.setImageResource(R.mipmap.icon_car_normal);
+                imgBus.setImageResource(R.mipmap.icon_gongjiao2);
+                imgCar.setImageResource(R.mipmap.icon_zijia1);
                 customRout.setCurrentItem(0);
                 break;
             case R.id.img_car:
-                imgBus.setImageResource(R.mipmap.icon_bus_normal);
-                imgCar.setImageResource(R.mipmap.icon_car_press);
+                imgBus.setImageResource(R.mipmap.icon_gongjiao1);
+                imgCar.setImageResource(R.mipmap.icon_zijia2);
                 customRout.setCurrentItem(1);
                 break;
             case R.id.routtoolbar_leftImgBtn:

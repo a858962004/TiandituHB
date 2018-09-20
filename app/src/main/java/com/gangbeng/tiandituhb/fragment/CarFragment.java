@@ -2,8 +2,10 @@ package com.gangbeng.tiandituhb.fragment;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -162,6 +164,7 @@ public class CarFragment extends BaseFragment implements BaseView {
         dismissProcessDialog();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void setData(Object data) {
         if (data instanceof DriveRouteBean) {
@@ -182,21 +185,23 @@ public class CarFragment extends BaseFragment implements BaseView {
                     polyline.addSegment(line, false);
                     polyline2.addSegment(line, false);
                 }
-                SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.RED, 10, SimpleLineSymbol.STYLE.SOLID);
-                SimpleLineSymbol lineSymbol2 = new SimpleLineSymbol(Color.BLACK, 5, SimpleLineSymbol.STYLE.DOT);
+                SimpleLineSymbol lineSymbol = new SimpleLineSymbol(getActivity().getColor(R.color.rout), 10, SimpleLineSymbol.STYLE.SOLID);
+                SimpleLineSymbol lineSymbol2 = new SimpleLineSymbol(Color.BLACK, 3, SimpleLineSymbol.STYLE.DOT);
                 Graphic graphic = new Graphic(polyline, lineSymbol);
                 Graphic graphic2 = new Graphic(polyline2, lineSymbol2);
                 graphicsLayer.addGraphic(graphic);
                 graphicsLayer.addGraphic(graphic2);
                 Point point = new Point(streetLatLon.get(0).getX(), streetLatLon.get(0).getY());
-                Drawable drawable = getResources().getDrawable(R.mipmap.icon_startpoint);
-                Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 130, 130);
+                Drawable drawable = getResources().getDrawable(R.mipmap.icon_qidian);
+                Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
                 PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
+                picSymbol.setOffsetY(drawable1.getIntrinsicHeight()/2);
                 Graphic startgraphic = new Graphic(point, picSymbol);
                 Point point2 = new Point(streetLatLon.get(streetLatLon.size() - 1).getX(), streetLatLon.get(streetLatLon.size() - 1).getY());
-                Drawable drawable2 = getResources().getDrawable(R.mipmap.icon_endpoint);
-                Drawable drawable21 = DensityUtil.zoomDrawable(drawable2, 130, 130);
+                Drawable drawable2 = getResources().getDrawable(R.mipmap.icon_zhongdian);
+                Drawable drawable21 = DensityUtil.zoomDrawable(drawable2, 100, 100);
                 PictureMarkerSymbol picSymbol2 = new PictureMarkerSymbol(drawable21);
+                picSymbol2.setOffsetY(drawable1.getIntrinsicHeight()/2);
                 Graphic startgraphic2 = new Graphic(point2, picSymbol2);
                 pointLayer.addGraphic(startgraphic);
                 pointLayer.addGraphic(startgraphic2);
