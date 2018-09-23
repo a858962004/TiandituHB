@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.SearchResultAdpter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.callback.SearchAdpaterCancelBack;
 import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
@@ -43,7 +44,7 @@ public class CollectActivity extends BaseActivity {
         List<SearchBean.PoisBean> data = (List<SearchBean.PoisBean>) SharedUtil.getSerializeObject("collectpoint");
         if (data != null&&data.size() != 0) {
             tvNote.setVisibility(View.GONE);
-            adpter = new SearchResultAdpter(this, data, false);
+//            adpter = new SearchResultAdpter(this, data, false);
             lvCollect.setAdapter(adpter);
             adpter.setCallBack(callBack);
             adpter.setCancalBack(cancelBack);
@@ -62,17 +63,17 @@ public class CollectActivity extends BaseActivity {
 
     SearchAdpterCallBack callBack = new SearchAdpterCallBack() {
         @Override
-        public void aroundclick(SearchBean.PoisBean bean) {
+        public void aroundclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
 
         }
 
         @Override
-        public void routeclick(SearchBean.PoisBean bean) {
+        public void routeclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
 
         }
 
         @Override
-        public void itemclick(SearchBean.PoisBean bean) {
+        public void itemclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
             Bundle bundle = new Bundle();
             bundle.putString("key", "point");
             bundle.putSerializable("data", bean);

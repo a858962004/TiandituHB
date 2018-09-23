@@ -60,7 +60,11 @@
         <activity android:name=".activity.PaintActivity" />
         <activity android:name=".activity.FeedBackActivity" />
         <activity android:name=".activity.PointBackActivity" />
-        <activity android:name=".activity.ShowPhotosActivity" />
+        <activity android:name=".activity.ShowPhotosActivity" /><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

@@ -51,7 +51,7 @@ public class MainActivity extends BaseActivity implements BaseView {
     @BindView(R.id.location_map)
     CardView locationMap;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_lfimg,map_xzq;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
@@ -75,7 +75,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
@@ -84,8 +84,8 @@ public class MainActivity extends BaseActivity implements BaseView {
 
         bmapsView.addLayer(map_lf, 4);
         bmapsView.addLayer(map_lf_text, 5);
-        bmapsView.addLayer(map_lfimg, 6);
-        bmapsView.addLayer(map_xzq,7);
+        bmapsView.addLayer(map_xzq, 6);
+        bmapsView.addLayer(map_lfimg, 7);
 
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
@@ -93,12 +93,12 @@ public class MainActivity extends BaseActivity implements BaseView {
         bmapsView.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
-                MyLogUtil.showLog("tag",o.toString()+":"+status);
+                MyLogUtil.showLog("tag", o.toString() + ":" + status);
             }
         });
 
-
     }
+
 
     private void locationGPS() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, 0);
@@ -111,8 +111,12 @@ public class MainActivity extends BaseActivity implements BaseView {
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
                     if (isFirstlocal) {
+//                        Point point = new Point();
+//                        point.setX(116.71537368741306);
+//                        point.setY(39.491536917809974);
                         bmapsView.zoomToScale(ptCurrent, 50000);
-
+//                        Graphic graphic = MapUtil.setDistanceGraphicsLayer(ptCurrent, "2000");
+//                        graphicsLayer.addGraphic(graphic);
                     }
                     isFirstlocal = false;
                 }
@@ -144,23 +148,23 @@ public class MainActivity extends BaseActivity implements BaseView {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,R.id.bt_navi, R.id.location_map})
+    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map, R.id.bt_navi, R.id.location_map})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_around:
                 setEventBus("around");
-                skip(AroundActivity.class,false);
+                skip(AroundActivity.class, false);
                 break;
             case R.id.bt_route:
                 setEventBus("route");
-                skip(PlanActivity.class,false);
+                skip(PlanActivity.class, false);
                 break;
             case R.id.bt_more:
-                skip(MoreActivity.class,false);
+                skip(MoreActivity.class, false);
                 break;
             case R.id.ll_searchview:
                 setEventBus("search");
-                skip(AroundActivity.class,false);
+                skip(AroundActivity.class, false);
                 break;
             case R.id.change_map:
                 if (map_lfimg.isVisible()) {
@@ -181,7 +185,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                 break;
             case R.id.bt_navi:
                 setEventBus("navi");
-                skip(PlanActivity.class,false);
+                skip(PlanActivity.class, false);
                 break;
             case R.id.location_map:
                 bmapsView.zoomToScale(ptCurrent, 50000);

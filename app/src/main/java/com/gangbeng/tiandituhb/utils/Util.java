@@ -1,6 +1,6 @@
 package com.gangbeng.tiandituhb.utils;
 
-import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.bean.NewSearchBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +12,12 @@ import java.util.List;
 
 public class Util {
 
-    public static boolean isCollect(SearchBean.PoisBean bean) {
+    public static boolean isCollect(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
         boolean iscollect = false;
-        List<SearchBean.PoisBean> data = (List<SearchBean.PoisBean>) SharedUtil.getSerializeObject("collectpoint");
+        List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data = (List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean>) SharedUtil.getSerializeObject("collectpoint");
         if (data != null) {
-            for (SearchBean.PoisBean poisBean : data) {
-                if (poisBean.getHotPointID().equals(bean.getHotPointID())) {
+            for (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean poisBean : data) {
+                if (poisBean.getId().equals(bean.getId())) {
                     iscollect = true;
                     return iscollect;
                 }
@@ -26,17 +26,17 @@ public class Util {
         return iscollect;
     }
 
-    public static void setCollect(SearchBean.PoisBean bean) {
-        List<SearchBean.PoisBean> data = (List<SearchBean.PoisBean>) SharedUtil.getSerializeObject("collectpoint");
+    public static void setCollect(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+        List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data = (List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean>) SharedUtil.getSerializeObject("collectpoint");
         if (data == null) data = new ArrayList<>();
         data.add(bean);
         SharedUtil.saveSerializeObject("collectpoint", data);
     }
 
-    public static void cancelCollect(SearchBean.PoisBean bean) {
-        List<SearchBean.PoisBean> data = (List<SearchBean.PoisBean>) SharedUtil.getSerializeObject("collectpoint");
-        for (SearchBean.PoisBean poisBean : data) {
-            if (bean.getHotPointID().equals(poisBean.getHotPointID())) {
+    public static void cancelCollect(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+        List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data = (List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean>) SharedUtil.getSerializeObject("collectpoint");
+        for (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean poisBean: data) {
+            if (bean.getId().equals(poisBean.getId())) {
                 data.remove(poisBean);
                 break;
             }

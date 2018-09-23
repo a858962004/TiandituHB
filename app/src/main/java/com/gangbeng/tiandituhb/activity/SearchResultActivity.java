@@ -11,8 +11,8 @@ import com.gangbeng.tiandituhb.adpter.SearchResultAdpter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
+import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.PointBean;
-import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
@@ -20,7 +20,6 @@ import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.event.IsStart;
 import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.presenter.SearchPresenter;
-import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
@@ -77,10 +76,10 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
     }
 
     private void setView(Bundle bundleExtra) {
-        SearchBean bean = (SearchBean)bundleExtra.getSerializable("data");
+        NewSearchBean bean = (NewSearchBean)bundleExtra.getSerializable("data");
         key = bundleExtra.getString("key");
         keywords = bundleExtra.getString("keywords");
-        total=Integer.valueOf(bean.getCount());
+        total=Integer.valueOf(bean.getHeader().getTotalItemsCount());
         tvPage.setText("共"+total+"条数据");
         if (total%20==0) {
             allpage=total/20;
@@ -92,7 +91,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
         if (channelEvent.getChannel().equals("navi")||channelEvent.getChannel().equals("route")){
             isroute=false;
         }
-        adpter=new SearchResultAdpter(this,bean.getPois(),isroute);
+        adpter=new SearchResultAdpter(this,bean.getContent().getFeatures().getFeatures(),isroute);
         adpter.setCallBack(callBack);
         listEssence.setAdapter(adpter);
         refreshLayout.setOnRefreshListener(onRefreshListener);
@@ -119,7 +118,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
     }
 
     /**
-     * 当前位置信息
+     * 当前频道信息
      * @param channelEvent
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
@@ -155,31 +154,15 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
             }
             currentpage++;
             start+=20;
-            String postStr = "";
-            Map<String, String> post = new HashMap<>();
-            Gson gson = new Gson();
-            if (key.equals("search")) {
-                post.put("keyWord", keywords);
-                post.put("level", "11");
-                post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
-                post.put("queryType", "1");
-                post.put("count", "20");
-                post.put("startView", start+"");
-                postStr = gson.toJson(post);
-            } else {
-                post.put("keyWord", keywords);
-                post.put("level", "11");
-                post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
-                post.put("queryType", "3");
-                post.put("pointLonlat", ptpoint.getX() + "," + ptpoint.getY());
-                post.put("queryRadius", "10000");
-                post.put("count", "20");
-                post.put("startView", start+"");
-                postStr = gson.toJson(post);
-            }
             Map<String, Object> parameter = new HashMap<>();
-            parameter.put("postStr", postStr);
-            parameter.put("type", "query");
+            parameter.put("maxitems","20");
+            parameter.put("page",currentpage);
+            parameter.put("where",keywords);
+            if (key.equals("around") ) {
+                //周边搜索
+
+
+            }
             presenter.setRequest(parameter);
         }
     };
@@ -201,16 +184,16 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
 
     @Override
     public void setData(Object data) {
-        if (data instanceof SearchBean) {
-            SearchBean bean=(SearchBean)data;
-            adpter.addData(bean.getPois());
+        if (data instanceof NewSearchBean) {
+            NewSearchBean bean=(NewSearchBean)data;
+            adpter.addData(bean.getContent().getFeatures().getFeatures());
             refreshLayout.finishLoadMore();
         }
     }
 
     SearchAdpterCallBack callBack=new SearchAdpterCallBack() {
         @Override
-        public void aroundclick(SearchBean.PoisBean bean) {
+        public void aroundclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
             AroundActivity.getInstence().finish();
             EventBus.getDefault().postSticky(bean);
             EventBus.getDefault().postSticky(new ChannelEvent("around"));
@@ -218,13 +201,12 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
         }
 
         @Override
-        public void routeclick(SearchBean.PoisBean bean) {
+        public void routeclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
             AroundActivity.getInstence().finish();
             EndPoint endPoint = new EndPoint();
-            endPoint.setName(bean.getName());
-            String lonlat = bean.getLonlat();
-            String x=lonlat.substring(0,lonlat.indexOf(" "));
-            String y=lonlat.substring(lonlat.indexOf(" "),lonlat.length());
+            endPoint.setName(bean.getProperties().get名称());
+            String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
+            String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
             endPoint.setX(x);
             endPoint.setY(y);
             EventBus.getDefault().postSticky(endPoint);
@@ -233,7 +215,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
         }
 
         @Override
-        public void itemclick(SearchBean.PoisBean bean) {
+        public void itemclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
             if (!channelEvent.getChannel().equals("navi")&&!channelEvent.getChannel().equals("route")){
                 Bundle bundle = new Bundle();
                 bundle.putString("key","point");
@@ -243,19 +225,17 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
                 AroundActivity.getInstence().finish();
                 if (isStart.isstart()){
                     StartPoint startPoint = new StartPoint();
-                    startPoint.setName(bean.getName());
-                    String lonlat = bean.getLonlat();
-                    String x=lonlat.substring(0,lonlat.indexOf(" "));
-                    String y=lonlat.substring(lonlat.indexOf(" "),lonlat.length());
+                    startPoint.setName(bean.getProperties().get名称());
+                    String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
+                    String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
                     startPoint.setX(x);
                     startPoint.setY(y);
                     EventBus.getDefault().postSticky(startPoint);
                 }else {
                     EndPoint endPoint = new EndPoint();
-                    endPoint.setName(bean.getName());
-                    String lonlat = bean.getLonlat();
-                    String x=lonlat.substring(0,lonlat.indexOf(" "));
-                    String y=lonlat.substring(lonlat.indexOf(" "),lonlat.length());
+                    endPoint.setName(bean.getProperties().get名称());
+                    String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
+                    String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
                     endPoint.setX(x);
                     endPoint.setY(y);
                     EventBus.getDefault().postSticky(endPoint);

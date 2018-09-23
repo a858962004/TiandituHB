@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gangbeng.tiandituhb.R;
-import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.callback.SearchAdpaterCancelBack;
 import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
 import com.gangbeng.tiandituhb.utils.Util;
@@ -25,12 +25,12 @@ import java.util.List;
 
 public class SearchResultAdpter extends BaseAdapter {
     private Context context;
-    private List<SearchBean.PoisBean> data;
+    private List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data;
     private SearchAdpterCallBack callBack;
     private SearchAdpaterCancelBack cancelBack;
     private boolean isvisible;
 
-    public SearchResultAdpter(Context context, List<SearchBean.PoisBean> data,boolean isvisible) {
+    public SearchResultAdpter(Context context, List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data, boolean isvisible) {
         this.context = context;
         this.data = data;
         this.isvisible=isvisible;
@@ -59,7 +59,7 @@ public class SearchResultAdpter extends BaseAdapter {
         return position;
     }
 
-    public void addData(List<SearchBean.PoisBean> data) {
+    public void addData(List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data) {
         this.data.addAll(data);
         notifyDataSetChanged();
     }
@@ -88,8 +88,8 @@ public class SearchResultAdpter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.nameTV.setText(data.get(position).getName());
-        holder.addressTV.setText(data.get(position).getAddress());
+        holder.nameTV.setText(data.get(position).getProperties().get名称());
+        holder.addressTV.setText(data.get(position).getProperties().get地址());
         if (Util.isCollect(data.get(position))){
             holder.collectIMG.setVisibility(View.GONE);
             holder.collect2IMG.setVisibility(View.VISIBLE);

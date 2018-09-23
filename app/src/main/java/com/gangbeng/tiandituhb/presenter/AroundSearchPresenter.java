@@ -4,21 +4,22 @@ import com.gangbeng.tiandituhb.base.BaseModel;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.base.OnCallBack;
-import com.gangbeng.tiandituhb.model.NewSearchModel;
+import com.gangbeng.tiandituhb.model.AroundSearchModel;
 
 import java.util.Map;
 
 /**
- * Created by Administrator on 2018/7/29.
+ * @author zhanghao
+ * @date 2018-09-21
  */
 
-public class SearchPresenter implements BasePresenter, OnCallBack {
+public class AroundSearchPresenter implements BasePresenter, OnCallBack {
     private BaseView view;
     private BaseModel model;
 
-    public SearchPresenter(BaseView view) {
+    public AroundSearchPresenter(BaseView view) {
         this.view = view;
-        model = new NewSearchModel();
+        model = new AroundSearchModel();
     }
 
     @Override

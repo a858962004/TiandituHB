@@ -12,6 +12,7 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.AroundLVAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.bean.PointBean;
+import com.gangbeng.tiandituhb.bean.RecordBean;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.event.IsStart;
@@ -60,7 +61,6 @@ public class PlanActivity extends BaseActivity {
     private EndPoint endPoint;
     private List<String> data = new ArrayList<>();
     private AroundLVAdapter aroundLVAdapter;
-    private ArrayList<String> strings;
     private List<Map<String, Object>> record;
 
     @Override
@@ -80,15 +80,17 @@ public class PlanActivity extends BaseActivity {
             endView.setText(endPoint.getName());
         record = (List<Map<String, Object>>) SharedUtil.getSerializeObject("routerecord");
         if (record != null) {
-            List<String> strings = new ArrayList<>();
+            List<RecordBean> data = new ArrayList<>();
             for (Map<String, Object> stringObjectMap : record) {
                 StartPoint start = (StartPoint) stringObjectMap.get("startView");
                 EndPoint end = (EndPoint) stringObjectMap.get("endView");
-                strings.add(start.getName() + "-" + end.getName());
+                RecordBean recordBean = new RecordBean();
+                recordBean.setData(start.getName() + "-" + end.getName());
+                data.add(recordBean);
             }
-            data.addAll(strings);
-            Collections.reverse(strings);
-            aroundLVAdapter = new AroundLVAdapter(this, strings);
+            data.addAll(data);
+            Collections.reverse(data);
+            aroundLVAdapter = new AroundLVAdapter(this, data);
             lvPlan.setAdapter(aroundLVAdapter);
             DensityUtil.getTotalHeightofListView(lvPlan);
             tvClearPlan.setVisibility(View.VISIBLE);
@@ -176,15 +178,17 @@ public class PlanActivity extends BaseActivity {
         }
         record.add(map);
         SharedUtil.saveSerializeObject("routerecord", record);
-        List<String> strings = new ArrayList<>();
+        List<RecordBean> data = new ArrayList<>();
         for (Map<String, Object> stringObjectMap : record) {
             StartPoint start = (StartPoint) stringObjectMap.get("startView");
             EndPoint end = (EndPoint) stringObjectMap.get("endView");
-            strings.add(start.getName() + "-" + end.getName());
+            RecordBean recordBean = new RecordBean();
+            recordBean.setData(start.getName() + "-" + end.getName());
+            data.add(recordBean);
         }
-        data.addAll(strings);
-        Collections.reverse(strings);
-        aroundLVAdapter = new AroundLVAdapter(this, strings);
+//        data.addAll(data);
+        Collections.reverse(data);
+        aroundLVAdapter = new AroundLVAdapter(this, data);
         lvPlan.setAdapter(aroundLVAdapter);
         DensityUtil.getTotalHeightofListView(lvPlan);
         tvClearPlan.setVisibility(View.VISIBLE);

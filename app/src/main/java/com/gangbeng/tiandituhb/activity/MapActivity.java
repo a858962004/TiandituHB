@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +25,7 @@ import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
-import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
@@ -33,8 +34,14 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.Util;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,14 +74,19 @@ public class MapActivity extends BaseActivity {
     @BindView(R.id.rl_bottom)
     RelativeLayout rlBottom;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_xzq;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer;
     private GraphicsLayer pointlayer;
     private LocationDisplayManager ldm;
-    private Point ptCurrent,choosePoint;
-    private SearchBean.PoisBean bean;
+    private Point ptCurrent, choosePoint;
+    private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private String key;
-    private boolean isFirstlocal=true;
+    private boolean isFirstlocal = true;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void initView() {
@@ -86,21 +98,21 @@ public class MapActivity extends BaseActivity {
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         key = bundleExtra.getString("key");
         if (key.equals("point")) {
-            bean = (SearchBean.PoisBean) bundleExtra.getSerializable("data");
+            bean = (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean) bundleExtra.getSerializable("data");
             setbottom(bean);
-        }else if (key.equals("addPoint")){
+        } else if (key.equals("addPoint")) {
             setToolbarTitle("添加信息点");
             setRightImageBtnText("完成");
             Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
             Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
             final PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
-            picSymbol.setOffsetY(drawable1.getIntrinsicHeight()/2);
+            picSymbol.setOffsetY(drawable1.getIntrinsicHeight() / 2);
             idMap.setOnSingleTapListener(new OnSingleTapListener() {
                 @Override
                 public void onSingleTap(float v, float v1) {
                     pointlayer.removeAll();
                     Point point = idMap.toMapPoint(v, v1);
-                    choosePoint=point;
+                    choosePoint = point;
                     Graphic graphic = new Graphic(point, picSymbol);
                     pointlayer.addGraphic(graphic);
                 }
@@ -112,25 +124,25 @@ public class MapActivity extends BaseActivity {
     protected void setRightClickListen() {
         if (choosePoint == null) {
             ShowToast("请先选择位置");
-        }else {
+        } else {
             Bundle bundle = new Bundle();
-            bundle.putSerializable("point",choosePoint);
-            skip(PointBackActivity.class,bundle,false);
+            bundle.putSerializable("point", choosePoint);
+            skip(PointBackActivity.class, bundle, false);
         }
     }
 
-    private void setbottom(SearchBean.PoisBean bean) {
+    private void setbottom(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
         pointlayer.removeAll();
         rlBottom.setVisibility(View.VISIBLE);
-        Point point = zoom2bean(bean);
+        Point point = zoom2bean(bean.getGeometry().getCoordinates());
         Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
         Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
         PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
-        picSymbol.setOffsetY(drawable1.getIntrinsicHeight()/2);
-        Graphic g = new  Graphic(point, picSymbol);
+        picSymbol.setOffsetY(drawable1.getIntrinsicHeight() / 2);
+        Graphic g = new Graphic(point, picSymbol);
         pointlayer.addGraphic(g);
-        tvName.setText(bean.getName());
-        tvAddress.setText(bean.getAddress());
+        tvName.setText(bean.getProperties().get名称());
+        tvAddress.setText(bean.getProperties().get地址());
         if (Util.isCollect(bean)) {
             imgCollect.setVisibility(View.GONE);
             imgCollect2.setVisibility(View.VISIBLE);
@@ -141,13 +153,10 @@ public class MapActivity extends BaseActivity {
     }
 
     @NonNull
-    private Point zoom2bean(SearchBean.PoisBean bean) {
-        String lonlat = bean.getLonlat();
-        String x=lonlat.substring(0,lonlat.indexOf(" "));
-        String y=lonlat.substring(lonlat.indexOf(" "),lonlat.length());
+    private Point zoom2bean(List<Double> coordinates) {
         Point point = new Point();
-        point.setX(Double.valueOf(x));
-        point.setY(Double.valueOf(y));
+        point.setX(coordinates.get(0));
+        point.setY(coordinates.get(1));
         idMap.zoomToScale(point, 5000);
         return point;
     }
@@ -157,40 +166,32 @@ public class MapActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void setMapView() {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-//        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-//        mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
-        pointlayer=new GraphicsLayer();
+        pointlayer = new GraphicsLayer();
 
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-//        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         idMap.addLayer(mapServiceLayer, 0);
         idMap.addLayer(maptextLayer, 1);
-//        idMap.addLayer(mapRSServiceLayer, 2);
-//        idMap.addLayer(mapRStextLayer, 3);
-
         idMap.addLayer(map_lf, 2);
         idMap.addLayer(map_lf_text, 3);
-//        idMap.addLayer(map_lfimg, 6);
-        idMap.addLayer(map_xzq,4);
-        idMap.addLayer(pointlayer,5);
-
-//        mapRSServiceLayer.setVisible(false);
-//        mapRStextLayer.setVisible(false);
-//        map_lfimg.setVisible(false);
+        idMap.addLayer(map_xzq, 4);
+        idMap.addLayer(pointlayer, 5);
         idMap.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
                 if (map_xzq == o && status == STATUS.LAYER_LOADED) {
-                    if (key.equals("point")) zoom2bean(bean);
+                    if (key.equals("point")) zoom2bean(bean.getGeometry().getCoordinates());
                 }
             }
         });
@@ -247,28 +248,25 @@ public class MapActivity extends BaseActivity {
                 Util.cancelCollect(bean);
                 break;
             case R.id.rl_item:
-                zoom2bean(bean);
+                zoom2bean(bean.getGeometry().getCoordinates());
                 break;
             case R.id.tv_around:
                 AroundActivity.getInstence().finish();
                 SearchResultActivity.getInstence().finish();
                 EventBus.getDefault().postSticky(bean);
                 EventBus.getDefault().postSticky(new ChannelEvent("around"));
-                skip(AroundActivity.class,true);
+                skip(AroundActivity.class, true);
                 break;
             case R.id.tv_route:
                 AroundActivity.getInstence().finish();
                 SearchResultActivity.getInstence().finish();
                 EndPoint endPoint = new EndPoint();
-                endPoint.setName(bean.getName());
-                String lonlat = bean.getLonlat();
-                String x=lonlat.substring(0,lonlat.indexOf(" "));
-                String y=lonlat.substring(lonlat.indexOf(" "),lonlat.length());
-                endPoint.setX(x);
-                endPoint.setY(y);
+                endPoint.setName(bean.getProperties().get名称());
+                endPoint.setX(String.valueOf(bean.getGeometry().getCoordinates().get(0)));
+                endPoint.setY(String.valueOf(bean.getGeometry().getCoordinates().get(1)));
                 EventBus.getDefault().postSticky(endPoint);
                 EventBus.getDefault().postSticky(new ChannelEvent("route"));
-                skip(PlanActivity.class,true);
+                skip(PlanActivity.class, true);
                 break;
         }
     }
@@ -279,8 +277,44 @@ public class MapActivity extends BaseActivity {
         Bundle bundleExtra = intent.getBundleExtra(PubConst.DATA);
         String key = bundleExtra.getString("key");
         if (key.equals("point")) {
-            bean = (SearchBean.PoisBean) bundleExtra.getSerializable("data");
+            bean = (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean) bundleExtra.getSerializable("data");
             setbottom(bean);
         }
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Map Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }

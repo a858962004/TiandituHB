@@ -1,6 +1,6 @@
 package com.gangbeng.tiandituhb.callback;
 
-import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.bean.NewSearchBean;
 
 /**
  * @author zhanghao
@@ -8,7 +8,7 @@ import com.gangbeng.tiandituhb.bean.SearchBean;
  */
 
 public interface SearchAdpterCallBack {
-    void aroundclick(SearchBean.PoisBean bean);
-    void routeclick(SearchBean.PoisBean bean);
-    void itemclick(SearchBean.PoisBean bean);
+    void aroundclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean);
+    void routeclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean);
+    void itemclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean);
 }

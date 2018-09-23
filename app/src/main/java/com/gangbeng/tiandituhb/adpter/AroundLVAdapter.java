@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.viewholder.AroundHolder;
+import com.gangbeng.tiandituhb.bean.RecordBean;
 
 import java.util.List;
 
@@ -17,8 +18,8 @@ import java.util.List;
 
 public class AroundLVAdapter extends BaseAdapter {
     private Context context;
-    private List<String> searchRecords;
-    public AroundLVAdapter(Context context,List<String> searchRecords){
+    private List<RecordBean> searchRecords;
+    public AroundLVAdapter(Context context,List<RecordBean> searchRecords){
         this.context=context;
         this.searchRecords=searchRecords;
     }
@@ -56,7 +57,7 @@ public class AroundLVAdapter extends BaseAdapter {
         }else {
             aroundHolder= (AroundHolder) convertView.getTag();
         }
-        aroundHolder.textView.setText(searchRecords.get(position));
+        aroundHolder.textView.setText(searchRecords.get(position).getData());
         return convertView;
     }
 }

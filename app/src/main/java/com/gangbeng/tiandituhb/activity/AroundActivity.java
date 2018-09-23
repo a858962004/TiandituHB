@@ -1,31 +1,39 @@
 package com.gangbeng.tiandituhb.activity;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.Geometry;
+import com.esri.core.geometry.Point;
+import com.esri.core.map.Graphic;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.AroundLVAdapter;
 import com.gangbeng.tiandituhb.adpter.SortGridViewAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
+import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.PointBean;
-import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.bean.RecordBean;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
+import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
 import com.gangbeng.tiandituhb.presenter.SearchPresenter;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
+import com.gangbeng.tiandituhb.utils.MapUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 import com.gangbeng.tiandituhb.widget.MyToolbar;
 import com.gangbeng.tiandituhb.widget.SourcePanel;
-import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,9 +63,10 @@ public class AroundActivity extends BaseActivity implements BaseView {
     private SortGridViewAdapter gridViewAdapter;
     private AroundLVAdapter aroundLVAdapter;
     private MyToolbar toolbar;
-    private BasePresenter presenter;
+    private BasePresenter presenter,aroundPresenter;
     private static AroundActivity activity;
     private ChannelEvent channelEvent;
+    private String qury;
 
     public static AroundActivity getInstence() {
         return activity;
@@ -69,11 +78,11 @@ public class AroundActivity extends BaseActivity implements BaseView {
     private String[] sortStrs = new String[]{"公共管理", "住宿餐饮", "金融保险", "交通运输", "房产楼盘", "生活服务", "休闲娱乐", "旅游服务"
             , "医疗卫生", "文化媒体", "其他行业"};
 
-    private List<String> data = new ArrayList<>();
+    private List<RecordBean> data = new ArrayList<>();
     private String key;
     private PointBean ptpoint;
     private String keyword;
-    private SearchBean.PoisBean bean;
+    private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
 
     @Override
     protected void initView() {
@@ -82,12 +91,13 @@ public class AroundActivity extends BaseActivity implements BaseView {
         setToolbarVisibility(true);
         toolbar = getToolBar();
         presenter = new SearchPresenter(this);
-        key=channelEvent.getChannel();
+        aroundPresenter=new AroundSearchPresenter(this);
+        key = channelEvent.getChannel();
         setView(channelEvent.getChannel());
         gridViewAdapter = new SortGridViewAdapter(this, sortImgs, sortStrs);
         sourceAround.setAdapter(gridViewAdapter);
         sourceAround.setOnItemClickListener(sourceclick);
-        List<String> record = (List<String>) SharedUtil.getSerializeObject("record");
+        List<RecordBean> record = (List<RecordBean>) SharedUtil.getSerializeObject("record");
         if (record != null) {
             data.addAll(record);
             Collections.reverse(record);
@@ -123,7 +133,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
      * @param bean
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onGetPoi(SearchBean.PoisBean bean) {
+    public void onGetPoi(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
         this.bean = bean;
     }
 
@@ -147,14 +157,17 @@ public class AroundActivity extends BaseActivity implements BaseView {
             return;
         }
         keyword = editText;
-        for (String s : data) {
-            if (keyword.equals(s)) {
+        for (RecordBean s : data) {
+            if (keyword.equals(s.getData())) {
                 data.remove(s);
                 break;
             }
         }
-        data.add(keyword);
-        List<String> adpterdata = new ArrayList<>();
+        RecordBean recordBean = new RecordBean();
+        recordBean.setData(keyword);
+        recordBean.setInput(true);
+        data.add(recordBean);
+        List<RecordBean> adpterdata = new ArrayList<>();
         adpterdata.addAll(data);
         Collections.reverse(adpterdata);
         if (adpterdata == null) return;
@@ -163,21 +176,24 @@ public class AroundActivity extends BaseActivity implements BaseView {
         DensityUtil.getTotalHeightofListView(lvAround);
         tvClear.setVisibility(View.VISIBLE);
         SharedUtil.saveSerializeObject("record", data);
-        requestData(keyword);
+        requestData(recordBean);
     }
 
     AdapterView.OnItemClickListener sourceclick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             keyword = sortStrs[position];
-            for (String s : data) {
-                if (keyword.equals(s)) {
+            for (RecordBean s : data) {
+                if (keyword.equals(s.getData())) {
                     data.remove(s);
                     break;
                 }
             }
-            data.add(keyword);
-            List<String> adpterdata = new ArrayList<>();
+            RecordBean recordBean = new RecordBean();
+            recordBean.setData(keyword);
+            recordBean.setInput(false);
+            data.add(recordBean);
+            List<RecordBean> adpterdata = new ArrayList<>();
             adpterdata.addAll(data);
             Collections.reverse(adpterdata);
             aroundLVAdapter = new AroundLVAdapter(AroundActivity.this, adpterdata);
@@ -185,51 +201,51 @@ public class AroundActivity extends BaseActivity implements BaseView {
             DensityUtil.getTotalHeightofListView(lvAround);
             tvClear.setVisibility(View.VISIBLE);
             SharedUtil.saveSerializeObject("record", data);
-            requestData(sortStrs[position]);
+            requestData(recordBean);
         }
     };
 
     AdapterView.OnItemClickListener listitem = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String item = (String) aroundLVAdapter.getItem(position);
+            RecordBean item = (RecordBean) aroundLVAdapter.getItem(position);
             requestData(item);
         }
     };
 
-    private void requestData(String item) {
-        String postStr = "";
-        Map<String, String> post = new HashMap<>();
-        Gson gson = new Gson();
-        if (key.equals("search")||key.equals("route")||key.equals("navi")) {
-            post.put("keyWord", item);
-            post.put("level", "11");
-            post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
-            post.put("queryType", "1");
-            post.put("count", "20");
-            post.put("startView", "0");
-            postStr = gson.toJson(post);
-        } else {
-            String Lonlat = "";
-            if (bean != null) {
-                Lonlat = bean.getLonlat().replace(" ", ",");
-            } else {
-                Lonlat = ptpoint.getX() + "," + ptpoint.getY();
-            }
-            post.put("keyWord", item);
-            post.put("level", "11");
-            post.put("mapBound", "116.04577,39.70307,116.77361,40.09583");
-            post.put("queryType", "3");
-            post.put("pointLonlat", Lonlat);
-            post.put("queryRadius", "10000");
-            post.put("count", "20");
-            post.put("startView", "0");
-            postStr = gson.toJson(post);
-        }
+    private void requestData(RecordBean bean) {
         Map<String, Object> parameter = new HashMap<>();
-        parameter.put("postStr", postStr);
-        parameter.put("type", "query");
-        presenter.setRequest(parameter);
+        parameter.put("maxitems", "20");
+        parameter.put("page", "1");
+        if (key.equals("search") || key.equals("route") || key.equals("navi")) {
+            if (bean.isInput()) {
+                qury = "'名称' like '%" + bean.getData() + "%'";
+            } else {
+                //分类查询条件
+                qury = getQury();
+            }
+            parameter.put("where", qury);
+            presenter.setRequest(parameter);
+        } else {
+            //周边查询
+            Point point = new Point();
+            if (this.bean != null) {
+                point.setX(this.bean.getGeometry().getCoordinates().get(0));
+                point.setY(this.bean.getGeometry().getCoordinates().get(1));
+            } else {
+                point.setX(Double.parseDouble(ptpoint.getX()));
+                point.setY(Double.parseDouble(ptpoint.getY()));
+            }
+            qury = getQury();//分类查询条件
+            Graphic graphic = MapUtil.setDistanceGraphicsLayer(point, "2000");
+            Geometry geometry = graphic.getGeometry();
+            Envelope envelope = new Envelope();
+            geometry.queryEnvelope(envelope);
+            String geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
+            parameter.put("geo", geo);
+            parameter.put("where", qury);
+            aroundPresenter.setRequest(parameter);
+        }
     }
 
     @OnClick(R.id.tv_clear)
@@ -258,17 +274,22 @@ public class AroundActivity extends BaseActivity implements BaseView {
 
     @Override
     public void setData(Object data) {
-        if (data instanceof SearchBean) {
-            SearchBean bean = (SearchBean) data;
-            String count = bean.getCount();
-            if (count.equals("0") || bean.getPois() == null || bean.getPois().size() == 0) {
+        if (data instanceof NewSearchBean) {
+            NewSearchBean bean = (NewSearchBean) data;
+            if (bean.getHeader()==null){
                 showMsg("未查找到相应数据");
                 return;
             }
+            String count = String.valueOf(bean.getHeader().getTotalItemsCount());
+            if (count.equals("0") || bean.getContent().getFeatures().getFeatures() == null || bean.getContent().getFeatures().getFeatures().size() == 0) {
+                showMsg("未查找到相应数据");
+                return;
+            }
+            List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features = bean.getContent().getFeatures().getFeatures();
             Bundle bundle = new Bundle();
-            bundle.putSerializable("data", bean);
+            bundle.putSerializable("data", (Serializable) bean);
             bundle.putString("key", key);
-            bundle.putString("keywords", keyword);
+            bundle.putString("keywords", qury);
             skip(SearchResultActivity.class, bundle, false);
         }
     }
@@ -279,10 +300,35 @@ public class AroundActivity extends BaseActivity implements BaseView {
             showEditText();
         } else {
             String address = "当前位置";
-            if (bean != null) address = bean.getName();
+            if (bean != null) address = bean.getProperties().get名称();
             setToolbarRightVisible(false);
             hideEditText();
             setToolbarTitle(address + "周边");
         }
+    }
+
+    /**
+     * 分类查询
+     * @return
+     */
+    public String getQury() {
+        String qury="1=1";
+        return qury;
+    }
+
+    @Override
+    protected void setLeftClickListen() {
+        finish();
+        EventBus.getDefault().removeStickyEvent(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean.class);
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            finish();
+            EventBus.getDefault().removeStickyEvent(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean.class);
+        }
+        return false;
     }
 }
