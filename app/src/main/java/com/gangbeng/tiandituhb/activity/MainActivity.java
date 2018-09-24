@@ -1,6 +1,8 @@
 package com.gangbeng.tiandituhb.activity;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.esri.android.map.LocationDisplayManager;
@@ -22,6 +25,8 @@ import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.StartPoint;
+import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
+import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
@@ -50,7 +55,15 @@ public class MainActivity extends BaseActivity implements BaseView {
     Button btNavi;
     @BindView(R.id.location_map)
     CardView locationMap;
+    @BindView(R.id.location_quanjing)
+    CardView locationQuanjing;
+    @BindView(R.id.img_quanjing)
+    ImageView imgQuanjing;
+    @BindView(R.id.bt_sure)
+    CardView btSure;
 
+    public static final int WGS84 = 9;// 大地坐标系方式
+    public static final int GCJ02 = 10;// 国测局加密方式
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm;
@@ -111,12 +124,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
                     if (isFirstlocal) {
-//                        Point point = new Point();
-//                        point.setX(116.71537368741306);
-//                        point.setY(39.491536917809974);
                         bmapsView.zoomToScale(ptCurrent, 50000);
-//                        Graphic graphic = MapUtil.setDistanceGraphicsLayer(ptCurrent, "2000");
-//                        graphicsLayer.addGraphic(graphic);
                     }
                     isFirstlocal = false;
                 }
@@ -148,7 +156,8 @@ public class MainActivity extends BaseActivity implements BaseView {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map, R.id.bt_navi, R.id.location_map})
+    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
+            R.id.bt_navi, R.id.location_map, R.id.location_quanjing,R.id.bt_sure})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_around:
@@ -189,6 +198,29 @@ public class MainActivity extends BaseActivity implements BaseView {
                 break;
             case R.id.location_map:
                 bmapsView.zoomToScale(ptCurrent, 50000);
+                break;
+            case R.id.location_quanjing:
+                if (imgQuanjing.getVisibility() == View.VISIBLE) {
+                    imgQuanjing.setVisibility(View.GONE);
+                    btSure.setVisibility(View.GONE);
+                } else {
+                    imgQuanjing.setVisibility(View.VISIBLE);
+                    ShowToast("请选择地图上的点，并按确定");
+                    btSure.setVisibility(View.VISIBLE);
+                }
+
+                break;
+            case R.id.bt_sure:
+                Point center = bmapsView.getCenter();
+                DemoInfo demoInfo = new DemoInfo(GCJ02, R.string.demo_title_panorama, R.string.demo_desc_gcj02, PanoDemoMain.class);
+                Intent intent = new Intent(MainActivity.this, demoInfo.demoClass);
+                intent.putExtra("type", demoInfo.type);
+                Gps gps = PositionUtil.gps84_To_Gcj02(center.getY(), center.getX());
+                double[] doubles = new double[]{gps.getWgLat(), gps.getWgLon()};
+                MyLogUtil.showLog("zuobiao", gps.getWgLat() + "---" + gps.getWgLon());
+                intent.putExtra("lontitude", doubles);
+                this.startActivity(intent);
+
                 break;
         }
     }
@@ -231,5 +263,19 @@ public class MainActivity extends BaseActivity implements BaseView {
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
+    }
+
+    private static class DemoInfo {
+        public int type;
+        public int title;
+        public int desc;
+        public Class<? extends Activity> demoClass;
+
+        public DemoInfo(int type, int title, int desc, Class<? extends Activity> demoClass) {
+            this.type = type;
+            this.title = title;
+            this.desc = desc;
+            this.demoClass = demoClass;
+        }
     }
 }
