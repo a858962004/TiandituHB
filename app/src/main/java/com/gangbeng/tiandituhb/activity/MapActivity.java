@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
@@ -103,6 +104,7 @@ public class MapActivity extends BaseActivity {
         } else if (key.equals("addPoint")) {
             setToolbarTitle("添加信息点");
             setRightImageBtnText("完成");
+            Toast.makeText(this,"选择图上一点并按完成按钮",Toast.LENGTH_LONG).show();
             Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
             Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
             final PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);

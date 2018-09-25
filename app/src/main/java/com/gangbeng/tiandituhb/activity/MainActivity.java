@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
@@ -205,7 +206,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                     btSure.setVisibility(View.GONE);
                 } else {
                     imgQuanjing.setVisibility(View.VISIBLE);
-                    ShowToast("请选择地图上的点，并按确定");
+                    Toast.makeText(this,"请选择地图上的点，并按确定按钮",Toast.LENGTH_LONG).show();
                     btSure.setVisibility(View.VISIBLE);
                 }
 
