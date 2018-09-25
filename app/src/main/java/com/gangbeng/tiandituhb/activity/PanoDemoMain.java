@@ -33,9 +33,11 @@ import com.baidu.lbsapi.tools.Point;
 import com.baidu.pano.platform.plugin.indooralbum.IndoorAlbumCallback;
 import com.baidu.pano.platform.plugin.indooralbum.IndoorAlbumPlugin;
 import com.gangbeng.tiandituhb.R;
+import com.gangbeng.tiandituhb.bean.QuanjingBean;
 import com.gangbeng.tiandituhb.indoor.AlbumContainer;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.widget.MyToolbar;
+import com.google.gson.Gson;
 
 /**
  * 全景Demo主Activity
@@ -95,7 +97,6 @@ public class PanoDemoMain extends Activity {
         btnArrowStyle02 = (Button) findViewById(R.id.panodemo_main_btn_arrowstyle_02);
         btnIsShowInoorAblum = (Button) findViewById(R.id.panodemo_main_btn_indoor_album);
         myToolbar = findViewById(R.id.toolbar);
-        myToolbar.setTitle("全景地图");
         myToolbar.hintRightBtnIcon();
         myToolbar.setMyToolBarBtnListenter(new MyToolbar.MyToolBarBtnListenter() {
             @Override
@@ -212,12 +213,26 @@ public class PanoDemoMain extends Activity {
 
             @Override
             public void onLoadPanoramaBegin() {
-                MyLogUtil.showLog("zuobiao","onLoadPanoramaBegin");
+                MyLogUtil.showLog("zuobiao", "onLoadPanoramaBegin");
             }
 
             @Override
             public void onLoadPanoramaEnd(String json) {
-                MyLogUtil.showLog("zuobiao",json);
+                MyLogUtil.showLog("zuobiao", json);
+                Gson gson = new Gson();
+                QuanjingBean quanjingBean = gson.fromJson(json, QuanjingBean.class);
+                String rname = "无名路段";
+                if (quanjingBean.getRname() != null && !quanjingBean.getRname().equals("")) {
+                    rname = quanjingBean.getRname();
+                }
+                final String finalRname = rname;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        myToolbar.setTitle(finalRname);
+                    }
+                });
+
             }
 
             @Override
@@ -225,7 +240,7 @@ public class PanoDemoMain extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        AlertDialog.Builder builder=new AlertDialog.Builder(PanoDemoMain.this);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(PanoDemoMain.this);
                         builder.setCancelable(false);
                         builder.setTitle("请注意");
                         builder.setMessage("暂无该路段全景数据");
@@ -241,13 +256,13 @@ public class PanoDemoMain extends Activity {
                 });
 
 
-                MyLogUtil.showLog("zuobiao",error);
+                MyLogUtil.showLog("zuobiao", error);
 
             }
 
             @Override
             public void onDescriptionLoadEnd(String json) {
-                MyLogUtil.showLog("zuobiao","onDescriptionLoadEnd:"+json);
+                MyLogUtil.showLog("zuobiao", "onDescriptionLoadEnd:" + json);
             }
 
             @Override

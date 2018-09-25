@@ -222,7 +222,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
                 qury = "'名称' like '%" + bean.getData() + "%'";
             } else {
                 //分类查询条件
-                qury = getQury();
+                qury = getQury(bean.getData());
             }
             parameter.put("where", qury);
             presenter.setRequest(parameter);
@@ -236,7 +236,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
                 point.setX(Double.parseDouble(ptpoint.getX()));
                 point.setY(Double.parseDouble(ptpoint.getY()));
             }
-            qury = getQury();//分类查询条件
+            qury = getQury(bean.getData());//分类查询条件
             Graphic graphic = MapUtil.setDistanceGraphicsLayer(point, "2000");
             Geometry geometry = graphic.getGeometry();
             Envelope envelope = new Envelope();
@@ -311,8 +311,45 @@ public class AroundActivity extends BaseActivity implements BaseView {
      * 分类查询
      * @return
      */
-    public String getQury() {
-        String qury="1=1";
+    public String getQury(String data) {
+        String qury="";
+        switch (data){
+            case "公共管理":
+                qury="yifl = '01'";
+                break;
+            case "住宿餐饮":
+                qury="yifl = '06'";
+                break;
+            case "金融保险":
+                qury="yifl = '03    '";
+                break;
+            case "交通运输":
+                qury="yifl = '02'";
+                break;
+            case "房产楼盘":
+                qury="yifl = '04'";
+                break;
+            case "生活服务":
+                qury="yifl = '05'";
+                break;
+            case "休闲娱乐":
+                qury="yifl = '07'";
+                break;
+            case "旅游服务":
+                qury="yifl = '08'";
+                break;
+            case "医疗卫生":
+                qury="yifl = '09'";
+                break;
+            case "文化媒体":
+                qury="yifl = '10'";
+                break;
+            case "其他行业":
+                qury="yifl = '11'";
+                break;
+        }
+
+
         return qury;
     }
 

@@ -9,7 +9,6 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.SearchResultAdpter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
-import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.callback.SearchAdpaterCancelBack;
 import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
@@ -41,10 +40,10 @@ public class CollectActivity extends BaseActivity {
     }
 
     private void setData() {
-        List<SearchBean.PoisBean> data = (List<SearchBean.PoisBean>) SharedUtil.getSerializeObject("collectpoint");
+        List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data = (List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean>) SharedUtil.getSerializeObject("collectpoint");
         if (data != null&&data.size() != 0) {
             tvNote.setVisibility(View.GONE);
-//            adpter = new SearchResultAdpter(this, data, false);
+            adpter = new SearchResultAdpter(this, data, false);
             lvCollect.setAdapter(adpter);
             adpter.setCallBack(callBack);
             adpter.setCancalBack(cancelBack);
