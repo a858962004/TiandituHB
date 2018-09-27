@@ -24,8 +24,8 @@
         <!--android:layout_height="wrap_content" />-->
         <RelativeLayout
             android:id="@+id/rl_img"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="10dp"
@@ -62,7 +62,7 @@
                 android:maxLines="1"
                 android:text="asfadf"
                 android:textColor="@color/textcolor"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tv_address"
@@ -75,7 +75,7 @@
                 android:maxLines="1"
                 android:text="asf"
                 android:textColor="@color/text8a"
-                android:textSize="18sp" />
+                android:textSize="15sp" />
         </RelativeLayout>
 
         <TextView
@@ -106,7 +106,7 @@
                     android:gravity="center"
                     android:text="周边"
                     android:textColor="@color/text8a"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
 
@@ -127,7 +127,7 @@
                     android:gravity="center"
                     android:text="路线"
                     android:textColor="@color/text8a"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
         </LinearLayout>

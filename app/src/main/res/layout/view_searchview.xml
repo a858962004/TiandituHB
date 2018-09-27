@@ -5,10 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_searchview"
     android:layout_width="fill_parent"
-    android:layout_height="50dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="20dp"
-    android:layout_marginRight="12dp"
+    android:layout_height="45dp"
+    android:layout_marginTop="15dp"
+    android:layout_marginLeft="30dp"
+    android:layout_marginRight="30dp"
     android:background="@drawable/background_searchview"
     android:orientation="horizontal"
     android:layout_alignParentTop="true"
@@ -16,8 +16,8 @@
     tools:showIn="@layout/activity_main">
 
     <Button
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
         android:layout_gravity="right|center_vertical"
         android:layout_margin="10dp"
         android:background="@mipmap/icon_search_1" />
@@ -35,6 +35,6 @@
         android:singleLine="true"
         android:textColor="@color/textcolor"
         android:textColorHint="#d1d1d1"
-        android:textSize="17sp" />
+        android:textSize="15sp" />
 
 </LinearLayout>

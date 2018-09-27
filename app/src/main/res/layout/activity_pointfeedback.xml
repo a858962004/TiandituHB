@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -29,8 +30,6 @@
                     android:layout_toRightOf="@+id/tv_name_photo" />
             </RelativeLayout>
 
-            <TextView style="@style/horizonline" />
-
             <RelativeLayout style="@style/rl_addphoto">
 
                 <TextView
@@ -45,8 +44,6 @@
                     android:inputType="date" />
             </RelativeLayout>
 
-            <TextView style="@style/horizonline" />
-
             <RelativeLayout style="@style/rl_addphoto">
 
                 <TextView
@@ -60,13 +57,11 @@
                     android:layout_toRightOf="@+id/tv_city_photo" />
             </RelativeLayout>
 
-            <TextView style="@style/horizonline" />
-
             <GridView
                 android:id="@+id/grid_feed"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="5dp"
                 android:horizontalSpacing="5dp"

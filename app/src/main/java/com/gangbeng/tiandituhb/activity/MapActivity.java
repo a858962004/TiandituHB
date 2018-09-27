@@ -144,7 +144,9 @@ public class MapActivity extends BaseActivity {
         Graphic g = new Graphic(point, picSymbol);
         pointlayer.addGraphic(g);
         tvName.setText(bean.getProperties().get名称());
+        tvName.setMaxLines(3);
         tvAddress.setText(bean.getProperties().get地址());
+        tvAddress.setMaxLines(3);
         if (Util.isCollect(bean)) {
             imgCollect.setVisibility(View.GONE);
             imgCollect2.setVisibility(View.VISIBLE);

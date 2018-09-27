@@ -96,7 +96,7 @@
     <style name="ed_addphoto">
         <item name="android:padding">5dp</item>
         <item name="android:layout_marginLeft">18dp</item>
-        <item name="android:background">@drawable/textview_border</item>
+        <item name="android:background">@drawable/background_searchview</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:textSize">18dp</item>
         <item name="android:layout_width">200dp</item>
@@ -111,8 +111,8 @@
     </style>
 
     <style name="style_maptab_img">
-        <item name="android:layout_width">25dp</item>
-        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_width">18dp</item>
+        <item name="android:layout_height">18dp</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginLeft">10dp</item>
     </style>
