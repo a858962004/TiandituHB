@@ -1,6 +1,5 @@
 package com.gangbeng.tiandituhb.activity;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -11,7 +10,10 @@ import com.baidu.lbsapi.BMapManager;
 import com.baidu.lbsapi.MKGeneralListener;
 import com.gangbeng.tiandituhb.utils.ToastUtil;
 
-public class MyApplication extends Application {
+import org.litepal.LitePalApplication;
+import org.litepal.exceptions.GlobalException;
+
+public class MyApplication extends LitePalApplication {
 
     private static MyApplication mInstance = null;
     public BMapManager mBMapManager = null;
@@ -38,6 +40,9 @@ public class MyApplication extends Application {
     }
 
     public static Context getContext() {
+        if (applicationContext == null) {
+            throw new GlobalException(GlobalException.APPLICATION_CONTEXT_IS_NULL);
+        }
         return applicationContext;
     }
 

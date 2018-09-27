@@ -62,6 +62,9 @@ public class MainActivity extends BaseActivity implements BaseView {
     ImageView imgQuanjing;
     @BindView(R.id.bt_sure)
     CardView btSure;
+    @BindView(R.id.location_tianqi)
+    CardView locationTianqi;
+
 
     public static final int WGS84 = 9;// 大地坐标系方式
     public static final int GCJ02 = 10;// 国测局加密方式
@@ -158,7 +161,7 @@ public class MainActivity extends BaseActivity implements BaseView {
     }
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
-            R.id.bt_navi, R.id.location_map, R.id.location_quanjing,R.id.bt_sure})
+            R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bt_sure,R.id.location_tianqi})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_around:
@@ -200,16 +203,18 @@ public class MainActivity extends BaseActivity implements BaseView {
             case R.id.location_map:
                 bmapsView.zoomToScale(ptCurrent, 50000);
                 break;
+            case R.id.location_tianqi:
+                skip(WeatherActivity.class,false);
+                break;
             case R.id.location_quanjing:
                 if (imgQuanjing.getVisibility() == View.VISIBLE) {
                     imgQuanjing.setVisibility(View.GONE);
                     btSure.setVisibility(View.GONE);
                 } else {
                     imgQuanjing.setVisibility(View.VISIBLE);
-                    Toast.makeText(this,"请选择地图上的点，并按确定按钮",Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "请选择地图上的点，并按确定按钮", Toast.LENGTH_LONG).show();
                     btSure.setVisibility(View.VISIBLE);
                 }
-
                 break;
             case R.id.bt_sure:
                 Point center = bmapsView.getCenter();

@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">天地图-廊坊</string>
+
+    <string name="title_activity_choose_area">ChooseAreaActivity</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
     <string name="tab_around">周边</string>
     <string name="tab_route">路线</string>
     <string name="tab_more">更多</string>

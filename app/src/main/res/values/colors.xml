@@ -165,4 +165,6 @@
     <color name="color64">#6491f7</color>
     <color name="colord1">#d1d1d1</color>
     <color name="colorff">#ffb734</color>
+
+    <color name="defalut">#fff</color>
 </resources>
