@@ -21,7 +21,7 @@ public class DriveModel implements BaseModel {
     @Override
     public void setRequest(Map<String, Object> parameter, final OnCallBack back) {
         String postStr = String.valueOf(parameter.get("postStr"));
-//        String postStr="{\"orig\":\"116.35506,39.92277\",\"dest\":\"116.39751,39.90854\",\"style\":\"0\"}";
+//        String postStr="{\"orig\":\"111.77952852400398,37.15078227322101\",\"dest\":\"111.76558103712654,37.14408747951984\",\"style\":\"0\"}";
         OkHttpUtils.get()
                 .url(PubConst.url+"drive")
                 .addParams("postStr",postStr)

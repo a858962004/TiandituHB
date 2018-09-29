@@ -12,10 +12,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
+import com.baidu.lbsapi.model.BaiduPanoData;
+import com.baidu.lbsapi.panoramaview.PanoramaRequest;
+import com.baidu.lbsapi.tools.CoordinateConverter;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
+import com.esri.android.map.event.OnPanListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
@@ -32,6 +35,7 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
+import com.github.library.bubbleview.BubbleTextView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -40,6 +44,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity implements BaseView {
+
+    public static final int WGS84 = 9;// 大地坐标系方式
+    public static final int GCJ02 = 10;// 国测局加密方式
+
     @BindView(R.id.bt_around)
     Button btAround;
     @BindView(R.id.bt_route)
@@ -64,15 +72,19 @@ public class MainActivity extends BaseActivity implements BaseView {
     CardView btSure;
     @BindView(R.id.location_tianqi)
     CardView locationTianqi;
+    @BindView(R.id.img_quanjing2)
+    ImageView imgQuanjing2;
+    @BindView(R.id.bubbletextview)
+    BubbleTextView bubbletextview;
+//    @BindView(R.id.bubblell)
+//    BubbleLinearLayout bubblell;
 
-
-    public static final int WGS84 = 9;// 大地坐标系方式
-    public static final int GCJ02 = 10;// 国测局加密方式
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
     private boolean isFirstlocal = true;
+
 
     @Override
     protected void initView() {
@@ -100,9 +112,9 @@ public class MainActivity extends BaseActivity implements BaseView {
         bmapsView.addLayer(mapRStextLayer, 3);
 
         bmapsView.addLayer(map_lf, 4);
-        bmapsView.addLayer(map_lf_text, 5);
+        bmapsView.addLayer(map_lfimg, 5);
         bmapsView.addLayer(map_xzq, 6);
-        bmapsView.addLayer(map_lfimg, 7);
+        bmapsView.addLayer(map_lf_text, 7);
 
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
@@ -113,7 +125,54 @@ public class MainActivity extends BaseActivity implements BaseView {
                 MyLogUtil.showLog("tag", o.toString() + ":" + status);
             }
         });
+        bmapsView.setOnPanListener(new OnPanListener() {
+            @Override
+            public void prePointerMove(float v, float v1, float v2, float v3) {
+                bubbletextview.setVisibility(View.GONE);
+                bubbletextview.setText("正在加载...");
+                if (imgQuanjing.getVisibility() == View.VISIBLE) {
+                    imgQuanjing.setVisibility(View.GONE);
+                    imgQuanjing2.setVisibility(View.VISIBLE);
+                }
+            }
 
+            @Override
+            public void postPointerMove(float v, float v1, float v2, float v3) {
+                MyLogUtil.showLog("pan", "postPointerMove");
+            }
+
+            @Override
+            public void prePointerUp(float v, float v1, float v2, float v3) {
+                MyLogUtil.showLog("pan", "prePointerUp");
+            }
+
+            @Override
+            public void postPointerUp(float v, float v1, float v2, float v3) {
+                MyLogUtil.showLog("pan", "postPointerUp");
+                bubbletextview.setVisibility(View.VISIBLE);
+                if (imgQuanjing2.getVisibility() == View.VISIBLE) {
+                    imgQuanjing2.setVisibility(View.GONE);
+                    imgQuanjing.setVisibility(View.VISIBLE);
+                }
+                // 通过百度经纬度坐标获取当前位置相关全景信息，包括是否有外景，外景PID，外景名称等
+                Point center = bmapsView.getCenter();
+                setStreetPano(center);
+            }
+        });
+
+    }
+
+    private void setStreetPano(Point center) {
+        com.baidu.lbsapi.tools.Point sourcePoint = new com.baidu.lbsapi.tools.Point(center.getX(), center.getY());
+        com.baidu.lbsapi.tools.Point converter = CoordinateConverter.converter(CoordinateConverter.COOR_TYPE.COOR_TYPE_WGS84, sourcePoint);
+        PanoramaRequest panoramaRequest = PanoramaRequest.getInstance(MainActivity.this);
+        BaiduPanoData mPanoDataWithLatLon = panoramaRequest.getPanoramaInfoByLatLon(converter.x, converter.y);
+//                Gps bd09 = PositionUtil.gps84_To_bd09(center.getY(), center.getX());
+        bubbletextview.setText("查看全景");
+//        if (mPanoDataWithLatLon.hasStreetPano()) {
+//        }else {
+//            bubbletextview.setText("该地区没有全景数据");
+//        }
     }
 
 
@@ -161,7 +220,7 @@ public class MainActivity extends BaseActivity implements BaseView {
     }
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
-            R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bt_sure,R.id.location_tianqi})
+            R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview, R.id.location_tianqi})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_around:
@@ -204,19 +263,23 @@ public class MainActivity extends BaseActivity implements BaseView {
                 bmapsView.zoomToScale(ptCurrent, 50000);
                 break;
             case R.id.location_tianqi:
-                skip(WeatherActivity.class,false);
+                skip(WeatherActivity.class, false);
                 break;
             case R.id.location_quanjing:
                 if (imgQuanjing.getVisibility() == View.VISIBLE) {
                     imgQuanjing.setVisibility(View.GONE);
-                    btSure.setVisibility(View.GONE);
+                    bubbletextview.setVisibility(View.GONE);
+                    bubbletextview.setText("正在查询...");
+//                    btSure.setVisibility(View.GONE);
                 } else {
                     imgQuanjing.setVisibility(View.VISIBLE);
-                    Toast.makeText(this, "请选择地图上的点，并按确定按钮", Toast.LENGTH_LONG).show();
-                    btSure.setVisibility(View.VISIBLE);
+                    bubbletextview.setVisibility(View.VISIBLE);
+                    bubbletextview.setText("正在查询...");
+                    Point center = bmapsView.getCenter();
+                    setStreetPano(center);
                 }
                 break;
-            case R.id.bt_sure:
+            case R.id.bubbletextview:
                 Point center = bmapsView.getCenter();
                 DemoInfo demoInfo = new DemoInfo(GCJ02, R.string.demo_title_panorama, R.string.demo_desc_gcj02, PanoDemoMain.class);
                 Intent intent = new Intent(MainActivity.this, demoInfo.demoClass);
@@ -226,7 +289,6 @@ public class MainActivity extends BaseActivity implements BaseView {
                 MyLogUtil.showLog("zuobiao", gps.getWgLat() + "---" + gps.getWgLon());
                 intent.putExtra("lontitude", doubles);
                 this.startActivity(intent);
-
                 break;
         }
     }
@@ -271,6 +333,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
     }
 
+
     private static class DemoInfo {
         public int type;
         public int title;
@@ -284,4 +347,6 @@ public class MainActivity extends BaseActivity implements BaseView {
             this.demoClass = demoClass;
         }
     }
+
+
 }

@@ -93,6 +93,14 @@ public class PositionUtil {
 
     }
 
+    public static Gps gps84_To_bd09(double lat,double lon){
+
+        Gps gcj02 = PositionUtil.gps84_To_Gcj02(lat, lon);
+        Gps bd09 = PositionUtil.gcj02_To_Bd09(gcj02.getWgLat(), gcj02.getWgLon());
+
+        return bd09;
+    }
+
     public static boolean outOfChina(double lat, double lon) {
         if (lon < 72.004 || lon > 137.8347)
             return true;

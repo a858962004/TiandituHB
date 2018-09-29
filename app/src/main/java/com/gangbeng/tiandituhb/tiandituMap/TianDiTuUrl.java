@@ -17,6 +17,7 @@ public class TianDiTuUrl {
         this.level = level;
         this.col = col;
         this.row = row;
+
     }
 
     public String generatUrl(){
@@ -32,6 +33,7 @@ public class TianDiTuUrl {
             case VEC_C:
 //                url = "http://www.bjmap.gov.cn/services/ogc/wmts/12?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=12&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJMap&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
                 url.append(".tianditu.com/DataServer?T=vec_c&X=").append(this.col).append("&Y=").append(this.row).append("&L=").append(this.level);
+
                 break;
             case CVA_C:
 //                url = "http://www.bjmap.gov.cn/services/ogc/wmts/13?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=13&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJMapAnno&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";

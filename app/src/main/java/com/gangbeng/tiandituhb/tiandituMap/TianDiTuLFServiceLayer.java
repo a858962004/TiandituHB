@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.RejectedExecutionException;
@@ -28,29 +29,27 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
     private TileInfo tiandituTileInfo;
 
     public TianDiTuLFServiceLayer() {
-        this(null, null,true);
+        this(null, null, true);
     }
 
-    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType){
-        this(mapType, null,true);
+    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType) {
+        this(mapType, null, true);
     }
 
-    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials){
+    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials) {
         this(mapType, usercredentials, true);
     }
 
-    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials, boolean flag){
+    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials, boolean flag) {
         super("");
-        this._mapType=mapType;
+        this._mapType = mapType;
         setCredentials(usercredentials);
 
-        if(flag)
-            try
-            {
+        if (flag)
+            try {
                 getServiceExecutor().submit(new Runnable() {
 
-                    public final void run()
-                    {
+                    public final void run() {
                         a.initLayer();
                     }
 
@@ -63,38 +62,33 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
                     }
                 });
                 return;
+            } catch (RejectedExecutionException _ex) {
             }
-            catch(RejectedExecutionException _ex) { }
     }
 
-    public TianDiTuTiledMapServiceType getMapType(){
+    public TianDiTuTiledMapServiceType getMapType() {
         return this._mapType;
     }
 
-    protected void initLayer(){
+    protected void initLayer() {
         this.buildTileInfo();
-        this.setFullExtent(new Envelope(-180,-90,180,90));
+        this.setFullExtent(new Envelope(-180, -90, 180, 90));
         this.setDefaultSpatialReference(SpatialReference.create(4326));
 //        this.setInitialExtent(new Envelope(116.111139,38.470552,117.254155,40.082904));
         super.initLayer();
     }
 
     public void refresh() {
-        try
-        {
+        try {
             getServiceExecutor().submit(new Runnable() {
 
-                public final void run()
-                {
-                    if(a.isInitialized())
-                        try
-                        {
+                public final void run() {
+                    if (a.isInitialized())
+                        try {
                             a.b();
                             a.clearTiles();
                             return;
-                        }
-                        catch(Exception exception)
-                        {
+                        } catch (Exception exception) {
                             Log.e("ArcGIS", "Re-initialization of the layer failed.", exception);
                         }
                 }
@@ -108,9 +102,7 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
                 }
             });
             return;
-        }
-        catch(RejectedExecutionException _ex)
-        {
+        } catch (RejectedExecutionException _ex) {
             return;
         }
     }
@@ -120,83 +112,111 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
     }
 
     @Override
-    protected byte[] getTile(int level, int col, int row) throws Exception {
+    protected byte[] getTile(final int level, final int col, final int row) throws Exception {
         /**
          *
          * */
+
+
         byte[] result = null;
 
-        File file=new File(Environment.getExternalStorageDirectory()+ File.separator+"Tianditu_LF"+File.separator+"map_lf"+ File.separator+_mapType+ File.separator+level+col+row);
-        Log.i("TAG","filePath"+file.getPath());
-        File fileParent = file.getParentFile();
-        if(!fileParent.exists()){
-            fileParent.mkdirs();
-        }
-
-        if (!file.exists()) {
-            try {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-                URL sjwurl = new URL(this.getTianDiMapUrl(level, col, row));
+        final String cachepath = Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF" + File.separator + "map_lf" + File.separator + _mapType;
+        //根据图层、行、列找本地数据
+        result = getOfflineCacheFile(cachepath, level, col, row);
+        //如果本地数据为空，则调用网络数据。改接口2.0.0测试成功。最新的10.0貌似没有这个接口。具体自个找找吧，我也没有测过
+        if (result == null) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            URL sjwurl = new URL(this.getTianDiMapUrl(level, col, row));
 //            String sjwurl = this.getTianDiMapUrl(level, col, row);
-                HttpURLConnection httpUrl = null;
-                BufferedInputStream bis = null;
-                byte[] buf = new byte[1024];
+            HttpURLConnection httpUrl = null;
+            BufferedInputStream bis = null;
+            byte[] buf = new byte[1024];
 
-                httpUrl = (HttpURLConnection) sjwurl.openConnection();
-                httpUrl.connect();
-                bis = new BufferedInputStream(httpUrl.getInputStream());
+            httpUrl = (HttpURLConnection) sjwurl.openConnection();
+            httpUrl.connect();
+            bis = new BufferedInputStream(httpUrl.getInputStream());
 
-                while (true) {
-                    int bytes_read = bis.read(buf);
-                    if (bytes_read > 0) {
-                        bos.write(buf, 0, bytes_read);
-                    } else {
-                        break;
-                    }
+            while (true) {
+                int bytes_read = bis.read(buf);
+                if (bytes_read > 0) {
+                    bos.write(buf, 0, bytes_read);
+                } else {
+                    break;
                 }
-                bis.close();
-                httpUrl.disconnect();
-                result = bos.toByteArray();
-                FileOutputStream fos = new FileOutputStream(file);
-                bos.writeTo(fos);
-            } catch (Exception ex) {
-                ex.printStackTrace();
             }
-        }else {
-            BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-            ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-            byte[] temp = new byte[1024];
-            int size = 0;
-            while ((size = in.read(temp)) != -1) {
-                out.write(temp, 0, size);
-            }
-            in.close();
-            result = out.toByteArray();
+            bis.close();
+            httpUrl.disconnect();
+            result = bos.toByteArray();
+            final byte[] finalBytes = result;
+            AddOfflineCacheFile(cachepath, level, col, row, finalBytes);
         }
+
+
+//
+//        if (!file.exists()) {
+//            try {
+//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//
+//                URL sjwurl = new URL(this.getTianDiMapUrl(level, col, row));
+////            String sjwurl = this.getTianDiMapUrl(level, col, row);
+//                HttpURLConnection httpUrl = null;
+//                BufferedInputStream bis = null;
+//                byte[] buf = new byte[1024];
+//
+//                httpUrl = (HttpURLConnection) sjwurl.openConnection();
+//                httpUrl.connect();
+//                bis = new BufferedInputStream(httpUrl.getInputStream());
+//
+//                while (true) {
+//                    int bytes_read = bis.read(buf);
+//                    if (bytes_read > 0) {
+//                        bos.write(buf, 0, bytes_read);
+//                    } else {
+//                        break;
+//                    }
+//                }
+//                bis.close();
+//                httpUrl.disconnect();
+//                result = bos.toByteArray();
+//                FileOutputStream fos = new FileOutputStream(file);
+//                bos.writeTo(fos);
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//            }
+//        }else {
+//            BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+//            ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+//            byte[] temp = new byte[1024];
+//            int size = 0;
+//            while ((size = in.read(temp)) != -1) {
+//                out.write(temp, 0, size);
+//            }
+//            in.close();
+//            result = out.toByteArray();
+//        }
         return result;
     }
 
 
-
     @Override
-    public TileInfo getTileInfo(){
+    public TileInfo getTileInfo() {
         return this.tiandituTileInfo;
     }
+
     /**
      *
      * */
-    private String getTianDiMapUrl(int level, int col, int row){
+    private String getTianDiMapUrl(int level, int col, int row) {
 
-        String url=new TianDiTuLFUrl(this._mapType,level,col,row).generatUrl();
-        MyLogUtil.showLog("url:"+url);
+        String url = new TianDiTuLFUrl(this._mapType, level, col, row).generatUrl();
+        MyLogUtil.showLog("url:" + url);
         return url;
     }
 
     private void buildTileInfo() {
-        Point originalPoint=new Point(-180,90);
+        Point originalPoint = new Point(-180, 90);
 
-        double[] res={
+        double[] res = {
                 1.40625,
                 0.703125,
                 0.3515625,
@@ -219,7 +239,7 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
                 2.68220901489258E-06,
                 1.34110450744629E-06
         };
-        double[] scale={
+        double[] scale = {
                 590995197.14166909755553014475,
                 295497598.57083454877776507238,
                 147748799.28541727438888253619,
@@ -242,11 +262,78 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
                 1127.2338812669164610968211074,
                 563.61694063345823054841055369
         };
-        int levels=21;
-        int dpi=96;
-        int tileWidth=256;
-        int tileHeight=256;
-        this.tiandituTileInfo=new TileInfo(originalPoint, scale, res, levels, dpi, tileWidth,tileHeight);
+        int levels = 21;
+        int dpi = 96;
+        int tileWidth = 256;
+        int tileHeight = 256;
+        this.tiandituTileInfo = new TileInfo(originalPoint, scale, res, levels, dpi, tileWidth, tileHeight);
         this.setTileInfo(this.tiandituTileInfo);
+    }
+
+    // 将图片保存到本地 目录结构可以随便定义 只要你找得到对应的图片
+    private byte[] AddOfflineCacheFile(String cachepath, int level, int col, int row, byte[] bytes) {
+
+        File file = new File(cachepath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        File levelfile = new File(cachepath + "/" + level);
+        if (!levelfile.exists()) {
+            levelfile.mkdirs();
+        }
+        File colfile = new File(cachepath + "/" + level + "/" + col);
+        if (!colfile.exists()) {
+            colfile.mkdirs();
+        }
+        File rowfile = new File(cachepath + "/" + level + "/" + col + "/" + row
+                + ".dat");
+        if (!rowfile.exists()) {
+            try {
+                FileOutputStream out = new FileOutputStream(rowfile);
+                out.write(bytes);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return bytes;
+
+    }
+
+    // 从本地获取图片
+    private byte[] getOfflineCacheFile(String cachepath, int level, int col, int row) {
+        byte[] bytes = null;
+        File rowfile = new File(cachepath + "/" + level + "/" + col + "/" + row
+                + ".dat");
+
+        if (rowfile.exists()) {
+            try {
+                bytes = CopySdcardbytes(rowfile);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            bytes = null;
+        }
+        return bytes;
+    }
+
+    // 读取本地图片流
+    public byte[] CopySdcardbytes(File file) throws IOException {
+        FileInputStream in = new FileInputStream(file);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+
+        byte[] temp = new byte[1024];
+
+        int size = 0;
+
+        while ((size = in.read(temp)) != -1) {
+            out.write(temp, 0, size);
+        }
+        in.close();
+        byte[] bytes = out.toByteArray();
+        return bytes;
     }
 }
