@@ -46,7 +46,7 @@ public class HourlyWeatherAdapter extends RecyclerView.Adapter<HourlyWeatherAdap
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         HourlyWeather hourlyWeather = hourlyWeatherList.get(position);
-        holder.hourlyTimeTV.setText(hourlyWeather.hourlyTime + "时");
+        holder.hourlyTimeTV.setText(hourlyWeather.hourlyTime + ":00");
         holder.hourlyWeatherImageV.setImageBitmap(hourlyWeather.hourlyImageBit);
         holder.hourlyTemperatureTV.setText(hourlyWeather.hourlyTemperature + "º");
     }

@@ -128,9 +128,9 @@ public class MainActivity extends BaseActivity implements BaseView {
         bmapsView.setOnPanListener(new OnPanListener() {
             @Override
             public void prePointerMove(float v, float v1, float v2, float v3) {
-                bubbletextview.setVisibility(View.GONE);
-                bubbletextview.setText("正在加载...");
                 if (imgQuanjing.getVisibility() == View.VISIBLE) {
+                    bubbletextview.setVisibility(View.GONE);
+                    bubbletextview.setText("正在加载...");
                     imgQuanjing.setVisibility(View.GONE);
                     imgQuanjing2.setVisibility(View.VISIBLE);
                 }
@@ -149,8 +149,8 @@ public class MainActivity extends BaseActivity implements BaseView {
             @Override
             public void postPointerUp(float v, float v1, float v2, float v3) {
                 MyLogUtil.showLog("pan", "postPointerUp");
-                bubbletextview.setVisibility(View.VISIBLE);
                 if (imgQuanjing2.getVisibility() == View.VISIBLE) {
+                    bubbletextview.setVisibility(View.VISIBLE);
                     imgQuanjing2.setVisibility(View.GONE);
                     imgQuanjing.setVisibility(View.VISIBLE);
                 }

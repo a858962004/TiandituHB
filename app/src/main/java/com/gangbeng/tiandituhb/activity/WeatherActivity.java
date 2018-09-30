@@ -371,6 +371,7 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
                  * 先判断得到的天气ID能不能返回正确的天气数据再确定要不要保存
                  * 以免定位到一些比较奇怪的地方时获取不到数据
                  */
+                String district = location.getDistrict();
                 locationCountyWeatherId = tempString2.substring(0,tempString2.indexOf('.') + 4)
                         + "," + tempString1.substring(0, tempString1.indexOf('.') + 4);
                 String weatherUrl = "https://free-api.heweather.com/v5/weather?city="
