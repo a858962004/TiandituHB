@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
+import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
 import com.esri.core.map.Graphic;
@@ -35,6 +37,7 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.Util;
+import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -74,6 +77,12 @@ public class MapActivity extends BaseActivity {
     TextView tvRoute;
     @BindView(R.id.rl_bottom)
     RelativeLayout rlBottom;
+    @BindView(R.id.mapviewscale)
+    MapScaleView mapviewscale;
+    @BindView(R.id.ll_around)
+    LinearLayout llAround;
+    @BindView(R.id.ll_route)
+    LinearLayout llRoute;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer;
@@ -98,13 +107,14 @@ public class MapActivity extends BaseActivity {
         locationGPS();
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         key = bundleExtra.getString("key");
+        mapviewscale.setVisibility(View.VISIBLE);
         if (key.equals("point")) {
             bean = (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean) bundleExtra.getSerializable("data");
             setbottom(bean);
         } else if (key.equals("addPoint")) {
             setToolbarTitle("添加信息点");
             setRightImageBtnText("完成");
-            Toast.makeText(this,"选择图上一点并按完成按钮",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "选择图上一点并按完成按钮", Toast.LENGTH_LONG).show();
             Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
             Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
             final PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
@@ -136,6 +146,7 @@ public class MapActivity extends BaseActivity {
     private void setbottom(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
         pointlayer.removeAll();
         rlBottom.setVisibility(View.VISIBLE);
+        mapviewscale.setVisibility(View.GONE);
         Point point = zoom2bean(bean.getGeometry().getCoordinates());
         Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
         Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
@@ -199,7 +210,17 @@ public class MapActivity extends BaseActivity {
                 }
             }
         });
+        idMap.setOnZoomListener(new OnZoomListener() {
+            @Override
+            public void preAction(float v, float v1, double v2) {
 
+            }
+
+            @Override
+            public void postAction(float v, float v1, double v2) {
+                mapviewscale.refreshScaleView(idMap);
+            }
+        });
     }
 
     private void locationGPS() {
@@ -214,7 +235,7 @@ public class MapActivity extends BaseActivity {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
                     if (isFirstlocal) {
                         idMap.zoomToScale(ptCurrent, 50000);
-
+                        mapviewscale.refreshScaleView(idMap);
                     }
                     isFirstlocal = false;
                 }
@@ -237,8 +258,7 @@ public class MapActivity extends BaseActivity {
             ldm.resume();
         }
     }
-
-    @OnClick({R.id.img_collect, R.id.img_collect2, R.id.rl_item, R.id.tv_around, R.id.tv_route})
+    @OnClick({R.id.img_collect, R.id.img_collect2, R.id.rl_item, R.id.ll_around, R.id.ll_route})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_collect:
@@ -254,14 +274,14 @@ public class MapActivity extends BaseActivity {
             case R.id.rl_item:
                 zoom2bean(bean.getGeometry().getCoordinates());
                 break;
-            case R.id.tv_around:
+            case R.id.ll_around:
                 AroundActivity.getInstence().finish();
                 SearchResultActivity.getInstence().finish();
                 EventBus.getDefault().postSticky(bean);
                 EventBus.getDefault().postSticky(new ChannelEvent("around"));
                 skip(AroundActivity.class, true);
                 break;
-            case R.id.tv_route:
+            case R.id.ll_route:
                 AroundActivity.getInstence().finish();
                 SearchResultActivity.getInstence().finish();
                 EndPoint endPoint = new EndPoint();

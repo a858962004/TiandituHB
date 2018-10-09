@@ -4,6 +4,10 @@ apply plugin: 'android-apt'
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
+    android {
+        aaptOptions.cruncherEnabled = false
+        aaptOptions.useNewCruncher = false
+    }
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']

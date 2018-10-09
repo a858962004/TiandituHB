@@ -91,6 +91,7 @@
             android:layout_below="@+id/rl_item"
             android:orientation="horizontal">
             <LinearLayout
+                android:id="@+id/ll_around"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -112,6 +113,7 @@
 
             <TextView style="@style/style_line_vertical" />
             <LinearLayout
+                android:id="@+id/ll_route"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"

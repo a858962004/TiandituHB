@@ -67,6 +67,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
     private static AroundActivity activity;
     private ChannelEvent channelEvent;
     private String qury;
+    private String geo="";
 
     public static AroundActivity getInstence() {
         return activity;
@@ -241,7 +242,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
             Geometry geometry = graphic.getGeometry();
             Envelope envelope = new Envelope();
             geometry.queryEnvelope(envelope);
-            String geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
+            geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
             parameter.put("geo", geo);
             parameter.put("where", qury);
             aroundPresenter.setRequest(parameter);
@@ -288,6 +289,9 @@ public class AroundActivity extends BaseActivity implements BaseView {
             List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features = bean.getContent().getFeatures().getFeatures();
             Bundle bundle = new Bundle();
             bundle.putSerializable("data", (Serializable) bean);
+            if (!geo.equals("")){
+                bundle.putString("geo",geo);
+            }
             bundle.putString("key", key);
             bundle.putString("keywords", qury);
             skip(SearchResultActivity.class, bundle, false);

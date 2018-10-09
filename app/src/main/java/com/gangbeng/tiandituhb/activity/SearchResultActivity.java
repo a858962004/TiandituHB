@@ -19,6 +19,7 @@ import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.event.IsStart;
 import com.gangbeng.tiandituhb.event.StartPoint;
+import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
 import com.gangbeng.tiandituhb.presenter.SearchPresenter;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -52,13 +53,14 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
     private int total=0;
     private PointBean ptpoint;
     private SearchResultAdpter adpter;
-    private BasePresenter presenter;
+    private BasePresenter presenter,aroundpresenter;
     private String key;
     private String keywords;
     private int allpage=0;
     private ChannelEvent channelEvent;
     private IsStart isStart;
     private static SearchResultActivity activity;
+    private String geo="";
 
     public static SearchResultActivity getInstence(){
         return activity;
@@ -79,6 +81,9 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
         NewSearchBean bean = (NewSearchBean)bundleExtra.getSerializable("data");
         key = bundleExtra.getString("key");
         keywords = bundleExtra.getString("keywords");
+        if (bundleExtra.getString("geo") != null) {
+            geo=bundleExtra.getString("geo");
+        }
         total=Integer.valueOf(bean.getHeader().getTotalItemsCount());
         tvPage.setText("共"+total+"条数据");
         if (total%20==0) {
@@ -87,6 +92,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
             allpage=total/20+1;
         }
         presenter = new SearchPresenter(this);
+        aroundpresenter=new AroundSearchPresenter(this);
         boolean isroute=true;
         if (channelEvent.getChannel().equals("navi")||channelEvent.getChannel().equals("route")){
             isroute=false;
@@ -160,10 +166,11 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
             parameter.put("where",keywords);
             if (key.equals("around") ) {
                 //周边搜索
-
-
+                parameter.put("geo",geo);
+                aroundpresenter.setRequest(parameter);
+            }else {
+                presenter.setRequest(parameter);
             }
-            presenter.setRequest(parameter);
         }
     };
 

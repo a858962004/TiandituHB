@@ -21,6 +21,7 @@ import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnPanListener;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
+import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
 import com.gangbeng.tiandituhb.R;
@@ -36,6 +37,7 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
+import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.github.library.bubbleview.BubbleTextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -77,6 +79,8 @@ public class MainActivity extends BaseActivity implements BaseView {
     ImageView imgQuanjing2;
     @BindView(R.id.bubbletextview)
     BubbleTextView bubbletextview;
+    @BindView(R.id.mapviewscale)
+    MapScaleView mapviewscale;
 //    @BindView(R.id.bubblell)
 //    BubbleLinearLayout bubblell;
 
@@ -168,6 +172,17 @@ public class MainActivity extends BaseActivity implements BaseView {
                 // 通过百度经纬度坐标获取当前位置相关全景信息，包括是否有外景，外景PID，外景名称等
                 Point center = bmapsView.getCenter();
                 setStreetPano(center);
+            }
+        });
+        bmapsView.setOnZoomListener(new OnZoomListener() {
+            @Override
+            public void preAction(float v, float v1, double v2) {
+
+            }
+
+            @Override
+            public void postAction(float v, float v1, double v2) {
+                mapviewscale.refreshScaleView(bmapsView);
             }
         });
 

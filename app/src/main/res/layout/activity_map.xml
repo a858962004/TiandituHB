@@ -18,6 +18,14 @@
 
         <include layout="@layout/item_seardhresult" />
     </RelativeLayout>
+    <com.gangbeng.tiandituhb.widget.MapScaleView
+        android:id="@+id/mapviewscale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        />
 
 
 </RelativeLayout>

@@ -83,6 +83,8 @@ public class SearchResultAdpter extends BaseAdapter {
             holder.collect2IMG=convertView.findViewById(R.id.img_collect2);
             holder.aroundTV = convertView.findViewById(R.id.tv_around);
             holder.routeTV = convertView.findViewById(R.id.tv_route);
+            holder.aroundLL=convertView.findViewById(R.id.ll_around);
+            holder.routeLL=convertView.findViewById(R.id.ll_route);
             holder.ll=convertView.findViewById(R.id.ll_button);
             convertView.setTag(holder);
         } else {
@@ -125,13 +127,13 @@ public class SearchResultAdpter extends BaseAdapter {
                     callBack.itemclick(data.get(position));
                 }
             });
-            holder.aroundTV.setOnClickListener(new View.OnClickListener() {
+            holder.aroundLL.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     callBack.aroundclick(data.get(position));
                 }
             });
-            holder.routeTV.setOnClickListener(new View.OnClickListener() {
+            holder.routeLL.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     callBack.routeclick(data.get(position));
@@ -153,6 +155,8 @@ public class SearchResultAdpter extends BaseAdapter {
         RelativeLayout itemRL;
         TextView aroundTV;
         TextView routeTV;
+        LinearLayout aroundLL;
+        LinearLayout routeLL;
         ImageView collectIMG;
         ImageView collect2IMG;
         LinearLayout ll;

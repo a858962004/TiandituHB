@@ -88,7 +88,7 @@ public class PlanActivity extends BaseActivity {
                 recordBean.setData(start.getName() + "-" + end.getName());
                 data.add(recordBean);
             }
-            data.addAll(data);
+//            data.addAll(data);
             Collections.reverse(data);
             aroundLVAdapter = new AroundLVAdapter(this, data);
             lvPlan.setAdapter(aroundLVAdapter);
