@@ -17,6 +17,8 @@ import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
+import com.esri.android.map.event.OnStatusChangedListener;
+import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Line;
@@ -31,10 +33,17 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.event.MapExtent;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.Util;
+import com.gangbeng.tiandituhb.widget.MapScaleView;
+import com.gangbeng.tiandituhb.widget.MapZoomView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -64,8 +73,12 @@ public class CalculateMapActivity extends BaseActivity {
     CardView locationCalculate;
     @BindView(R.id.btnclear)
     TextView btnclear;
+    @BindView(R.id.mapviewscale)
+    MapScaleView mapviewscale;
+    @BindView(R.id.mapzoom)
+    MapZoomView mapzoom;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_lfimg,map_xzq;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private GraphicsLayer drawPointLayer, drawLayer;
     private LocationDisplayManager ldm;
@@ -81,6 +94,7 @@ public class CalculateMapActivity extends BaseActivity {
     private SimpleLineSymbol lineSymbol;
     private Polyline polyline;
     private Polygon polygon = null;//记录绘制过程中的多边形
+    private MapExtent extent;
 
 
     @Override
@@ -98,8 +112,9 @@ public class CalculateMapActivity extends BaseActivity {
             textTvjieguo.setText("0.0平方米");
         }
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
-        setMapview();
         locationGPS();
+        setMapview();
+
     }
 
     private void setMapview() {
@@ -111,7 +126,7 @@ public class CalculateMapActivity extends BaseActivity {
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         drawPointLayer = new GraphicsLayer();
         drawLayer = new GraphicsLayer();
 
@@ -123,7 +138,7 @@ public class CalculateMapActivity extends BaseActivity {
         mapCalculate.addLayer(map_lf, 4);
         mapCalculate.addLayer(map_lf_text, 5);
         mapCalculate.addLayer(map_lfimg, 6);
-        mapCalculate.addLayer(map_xzq,7);
+        mapCalculate.addLayer(map_xzq, 7);
 
         mapCalculate.addLayer(drawPointLayer, 8);
         mapCalculate.addLayer(drawLayer, 9);
@@ -142,6 +157,28 @@ public class CalculateMapActivity extends BaseActivity {
         Drawable imageblue = getBaseContext().getResources()
                 .getDrawable(R.mipmap.bluepush);
         markerSymbolblue = new PictureMarkerSymbol(imageblue);
+        mapCalculate.setOnZoomListener(new OnZoomListener() {
+            @Override
+            public void preAction(float v, float v1, double v2) {
+
+            }
+
+            @Override
+            public void postAction(float v, float v1, double v2) {
+                mapviewscale.refreshScaleView(mapCalculate.getScale());
+            }
+        });
+        mapCalculate.setOnStatusChangedListener(new OnStatusChangedListener() {
+            @Override
+            public void onStatusChanged(Object o, STATUS status) {
+                if (o.equals(map_lf) && status == STATUS.LAYER_LOADED) {
+                    mapCalculate.zoomToScale(extent.getCenter(), extent.getScale());
+                    mapviewscale.refreshScaleView(extent.getScale());
+
+                }
+            }
+        });
+        mapzoom.setMapView(mapCalculate);
     }
 
     private void locationGPS() {
@@ -154,10 +191,6 @@ public class CalculateMapActivity extends BaseActivity {
                 @Override
                 public void onLocationChanged(Location location) {
                     lacation = new Point(location.getLongitude(), location.getLatitude());
-                    if (isFirstlocal) {
-                        mapCalculate.zoomToScale(lacation, 50000);
-                    }
-                    isFirstlocal = false;
                 }
 
                 @Override
@@ -179,11 +212,14 @@ public class CalculateMapActivity extends BaseActivity {
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
+
     }
 
     @OnClick({R.id.btnclear, R.id.change_calulate, R.id.location_calculate})
@@ -326,4 +362,15 @@ public class CalculateMapActivity extends BaseActivity {
 
         return sArea;
     }
+
+    /**
+     * eventbus接收地图位置
+     *
+     * @param extent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetExtent(MapExtent extent) {
+        this.extent = extent;
+    }
+
 }

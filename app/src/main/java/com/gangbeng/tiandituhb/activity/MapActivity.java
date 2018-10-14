@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,18 +33,22 @@ import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
+import com.gangbeng.tiandituhb.event.MapExtent;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.Util;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
+import com.gangbeng.tiandituhb.widget.MapZoomView;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -83,9 +88,15 @@ public class MapActivity extends BaseActivity {
     LinearLayout llAround;
     @BindView(R.id.ll_route)
     LinearLayout llRoute;
+    @BindView(R.id.mapzoom)
+    MapZoomView mapzoom;
+    @BindView(R.id.change_map)
+    CardView changeMap;
+    @BindView(R.id.location_map)
+    CardView locationMap;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_xzq;
-    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_lfimg,  map_xzq;
+    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer,mapRStextLayer, mapRSServiceLayer;
     private GraphicsLayer pointlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent, choosePoint;
@@ -97,21 +108,25 @@ public class MapActivity extends BaseActivity {
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    private MapExtent extent;
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_map);
         setToolbarTitle("查询结果");
         setToolbarRightVisible(false);
-        setMapView();
         locationGPS();
+        setMapView();
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         key = bundleExtra.getString("key");
-        mapviewscale.setVisibility(View.VISIBLE);
         if (key.equals("point")) {
             bean = (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean) bundleExtra.getSerializable("data");
             setbottom(bean);
         } else if (key.equals("addPoint")) {
+            mapviewscale.setVisibility(View.VISIBLE);
+            mapzoom.setVisibility(View.VISIBLE);
+            changeMap.setVisibility(View.VISIBLE);
+            locationMap.setVisibility(View.VISIBLE);
             setToolbarTitle("添加信息点");
             setRightImageBtnText("完成");
             Toast.makeText(this, "选择图上一点并按完成按钮", Toast.LENGTH_LONG).show();
@@ -129,6 +144,16 @@ public class MapActivity extends BaseActivity {
                     pointlayer.addGraphic(graphic);
                 }
             });
+            idMap.setOnStatusChangedListener(new OnStatusChangedListener() {
+                @Override
+                public void onStatusChanged(Object o, STATUS status) {
+                    if (o.equals(map_lf) && status == STATUS.LAYER_LOADED) {
+                        idMap.zoomToScale(extent.getCenter(), extent.getScale());
+                        mapviewscale.refreshScaleView(extent.getScale());
+                    }
+                }
+            });
+
         }
     }
 
@@ -147,6 +172,9 @@ public class MapActivity extends BaseActivity {
         pointlayer.removeAll();
         rlBottom.setVisibility(View.VISIBLE);
         mapviewscale.setVisibility(View.GONE);
+        mapzoom.setVisibility(View.GONE);
+        changeMap.setVisibility(View.GONE);
+        locationMap.setVisibility(View.GONE);
         Point point = zoom2bean(bean.getGeometry().getCoordinates());
         Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
         Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
@@ -178,6 +206,7 @@ public class MapActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
@@ -190,18 +219,29 @@ public class MapActivity extends BaseActivity {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+
         pointlayer = new GraphicsLayer();
 
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
 
         idMap.addLayer(mapServiceLayer, 0);
         idMap.addLayer(maptextLayer, 1);
-        idMap.addLayer(map_lf, 2);
-        idMap.addLayer(map_lf_text, 3);
-        idMap.addLayer(map_xzq, 4);
-        idMap.addLayer(pointlayer, 5);
+        idMap.addLayer(mapRSServiceLayer, 2);
+        idMap.addLayer(mapRStextLayer, 3);
+
+        idMap.addLayer(map_lf, 4);
+        idMap.addLayer(map_lf_text, 5);
+        idMap.addLayer(map_lfimg, 6);
+        idMap.addLayer(map_xzq, 7);
+        idMap.addLayer(pointlayer, 8);
+        mapRSServiceLayer.setVisible(false);
+        mapRStextLayer.setVisible(false);
+        map_lfimg.setVisible(false);
         idMap.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
@@ -218,9 +258,10 @@ public class MapActivity extends BaseActivity {
 
             @Override
             public void postAction(float v, float v1, double v2) {
-                mapviewscale.refreshScaleView(idMap);
+                mapviewscale.refreshScaleView(idMap.getScale());
             }
         });
+        mapzoom.setMapView(idMap);
     }
 
     private void locationGPS() {
@@ -233,11 +274,6 @@ public class MapActivity extends BaseActivity {
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
-                    if (isFirstlocal) {
-                        idMap.zoomToScale(ptCurrent, 50000);
-                        mapviewscale.refreshScaleView(idMap);
-                    }
-                    isFirstlocal = false;
                 }
 
                 @Override
@@ -258,7 +294,9 @@ public class MapActivity extends BaseActivity {
             ldm.resume();
         }
     }
-    @OnClick({R.id.img_collect, R.id.img_collect2, R.id.rl_item, R.id.ll_around, R.id.ll_route})
+
+
+    @OnClick({R.id.img_collect, R.id.img_collect2, R.id.rl_item, R.id.ll_around, R.id.ll_route,R.id.change_map,R.id.location_map})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_collect:
@@ -291,6 +329,26 @@ public class MapActivity extends BaseActivity {
                 EventBus.getDefault().postSticky(endPoint);
                 EventBus.getDefault().postSticky(new ChannelEvent("route"));
                 skip(PlanActivity.class, true);
+                break;
+            case R.id.change_map:
+                if (map_lfimg.isVisible()) {
+                    map_lfimg.setVisible(false);
+                    map_lf.setVisible(true);
+                    mapRSServiceLayer.setVisible(false);
+                    mapRStextLayer.setVisible(false);
+                    mapServiceLayer.setVisible(true);
+                    maptextLayer.setVisible(true);
+                } else {
+                    map_lfimg.setVisible(true);
+                    map_lf.setVisible(false);
+                    mapRSServiceLayer.setVisible(true);
+                    mapRStextLayer.setVisible(true);
+                    mapServiceLayer.setVisible(false);
+                    maptextLayer.setVisible(false);
+                }
+                break;
+            case R.id.location_map:
+                idMap.zoomToScale(ptCurrent, 50000);
                 break;
         }
     }
@@ -341,4 +399,15 @@ public class MapActivity extends BaseActivity {
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
     }
+
+    /**
+     * eventbus接收地图位置
+     *
+     * @param extent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetExtent(MapExtent extent) {
+        this.extent = extent;
+    }
+
 }

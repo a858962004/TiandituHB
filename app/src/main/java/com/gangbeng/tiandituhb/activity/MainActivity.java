@@ -30,6 +30,7 @@ import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
+import com.gangbeng.tiandituhb.event.MapExtent;
 import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
@@ -38,6 +39,7 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
+import com.gangbeng.tiandituhb.widget.MapZoomView;
 import com.github.library.bubbleview.BubbleTextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -81,6 +83,8 @@ public class MainActivity extends BaseActivity implements BaseView {
     BubbleTextView bubbletextview;
     @BindView(R.id.mapviewscale)
     MapScaleView mapviewscale;
+    @BindView(R.id.mapzoom)
+    MapZoomView mapzoom;
 //    @BindView(R.id.bubblell)
 //    BubbleLinearLayout bubblell;
 
@@ -97,6 +101,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         setToolbarVisibility(false);
         setMapView();
         locationGPS();
+
     }
 
     private void setMapView() {
@@ -182,10 +187,10 @@ public class MainActivity extends BaseActivity implements BaseView {
 
             @Override
             public void postAction(float v, float v1, double v2) {
-                mapviewscale.refreshScaleView(bmapsView);
+                mapviewscale.refreshScaleView(bmapsView.getScale());
             }
         });
-
+        mapzoom.setMapView(bmapsView);
     }
 
     private void setStreetPano(Point center) {
@@ -214,7 +219,9 @@ public class MainActivity extends BaseActivity implements BaseView {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
                     if (isFirstlocal) {
                         bmapsView.zoomToScale(ptCurrent, 50000);
+                        mapviewscale.refreshScaleView(50000);
                     }
+
                     isFirstlocal = false;
                 }
 
@@ -258,6 +265,10 @@ public class MainActivity extends BaseActivity implements BaseView {
                 skip(PlanActivity.class, false);
                 break;
             case R.id.bt_more:
+                MapExtent extent = new MapExtent();
+                extent.setCenter(bmapsView.getCenter());
+                extent.setScale(bmapsView.getScale());
+                EventBus.getDefault().postSticky(extent);
                 skip(MoreActivity.class, false);
                 break;
             case R.id.ll_searchview:

@@ -16,7 +16,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 
-import com.esri.android.map.MapView;
 import com.gangbeng.tiandituhb.R;
 
 /**
@@ -57,7 +56,7 @@ public class MapScaleView extends View {
         scaleHeight = 8;//比比例尺宽度例尺高度
         textColor = Color.BLACK;//比例尺字体颜色
         text = "20公里";//比例尺文本
-        textSize = 30;//比例尺宽度
+        textSize = 40;//比例尺宽度
         scaleSpaceText = 8;//比例尺文本与图形的间隔高度
         mPaint = new Paint();//画笔
     }
@@ -133,11 +132,8 @@ public class MapScaleView extends View {
         patch.draw(canvas, rect);
     }
 
-    public void refreshScaleView(MapView mapView) {
-        if (mapView == null) {
-            throw new NullPointerException("you can call setMapView(MapView mapView) at first");
-        }
-        double scale = mapView.getScale() / 100;//结果单位米，表示图上1厘米代表*米
+    public void refreshScaleView(double sc) {
+        double scale = sc / 100;//结果单位米，表示图上1厘米代表*米
         double ppi = getPPIOfDevice();
         if (scale > 0 && scale <= 20) {//换算20米
             String unit = "20米";

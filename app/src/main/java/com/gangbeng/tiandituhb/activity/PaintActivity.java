@@ -14,17 +14,26 @@ import android.widget.RelativeLayout;
 
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
+import com.esri.android.map.event.OnStatusChangedListener;
+import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.event.MapExtent;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.ScreenShotUtils;
+import com.gangbeng.tiandituhb.widget.MapScaleView;
+import com.gangbeng.tiandituhb.widget.MapZoomView;
 import com.gangbeng.tiandituhb.widget.MyToolbar;
 import com.gangbeng.tiandituhb.workbox.PathView;
 import com.gangbeng.tiandituhb.workbox.PenStrockAndColorSelect;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 
@@ -58,13 +67,18 @@ public class PaintActivity extends BaseActivity {
     LinearLayout savePaint;
     @BindView(R.id.quit_paint)
     LinearLayout quitPaint;
+    @BindView(R.id.mapviewscale)
+    MapScaleView mapviewscale;
+    @BindView(R.id.mapzoom)
+    MapZoomView mapzoom;
 
     private PathView pathView = null;
-    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_lfimg,map_xzq;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
     private boolean isFirstlocal = true;
+    private MapExtent extent;
 
 
     @Override
@@ -76,6 +90,8 @@ public class PaintActivity extends BaseActivity {
         toolbarPaint.setMyToolBarBtnListenter(new MyToolbar.MyToolBarBtnListenter() {
             @Override
             public void ImageRightBtnclick() {
+                mapzoom.setVisibility(View.GONE);
+                mapviewscale.setVisibility(View.GONE);
                 toolbarPaint.setVisibility(View.GONE);
                 changeMap.setVisibility(View.GONE);
                 locationMap.setVisibility(View.GONE);
@@ -100,12 +116,13 @@ public class PaintActivity extends BaseActivity {
 
             }
         });
-        setMapView();
         locationGPS();
+        setMapView();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
@@ -121,7 +138,7 @@ public class PaintActivity extends BaseActivity {
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         mapviewPaint.addLayer(mapServiceLayer, 0);
         mapviewPaint.addLayer(maptextLayer, 1);
@@ -131,12 +148,34 @@ public class PaintActivity extends BaseActivity {
         mapviewPaint.addLayer(map_lf, 4);
         mapviewPaint.addLayer(map_lf_text, 5);
         mapviewPaint.addLayer(map_lfimg, 6);
-        mapviewPaint.addLayer(map_xzq,7);
+        mapviewPaint.addLayer(map_xzq, 7);
 
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
 
+        mapviewPaint.setOnZoomListener(new OnZoomListener() {
+            @Override
+            public void preAction(float v, float v1, double v2) {
+
+            }
+
+            @Override
+            public void postAction(float v, float v1, double v2) {
+                mapviewscale.refreshScaleView(mapviewPaint.getScale());
+            }
+        });
+
+        mapviewPaint.setOnStatusChangedListener(new OnStatusChangedListener() {
+            @Override
+            public void onStatusChanged(Object o, STATUS status) {
+                if (o.equals(map_lf) && status == STATUS.LAYER_LOADED) {
+                    mapviewPaint.zoomToScale(extent.getCenter(), extent.getScale());
+                    mapviewscale.refreshScaleView(extent.getScale());
+                }
+            }
+        });
+        mapzoom.setMapView(mapviewPaint);
     }
 
     private void locationGPS() {
@@ -149,10 +188,6 @@ public class PaintActivity extends BaseActivity {
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
-                    if (isFirstlocal) {
-                        mapviewPaint.zoomToScale(ptCurrent, 50000);
-                    }
-                    isFirstlocal = false;
                 }
 
                 @Override
@@ -288,5 +323,15 @@ public class PaintActivity extends BaseActivity {
         v.setWillNotCacheDrawing(willNotCache);
         v.setDrawingCacheBackgroundColor(color);
         return bitmap;
+    }
+
+    /**
+     * eventbus接收地图位置
+     *
+     * @param extent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetExtent(MapExtent extent) {
+        this.extent = extent;
     }
 }
