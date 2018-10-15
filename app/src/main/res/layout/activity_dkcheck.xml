@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <RelativeLayout style="@style/rl_addphoto">
+
+                <TextView
+                    android:id="@+id/tv_name_photo"
+                    style="@style/tv_addphoto"
+                    android:text="上传人姓名：" />
+
+                <EditText
+                    android:id="@+id/ed_name_feed"
+                    style="@style/ed_addphoto"
+                    android:layout_toRightOf="@+id/tv_name_photo" />
+            </RelativeLayout>
+
+            <RelativeLayout style="@style/rl_addphoto">
+
+                <TextView
+                    android:id="@+id/tv_time_photo"
+                    style="@style/tv_addphoto"
+                    android:text="地类:" />
+
+                <TextView
+                    android:id="@+id/ed_loc_feed"
+                    style="@style/ed_addphoto"
+                    android:layout_toRightOf="@+id/tv_time_photo"
+                    android:inputType="date" />
+            </RelativeLayout>
+
+            <RelativeLayout style="@style/rl_addphoto">
+
+                <TextView
+                    android:id="@+id/tv_city_photo"
+                    style="@style/tv_addphoto"
+                    android:text="上传时间:" />
+
+                <TextView
+                    android:id="@+id/ed2_loc_feed"
+                    style="@style/ed_addphoto"
+                    android:layout_toRightOf="@+id/tv_city_photo" />
+            </RelativeLayout>
+
+            <RelativeLayout style="@style/rl_addphoto">
+
+                <TextView
+                    android:id="@+id/tv_gd"
+                    style="@style/tv_addphoto"
+                    android:text="拐点坐标:" />
+
+                <TextView
+                    android:id="@+id/ed2_gd_feed"
+                    style="@style/ed_addphoto"
+                    android:layout_toRightOf="@+id/tv_gd" />
+            </RelativeLayout>
+
+            <LinearLayout
+                style="@style/rl_addphoto"
+                android:layout_height="100dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    style="@style/tv_addphoto"
+                    android:text="四至信息：" />
+
+                <EditText
+                    android:id="@+id/ed_content"
+                    style="@style/ed_addphoto"
+                    android:layout_height="match_parent"
+                    android:gravity="top"
+                    android:hint="请输入内容"
+                    android:textColorHint="@color/text8a" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/rl_addphoto"
+                android:layout_height="100dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    style="@style/tv_addphoto"
+                    android:text="问题描述：" />
+
+                <EditText
+                    android:id="@+id/ed_eq"
+                    style="@style/ed_addphoto"
+                    android:layout_height="match_parent"
+                    android:gravity="top"
+                    android:hint="请输入内容"
+                    android:textColorHint="@color/text8a" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/rl_addphoto">
+                <TextView
+                    style="@style/tv_addphoto"
+                    android:text="照片：" />
+            </LinearLayout>
+
+
+            <GridView
+                android:id="@+id/grid_feed"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:horizontalSpacing="5dp"
+                android:numColumns="3" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</RelativeLayout>
