@@ -37,6 +37,7 @@ import com.gangbeng.tiandituhb.event.MapExtent;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
+import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.Util;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
@@ -65,18 +66,20 @@ public class CalculateMapActivity extends BaseActivity {
     TextView textTvjieguo;
     @BindView(R.id.measureLin)
     LinearLayout measureLin;
-    //    @BindView(R.id.btnclear)
-//    ImageButton btnclear;
     @BindView(R.id.change_calulate)
     CardView changeCalulate;
     @BindView(R.id.location_calculate)
     CardView locationCalculate;
-    @BindView(R.id.btnclear)
-    TextView btnclear;
     @BindView(R.id.mapviewscale)
     MapScaleView mapviewscale;
     @BindView(R.id.mapzoom)
     MapZoomView mapzoom;
+    @BindView(R.id.btnclear)
+    LinearLayout btnclear;
+    @BindView(R.id.btnchexiao)
+    LinearLayout btnchexiao;
+    @BindView(R.id.calculate)
+    LinearLayout calculate;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
@@ -89,7 +92,7 @@ public class CalculateMapActivity extends BaseActivity {
     private Point ptCurrent;
     private Point ptPrevious = null;//上一个点
     private Point ptStart = null;//起点
-    private PictureMarkerSymbol markerSymbolred, markerSymbolblue;
+    private PictureMarkerSymbol markerSymbolred;
     private SimpleFillSymbol fillSymbol;
     private SimpleLineSymbol lineSymbol;
     private Polyline polyline;
@@ -110,6 +113,10 @@ public class CalculateMapActivity extends BaseActivity {
         } else if (activity.equals("面积测量")) {
             textTvjuli.setText("面积");
             textTvjieguo.setText("0.0平方米");
+        } else if (activity.equals("地块核查")) {
+            calculate.setVisibility(View.GONE);
+            setToolbarRightVisible(true);
+            setRightImageBtnText("完成");
         }
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         locationGPS();
@@ -140,8 +147,8 @@ public class CalculateMapActivity extends BaseActivity {
         mapCalculate.addLayer(map_lfimg, 6);
         mapCalculate.addLayer(map_xzq, 7);
 
-        mapCalculate.addLayer(drawPointLayer, 8);
-        mapCalculate.addLayer(drawLayer, 9);
+        mapCalculate.addLayer(drawLayer, 8);
+        mapCalculate.addLayer(drawPointLayer, 9);
 
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
@@ -151,12 +158,11 @@ public class CalculateMapActivity extends BaseActivity {
         fillSymbol = new SimpleFillSymbol(Color.RED);
         fillSymbol.setAlpha(90);
         lineSymbol = new SimpleLineSymbol(Color.RED, 2, SimpleLineSymbol.STYLE.SOLID);
-        Drawable imagered = getBaseContext().getResources()
-                .getDrawable(R.mipmap.redpush);
-        markerSymbolred = new PictureMarkerSymbol(imagered);
-        Drawable imageblue = getBaseContext().getResources()
-                .getDrawable(R.mipmap.bluepush);
-        markerSymbolblue = new PictureMarkerSymbol(imageblue);
+
+        Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingweizhen);
+        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 130, 130);
+        markerSymbolred = new PictureMarkerSymbol(drawable1);
+        markerSymbolred.setOffsetY(drawable1.getIntrinsicHeight() / 2);
         mapCalculate.setOnZoomListener(new OnZoomListener() {
             @Override
             public void preAction(float v, float v1, double v2) {
@@ -222,7 +228,7 @@ public class CalculateMapActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.btnclear, R.id.change_calulate, R.id.location_calculate})
+    @OnClick({R.id.btnclear, R.id.change_calulate, R.id.location_calculate, R.id.btnchexiao})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btnclear:
@@ -237,6 +243,17 @@ public class CalculateMapActivity extends BaseActivity {
                 polyline = null;
                 drawLayer.removeAll();
                 drawPointLayer.removeAll();
+                break;
+            case R.id.btnchexiao:
+                if (points.size() > 0) {
+                    points.remove(points.size() - 1);
+                    drawPointLayer.removeAll();
+                    setLengthArea();
+                    for (Point point : points) {
+                        Graphic graphic = new Graphic(point, markerSymbolred);
+                        drawPointLayer.addGraphic(graphic);
+                    }
+                }
                 break;
             case R.id.change_calulate:
                 if (map_lfimg.isVisible()) {
@@ -274,39 +291,43 @@ public class CalculateMapActivity extends BaseActivity {
                 Graphic graphic = new Graphic(ptStart, markerSymbolred);
                 drawPointLayer.addGraphic(graphic);
             } else {//画线或多边形的其他点
+                setLengthArea();
                 //绘制其他点
-                Graphic graphic = new Graphic(ptCurrent, markerSymbolblue);
+                Graphic graphic = new Graphic(ptCurrent, markerSymbolred);
                 drawPointLayer.addGraphic(graphic);
-                if (activity.equals("点距测量")) {
-                    //绘制当前线段
-                    getlength(drawLayer);
-                    // 计算当前线段的长度
-                    Polyline polyline1 = (Polyline) GeometryEngine.project(polyline, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
-                    String length = new String();
-                    if (Math.round(polyline1.calculateLength2D()) > 1000) {
-                        String string = Double.toString(Math.round(polyline1.calculateLength2D()) / 1000.0);
-                        String s = Util.saveTwoU(string);
-                        length = s + " 千米";
-                    } else {
-                        String string = Double.toString(Math.round(polyline1.calculateLength2D()));
-                        String s = Util.saveTwoU(string);
-                        length = s + " 米";
-                    }
-                    textTvjieguo.setText(length);
-                } else if (activity.equals("面积测量")) {
-                    //绘制临时多边形
-                    getArea(drawLayer);
-                    //计算当前面积
-                    Polygon polygonNow = (Polygon) GeometryEngine.project(polygon, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
-                    Log.d("tag", String.valueOf(mapCalculate.getSpatialReference()));
-                    String sArea = getAreaString(polygonNow.calculateArea2D());
-                    Log.d("tag", polygonNow.calculateArea2D() + "");
-                    textTvjieguo.setText(sArea);
-                }
             }
             ptPrevious = ptCurrent;
         }
     };
+
+    private void setLengthArea() {
+        if (activity.equals("点距测量")) {
+            //绘制当前线段
+            getlength(drawLayer);
+            // 计算当前线段的长度
+            Polyline polyline1 = (Polyline) GeometryEngine.project(polyline, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
+            String length = new String();
+            if (Math.round(polyline1.calculateLength2D()) > 1000) {
+                String string = Double.toString(Math.round(polyline1.calculateLength2D()) / 1000.0);
+                String s = Util.saveTwoU(string);
+                length = s + " 千米";
+            } else {
+                String string = Double.toString(Math.round(polyline1.calculateLength2D()));
+                String s = Util.saveTwoU(string);
+                length = s + " 米";
+            }
+            textTvjieguo.setText(length);
+        } else if (activity.equals("面积测量")||activity.equals("地块核查")) {
+            //绘制临时多边形
+            getArea(drawLayer);
+            //计算当前面积
+            Polygon polygonNow = (Polygon) GeometryEngine.project(polygon, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
+            Log.d("tag", String.valueOf(mapCalculate.getSpatialReference()));
+            String sArea = getAreaString(polygonNow.calculateArea2D());
+            Log.d("tag", polygonNow.calculateArea2D() + "");
+            textTvjieguo.setText(sArea);
+        }
+    }
 
     //测量距离
     private void getlength(GraphicsLayer drawLayer) {

@@ -31,24 +31,5 @@
             android:textColor="@color/colorff"
             android:textSize="15sp" />
     </LinearLayout>
-    <LinearLayout
-        android:layout_marginTop="20dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/measureLin"
-        android:background="@mipmap/icon_clear"
-        android:alpha="0.7"
-        >
-        <TextView
-            android:id="@+id/btnclear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="7dp"
-            android:gravity="center"
-            android:background="@mipmap/icon_shanchu"
-
-             />
-    </LinearLayout>
 
 </RelativeLayout>
