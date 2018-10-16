@@ -27,9 +27,9 @@ public class MoreActivity extends BaseActivity {
     ListView lvMore;
     MoreLVAdapter adapter;
 
-    String[] names = new String[]{"登录/注册","地块核查","添加信息点","收藏夹", "点距测量", "面积测量","绘图板","地图对比","添加信息点","信息反馈"};
+    String[] names = new String[]{"登录/注册","地块核查","添加信息点","收藏夹", "点距测量", "面积测量","绘图板","地图对比","信息反馈"};
     int[] resource = new int[]{R.mipmap.icon_user,R.mipmap.icon_dikuaihecha,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_shoucang1, R.mipmap.icon_dianju, R.mipmap.icon_mianji,
-            R.mipmap.icon_huitu,R.mipmap.icon_duibi,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_fankui};
+            R.mipmap.icon_huitu,R.mipmap.icon_duibi,R.mipmap.icon_fankui};
 
     @Override
     protected void initView() {

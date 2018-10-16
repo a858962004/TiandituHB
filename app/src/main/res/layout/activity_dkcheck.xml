@@ -15,21 +15,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-
-            <RelativeLayout style="@style/rl_addphoto">
-
-                <TextView
-                    android:id="@+id/tv_name_photo"
-                    style="@style/tv_addphoto"
-                    android:text="上传人姓名："
-                    />
-
-                <EditText
-                    android:id="@+id/ed_name_feed"
-                    style="@style/ed_addphoto"
-                    android:layout_toRightOf="@+id/tv_name_photo" />
-            </RelativeLayout>
-
             <RelativeLayout style="@style/rl_addphoto">
 
                 <TextView
