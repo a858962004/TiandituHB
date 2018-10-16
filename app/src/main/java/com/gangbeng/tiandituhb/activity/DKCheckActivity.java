@@ -11,6 +11,6 @@ public class DKCheckActivity extends BaseActivity {
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_dkcheck);
-
+        setToolbarTitle("地块核查");
     }
 }

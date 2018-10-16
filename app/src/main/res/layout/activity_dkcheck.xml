@@ -21,7 +21,8 @@
                 <TextView
                     android:id="@+id/tv_name_photo"
                     style="@style/tv_addphoto"
-                    android:text="上传人姓名：" />
+                    android:text="上传人姓名："
+                    />
 
                 <EditText
                     android:id="@+id/ed_name_feed"

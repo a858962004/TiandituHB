@@ -218,6 +218,10 @@ public class CalculateMapActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void setRightClickListen() {
+        skip(DKCheckActivity.class,false);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

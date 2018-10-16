@@ -27,8 +27,8 @@ public class MoreActivity extends BaseActivity {
     ListView lvMore;
     MoreLVAdapter adapter;
 
-    String[] names = new String[]{"地块核查","添加信息点","收藏夹", "点距测量", "面积测量","绘图板","地图对比","添加信息点","信息反馈"};
-    int[] resource = new int[]{R.mipmap.icon_dikuaihecha,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_shoucang1, R.mipmap.icon_dianju, R.mipmap.icon_mianji,
+    String[] names = new String[]{"登录/注册","地块核查","添加信息点","收藏夹", "点距测量", "面积测量","绘图板","地图对比","添加信息点","信息反馈"};
+    int[] resource = new int[]{R.mipmap.icon_user,R.mipmap.icon_dikuaihecha,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_shoucang1, R.mipmap.icon_dianju, R.mipmap.icon_mianji,
             R.mipmap.icon_huitu,R.mipmap.icon_duibi,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_fankui};
 
     @Override
@@ -60,6 +60,9 @@ public class MoreActivity extends BaseActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Bundle bundle = new Bundle();
             switch (names[position]) {
+                case "登录/注册":
+                    skip(LoginActivity.class,false);
+                      break;
                 case "地块核查":
                     bundle.putString("activity","地块核查");
                     skip(CalculateMapActivity.class,bundle,false);
