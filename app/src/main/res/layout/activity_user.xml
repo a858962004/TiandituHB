@@ -40,8 +40,6 @@
                 style="@style/style_register_ed2"/>
         </RelativeLayout>
 
-
-
     </LinearLayout>
     <Button
         android:id="@+id/quit"
