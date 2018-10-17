@@ -14,6 +14,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <RelativeLayout style="@style/rl_addphoto">
+
+                <TextView
+                    android:id="@+id/tv_name_photo"
+                    style="@style/tv_addphoto"
+                    android:text="地块名称:" />
+
+                <TextView
+                    android:id="@+id/ed_name_feed"
+                    style="@style/ed_addphoto"
+                    android:layout_toRightOf="@+id/tv_name_photo"
+                    android:inputType="date" />
+            </RelativeLayout>
+
 
             <RelativeLayout style="@style/rl_addphoto">
 
@@ -29,18 +43,18 @@
                     android:inputType="date" />
             </RelativeLayout>
 
-            <RelativeLayout style="@style/rl_addphoto">
+            <!--<RelativeLayout style="@style/rl_addphoto">-->
 
-                <TextView
-                    android:id="@+id/tv_city_photo"
-                    style="@style/tv_addphoto"
-                    android:text="上传时间:" />
+                <!--<TextView-->
+                    <!--android:id="@+id/tv_city_photo"-->
+                    <!--style="@style/tv_addphoto"-->
+                    <!--android:text="上传时间:" />-->
 
-                <TextView
-                    android:id="@+id/ed2_loc_feed"
-                    style="@style/ed_addphoto"
-                    android:layout_toRightOf="@+id/tv_city_photo" />
-            </RelativeLayout>
+                <!--<TextView-->
+                    <!--android:id="@+id/ed2_loc_feed"-->
+                    <!--style="@style/ed_addphoto"-->
+                    <!--android:layout_toRightOf="@+id/tv_city_photo" />-->
+            <!--</RelativeLayout>-->
 
             <RelativeLayout style="@style/rl_addphoto">
 

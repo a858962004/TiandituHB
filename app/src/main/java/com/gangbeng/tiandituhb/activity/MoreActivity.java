@@ -8,6 +8,8 @@ import android.widget.ListView;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.MoreLVAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.event.UserEvent;
+import com.gangbeng.tiandituhb.utils.SharedUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,20 +24,37 @@ import butterknife.ButterKnife;
  * @date 2018-08-04
  */
 
-public class MoreActivity extends BaseActivity {
+public class MoreActivity extends BaseActivity{
     @BindView(R.id.lv_more)
     ListView lvMore;
     MoreLVAdapter adapter;
+
+    public static MoreActivity activity;
 
     String[] names = new String[]{"登录/注册","地块核查","添加信息点","收藏夹", "点距测量", "面积测量","绘图板","地图对比","信息反馈"};
     int[] resource = new int[]{R.mipmap.icon_user,R.mipmap.icon_dikuaihecha,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_shoucang1, R.mipmap.icon_dianju, R.mipmap.icon_mianji,
             R.mipmap.icon_huitu,R.mipmap.icon_duibi,R.mipmap.icon_fankui};
 
+    public static MoreActivity instence(){
+        return activity;
+    }
+
     @Override
     protected void initView() {
+        activity=this;
         setContentLayout(R.layout.activity_more);
         setToolbarTitle("更多");
         setToolbarRightVisible(false);
+        setListData();
+    }
+
+    public void setListData() {
+        UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
+        if (user!=null){
+            names[0]="个人中心";
+        }else {
+            names[0]="登录/注册";
+        }
         List<Map<String, Object>> data = new ArrayList<>();
         for (int i = 0; i < names.length; i++) {
             Map<String, Object> map = new HashMap<>();
@@ -91,7 +110,12 @@ public class MoreActivity extends BaseActivity {
                 case "信息反馈":
                     skip(FeedBackActivity.class,false);
                     break;
+                case "个人中心":
+                    skip(UserActivity.class,false);
+                    break;
             }
         }
     };
+
+
 }

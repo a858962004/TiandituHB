@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout style="@style/style_register_linear">
+        <TextView
+            android:id="@+id/tv_username"
+            style="@style/style_register_ed2"/>
+        </LinearLayout>
+    <LinearLayout style="@style/style_register_linear">
+
+        <TextView
+            android:text="电话："
+            android:id="@+id/tv_telephone"
+            style="@style/style_register_ed2"/>
+        <TextView
+            style="@style/horizonline"/>
+        <TextView
+            android:text="邮箱："
+            android:id="@+id/tv_email"
+            style="@style/style_register_ed2"/>
+
+        <TextView
+            style="@style/horizonline"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_arrow_r"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@mipmap/icon_arrow_r"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"/>
+            <TextView
+                android:layout_toLeftOf="@+id/tv_arrow_r"
+                android:text="修改密码"
+                android:id="@+id/tv_updatepassword"
+                style="@style/style_register_ed2"/>
+        </RelativeLayout>
+
+
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/quit"
+        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:text="退出登录"
+        android:background="@drawable/login_btn"
+        android:textColor="@android:color/white"/>
+</LinearLayout>

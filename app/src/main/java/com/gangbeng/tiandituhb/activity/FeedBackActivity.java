@@ -15,8 +15,8 @@ import butterknife.ButterKnife;
  */
 
 public class FeedBackActivity extends BaseActivity {
-    @BindView(R.id.ed_telephoto)
-    EditText edTelephoto;
+    @BindView(R.id.ed_telephone)
+    EditText edTelephone;
     @BindView(R.id.ed_email)
     EditText edEmail;
     @BindView(R.id.ed_content)
@@ -31,10 +31,10 @@ public class FeedBackActivity extends BaseActivity {
 
     @Override
     protected void setRightClickListen() {
-        String telephoto = String.valueOf(edTelephoto.getText());
+        String telephone = String.valueOf(edTelephone.getText());
         String email = String.valueOf(edEmail.getText());
         String content = String.valueOf(edContent.getText());
-        if (telephoto.equals("")) {
+        if (telephone.equals("")) {
             ShowToast("请输入电话");
             return;
         }
