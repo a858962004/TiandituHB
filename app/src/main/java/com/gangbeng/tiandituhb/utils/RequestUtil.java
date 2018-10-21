@@ -33,6 +33,8 @@ public class RequestUtil {
     public static final String Login="Login";//登录接口
     public static final String AddUserInfo="AddUserInfo";//注册接口
     public static final String EditPassword="EditPassword";//修改密码接口
+    public static final String GetUserInfo="GetUserInfo";//获取用户信息
+    public static final String AddFeedBackInfo="AddFeedBackInfo";//添加信息反馈
 
     public static String post(String methodName, Map<String,String> param){
 

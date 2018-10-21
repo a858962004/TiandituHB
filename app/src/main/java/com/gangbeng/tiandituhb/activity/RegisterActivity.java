@@ -1,14 +1,21 @@
 package com.gangbeng.tiandituhb.activity;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.presenter.RegisterPresenter;
+import com.gangbeng.tiandituhb.utils.CodeUtils;
+import com.gangbeng.tiandituhb.utils.RequestUtil;
+
+import org.ksoap2.serialization.SoapObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +44,13 @@ public class RegisterActivity extends BaseActivity implements BaseView {
     EditText edEmail;
     @BindView(R.id.register)
     Button register;
+    @BindView(R.id.img_yzm)
+    ImageView imgYzm;
+    @BindView(R.id.ed_yzm)
+    EditText edYzm;
 
     private BasePresenter presenter;
+    private CodeUtils instance;
 
     @Override
     protected void initView() {
@@ -46,6 +58,9 @@ public class RegisterActivity extends BaseActivity implements BaseView {
         setToolbarTitle("注册");
         setToolbarRightVisible(false);
         presenter = new RegisterPresenter(this);
+        instance = CodeUtils.getInstance();
+        Bitmap bitmap = instance.createBitmap();
+        imgYzm.setImageBitmap(bitmap);
     }
 
     @Override
@@ -53,51 +68,6 @@ public class RegisterActivity extends BaseActivity implements BaseView {
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-    }
-
-    @OnClick(R.id.register)
-    public void onViewClicked() {
-        String loginname = String.valueOf(edLoginname.getText());
-        String password = String.valueOf(edPassword.getText());
-        String password2 = String.valueOf(edPassword2.getText());
-        String username = String.valueOf(edUsename.getText());
-        String telephone = String.valueOf(edTelephone.getText());
-        String email = String.valueOf(edEmail.getText());
-        if (loginname.equals("")) {
-            ShowToast("请填入登录名");
-            return;
-        }
-        if (password.equals("")) {
-            ShowToast("请填入密码");
-            return;
-        }
-        if (password2.equals("")) {
-            ShowToast("请确认密码");
-            return;
-        }
-        if (username.equals("")) {
-            ShowToast("请填入用户名");
-            return;
-        }
-        if (telephone.equals("")) {
-            ShowToast("请填入联系电话");
-            return;
-        }
-        if (email.equals("")) {
-            ShowToast("请填入电子邮箱");
-            return;
-        }
-        if (!password.equals(password2)) {
-            ShowToast("确认密码填写错误");
-            return;
-        }
-        Map<String,Object> parameter=new HashMap<>();
-        parameter.put("loginname",loginname);
-        parameter.put("username",username);
-        parameter.put("password",password);
-        parameter.put("tel",telephone);
-        parameter.put("email",email);
-        presenter.setRequest(parameter);
     }
 
     @Override
@@ -117,6 +87,80 @@ public class RegisterActivity extends BaseActivity implements BaseView {
 
     @Override
     public void setData(Object data) {
+        if (data instanceof SoapObject) {
+            SoapObject soapObject=(SoapObject)data;
+            String result = RequestUtil.getSoapObjectValue(soapObject, "result");
+            String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
+            String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+            if (result.equals("ok")){
+                showMsg("注册成功");
+                finish();
+            }else {
+                showMsg(errReason);
+            }
+        }
+    }
 
+    @OnClick({R.id.img_yzm, R.id.register})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_yzm:
+                Bitmap bitmap = instance.createBitmap();
+                imgYzm.setImageBitmap(bitmap);
+                break;
+            case R.id.register:
+                String loginname = String.valueOf(edLoginname.getText());
+                String password = String.valueOf(edPassword.getText());
+                String password2 = String.valueOf(edPassword2.getText());
+                String username = String.valueOf(edUsename.getText());
+                String telephone = String.valueOf(edTelephone.getText());
+                String email = String.valueOf(edEmail.getText());
+                String yzm = String.valueOf(edYzm.getText());
+                String code = instance.getCode();
+                if (loginname.equals("")) {
+                    ShowToast("请填入登录名");
+                    return;
+                }
+                if (password.equals("")) {
+                    ShowToast("请填入密码");
+                    return;
+                }
+                if (password2.equals("")) {
+                    ShowToast("请确认密码");
+                    return;
+                }
+                if (username.equals("")) {
+                    ShowToast("请填入用户名");
+                    return;
+                }
+                if (telephone.equals("")) {
+                    ShowToast("请填入联系电话");
+                    return;
+                }
+                if (email.equals("")) {
+                    ShowToast("请填入电子邮箱");
+                    return;
+                }
+                if (!password.equals(password2)) {
+                    ShowToast("确认密码填写错误");
+                    return;
+                }
+                if (yzm.equals("")){
+                    ShowToast("请输入验证码");
+                    return;
+                }
+                if (!yzm.equals(code)){
+                    ShowToast("您输入的验证码有误");
+                    return;
+                }
+                Map<String, Object> parameter = new HashMap<>();
+                parameter.put("loginname", loginname);
+                parameter.put("username", username);
+                parameter.put("password", password);
+                parameter.put("tel", telephone);
+                parameter.put("email", email);
+                presenter.setRequest(parameter);
+                break;
+        }
     }
 }

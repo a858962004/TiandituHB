@@ -100,6 +100,7 @@
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.UserActivity" />
+        <activity android:name=".activity.EditPasswordActivity" />
         <!--<activity android:name=".activity.DKCheckActivity" />-->
 
         <receiver android:name=".provider.WidgetProvider">
