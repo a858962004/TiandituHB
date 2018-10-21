@@ -78,13 +78,18 @@ public class MoreActivity extends BaseActivity{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Bundle bundle = new Bundle();
+            UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
             switch (names[position]) {
                 case "登录/注册":
                     skip(LoginActivity.class,false);
                       break;
                 case "地块核查":
-                    bundle.putString("activity","地块核查");
-                    skip(CalculateMapActivity.class,bundle,false);
+                    if (user != null) {
+                        bundle.putString("activity","地块核查");
+                        skip(DKListActivity.class,bundle,false);
+                    }else {
+                        ShowToast("此功能需登录后使用");
+                    }
                     break;
                 case "收藏夹":
                     skip(CollectActivity.class, false);
@@ -104,11 +109,19 @@ public class MoreActivity extends BaseActivity{
                     skip(ComparisonActivity.class,false);
                     break;
                 case "添加信息点":
-                    bundle.putString("key","addPoint");
-                    skip(MapActivity.class,bundle,false);
+                    if (user != null) {
+                        bundle.putString("key","addPoint");
+                        skip(MapActivity.class,bundle,false);
+                    }else {
+                        ShowToast("此功能需登录后使用");
+                    }
                     break;
                 case "信息反馈":
-                    skip(FeedBackActivity.class,false);
+                    if (user!=null){
+                        skip(FeedBackActivity.class,false);
+                    }else {
+                        ShowToast("此功能需登录后使用");
+                    }
                     break;
                 case "个人中心":
                     skip(UserActivity.class,false);

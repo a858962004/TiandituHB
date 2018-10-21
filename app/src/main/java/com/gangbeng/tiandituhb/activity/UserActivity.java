@@ -98,8 +98,8 @@ public class UserActivity extends BaseActivity implements BaseView {
             String userName = RequestUtil.getSoapObjectValue(object, "UserName");
             String mobilePhone1 = RequestUtil.getSoapObjectValue(object, "MobilePhone1");
             String email = RequestUtil.getSoapObjectValue(object, "EMAIL");
-            tvTelephone.setText(mobilePhone1);
-            tvEmail.setText(email);
+            tvTelephone.setText("电话："+mobilePhone1);
+            tvEmail.setText("邮箱："+email);
         }
 
     }

@@ -12,119 +12,188 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
-            <RelativeLayout style="@style/rl_addphoto">
 
-                <TextView
-                    android:id="@+id/tv_name_photo"
-                    style="@style/tv_addphoto"
-                    android:text="地块名称:" />
-
-                <TextView
-                    android:id="@+id/ed_name_feed"
-                    style="@style/ed_addphoto"
-                    android:layout_toRightOf="@+id/tv_name_photo"
-                    android:inputType="date" />
-            </RelativeLayout>
-
-
-            <RelativeLayout style="@style/rl_addphoto">
-
-                <TextView
-                    android:id="@+id/tv_time_photo"
-                    style="@style/tv_addphoto"
-                    android:text="地类:" />
-
-                <TextView
-                    android:id="@+id/ed_loc_feed"
-                    style="@style/ed_addphoto"
-                    android:layout_toRightOf="@+id/tv_time_photo"
-                    android:inputType="date" />
-            </RelativeLayout>
-
-            <!--<RelativeLayout style="@style/rl_addphoto">-->
-
-                <!--<TextView-->
-                    <!--android:id="@+id/tv_city_photo"-->
-                    <!--style="@style/tv_addphoto"-->
-                    <!--android:text="上传时间:" />-->
-
-                <!--<TextView-->
-                    <!--android:id="@+id/ed2_loc_feed"-->
-                    <!--style="@style/ed_addphoto"-->
-                    <!--android:layout_toRightOf="@+id/tv_city_photo" />-->
-            <!--</RelativeLayout>-->
-
-            <RelativeLayout style="@style/rl_addphoto">
-
-                <TextView
-                    android:id="@+id/tv_gd"
-                    style="@style/tv_addphoto"
-                    android:text="拐点坐标:" />
-
-                <TextView
-                    android:id="@+id/ed2_gd_feed"
-                    style="@style/ed_addphoto"
-                    android:layout_toRightOf="@+id/tv_gd" />
-            </RelativeLayout>
-
-            <LinearLayout
-                style="@style/rl_addphoto"
-                android:layout_height="100dp"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp">
-
-                <TextView
-                    style="@style/tv_addphoto"
-                    android:text="四至信息：" />
+            <LinearLayout style="@style/style_register_linear">
 
                 <EditText
-                    android:id="@+id/ed_content"
-                    style="@style/ed_addphoto"
-                    android:layout_height="match_parent"
-                    android:gravity="top"
-                    android:hint="请输入内容"
-                    android:textColorHint="@color/text8a" />
-            </LinearLayout>
+                    android:id="@+id/ed_bianhao"
+                    style="@style/style_register_ed2"
+                    android:hint="请输入地块编号"
+                    android:maxLines="1"/>
 
-            <LinearLayout
-                style="@style/rl_addphoto"
-                android:layout_height="100dp"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp">
-
-                <TextView
-                    style="@style/tv_addphoto"
-                    android:text="问题描述：" />
+                <TextView style="@style/horizonline" />
 
                 <EditText
-                    android:id="@+id/ed_eq"
-                    style="@style/ed_addphoto"
-                    android:layout_height="match_parent"
-                    android:gravity="top"
-                    android:hint="请输入内容"
-                    android:textColorHint="@color/text8a" />
-            </LinearLayout>
+                    android:id="@+id/ed_xianzhuang"
+                    style="@style/style_register_ed2"
+                    android:hint="请输入利用现状"
+                    android:maxLines="1"/>
 
-            <LinearLayout style="@style/rl_addphoto">
+                <TextView style="@style/horizonline" />
+
                 <TextView
-                    style="@style/tv_addphoto"
-                    android:text="照片：" />
+                    android:id="@+id/ed_dikuai"
+                    style="@style/style_register_ed2"
+                    android:hint="请添加地块信息"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    />
+
+                <TextView style="@style/horizonline" />
+
+                <EditText
+                    android:id="@+id/ed_sizhi"
+                    style="@style/style_register_ed2"
+                    android:hint="请输入四至信息"
+                    android:maxLines="2"/>
+
+                <TextView style="@style/horizonline" />
+
+                <EditText
+                    android:id="@+id/ed_wenti"
+                    style="@style/style_register_ed2"
+                    android:hint="请输入问题描述"
+                    android:maxLines="2"/>
             </LinearLayout>
 
-
-            <GridView
+            <LinearLayout style="@style/style_register_linear"
+                android:orientation="horizontal">
+                <GridView
                 android:id="@+id/grid_feed"
-                android:layout_width="match_parent"
+                android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="5dp"
                 android:horizontalSpacing="5dp"
-                android:numColumns="3" />
+                android:numColumns="1" />
+                <TextView
+                    android:text="添加照片"
+                    android:layout_marginRight="20dp"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
+            </LinearLayout>
         </LinearLayout>
+
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical">-->
+        <!--<RelativeLayout style="@style/rl_addphoto">-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/tv_name_photo"-->
+        <!--style="@style/tv_addphoto"-->
+        <!--android:text="地块名称:" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/ed_name_feed"-->
+        <!--style="@style/ed_addphoto"-->
+        <!--android:layout_toRightOf="@+id/tv_name_photo"-->
+        <!--android:inputType="date" />-->
+        <!--</RelativeLayout>-->
+
+
+        <!--<RelativeLayout style="@style/rl_addphoto">-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/tv_time_photo"-->
+        <!--style="@style/tv_addphoto"-->
+        <!--android:text="地类:" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/ed_loc_feed"-->
+        <!--style="@style/ed_addphoto"-->
+        <!--android:layout_toRightOf="@+id/tv_time_photo"-->
+        <!--android:inputType="date" />-->
+        <!--</RelativeLayout>-->
+
+        <!--&lt;!&ndash;<RelativeLayout style="@style/rl_addphoto">&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/tv_city_photo"&ndash;&gt;-->
+        <!--&lt;!&ndash;style="@style/tv_addphoto"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:text="上传时间:" />&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/ed2_loc_feed"&ndash;&gt;-->
+        <!--&lt;!&ndash;style="@style/ed_addphoto"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_toRightOf="@+id/tv_city_photo" />&ndash;&gt;-->
+        <!--&lt;!&ndash;</RelativeLayout>&ndash;&gt;-->
+
+        <!--<RelativeLayout style="@style/rl_addphoto">-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/tv_gd"-->
+        <!--style="@style/tv_addphoto"-->
+        <!--android:text="拐点坐标:" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/ed2_gd_feed"-->
+        <!--style="@style/ed_addphoto"-->
+        <!--android:layout_toRightOf="@+id/tv_gd" />-->
+        <!--</RelativeLayout>-->
+
+        <!--<LinearLayout-->
+        <!--style="@style/rl_addphoto"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:paddingBottom="5dp"-->
+        <!--android:paddingTop="5dp">-->
+
+        <!--<TextView-->
+        <!--style="@style/tv_addphoto"-->
+        <!--android:text="四至信息：" />-->
+
+        <!--<EditText-->
+        <!--android:id="@+id/ed_content"-->
+        <!--style="@style/ed_addphoto"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="top"-->
+        <!--android:hint="请输入内容"-->
+        <!--android:textColorHint="@color/text8a" />-->
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+        <!--style="@style/rl_addphoto"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:paddingBottom="5dp"-->
+        <!--android:paddingTop="5dp">-->
+
+        <!--<TextView-->
+        <!--style="@style/tv_addphoto"-->
+        <!--android:text="问题描述：" />-->
+
+        <!--<EditText-->
+        <!--android:id="@+id/ed_eq"-->
+        <!--style="@style/ed_addphoto"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="top"-->
+        <!--android:hint="请输入内容"-->
+        <!--android:textColorHint="@color/text8a" />-->
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout style="@style/rl_addphoto">-->
+        <!--<TextView-->
+        <!--style="@style/tv_addphoto"-->
+        <!--android:text="照片：" />-->
+        <!--</LinearLayout>-->
+
+
+        <!--<GridView-->
+        <!--android:id="@+id/grid_feed"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="5dp"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:horizontalSpacing="5dp"-->
+        <!--android:numColumns="3" />-->
+
+        <!--</LinearLayout>-->
 
     </ScrollView>
 </RelativeLayout>

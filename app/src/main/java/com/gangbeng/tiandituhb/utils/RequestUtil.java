@@ -2,6 +2,8 @@ package com.gangbeng.tiandituhb.utils;
 
 import android.util.Log;
 
+import com.gangbeng.tiandituhb.bean.DKHCInfo;
+
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -18,6 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +39,9 @@ public class RequestUtil {
     public static final String EditPassword="EditPassword";//修改密码接口
     public static final String GetUserInfo="GetUserInfo";//获取用户信息
     public static final String AddFeedBackInfo="AddFeedBackInfo";//添加信息反馈
+    public static final String GetDKCheckInfo="GetDKCheckInfo";//获取地块列表
+    public static final String AddDKCheckInfo="AddDKCheckInfo";//添加地块信息
+    public static final String EditDKCheckInfo="EditDKCheckInfo";//修改地块信息
 
     public static String post(String methodName, Map<String,String> param){
 
@@ -120,12 +127,55 @@ public class RequestUtil {
                 soapObject.getPropertyInfo(i,propertyInfo);
                 if (propertyInfo.getName().equals(name)){
                     Object value1 = propertyInfo.getValue();
+                    if (value1!=null)
                     value=value1.toString();
                     break;
                 }
             }
         }
         return value;
+    }
+
+
+    public static List<SoapObject> getObjectValue(SoapObject soapObject, String name){
+        List<SoapObject>soapObjects=new ArrayList<>();
+        int propertyCount = soapObject.getPropertyCount();
+        if (propertyCount>0){
+            for (int i = 0; i < soapObject.getPropertyCount(); i++) {
+                PropertyInfo propertyInfo=new PropertyInfo();
+                soapObject.getPropertyInfo(i,propertyInfo);
+                if (propertyInfo.getName().equals(name)){
+                    SoapObject soapObject1 = (SoapObject)propertyInfo.getValue();
+                    soapObjects.add(soapObject1);
+                }
+            }
+        }
+        return soapObjects;
+    }
+
+    public static DKHCInfo soapObjectToDKHCInfo(SoapObject soapObject){
+        DKHCInfo dkhcInfo=new DKHCInfo();
+        dkhcInfo.setAddLoginName(getSoapObjectValue(soapObject,"AddLoginName"));
+        dkhcInfo.setAddress(getSoapObjectValue(soapObject,"Address"));
+        dkhcInfo.setAddTime(getSoapObjectValue(soapObject,"AddTime"));
+        dkhcInfo.setArea(getSoapObjectValue(soapObject,"Area"));
+        dkhcInfo.setCheckman(getSoapObjectValue(soapObject,"Checkman"));
+        dkhcInfo.setCheckTime(getSoapObjectValue(soapObject,"CheckTime"));
+        dkhcInfo.setCounty(getSoapObjectValue(soapObject,"County"));
+        dkhcInfo.setDKID(getSoapObjectValue(soapObject,"DKID"));
+        dkhcInfo.setGeometryStr(getSoapObjectValue(soapObject,"GeometryStr"));
+        dkhcInfo.setGeometryType(getSoapObjectValue(soapObject,"GeometryType"));
+        dkhcInfo.setID(getSoapObjectValue(soapObject,"ID"));
+        dkhcInfo.setInfostate(getSoapObjectValue(soapObject,"infostate"));
+        dkhcInfo.setNote(getSoapObjectValue(soapObject,"Note"));
+        dkhcInfo.setOwner(getSoapObjectValue(soapObject,"Owner"));
+        dkhcInfo.setPicUrl(getSoapObjectValue(soapObject,"PicUrl"));
+        dkhcInfo.setResult(getSoapObjectValue(soapObject,"result"));
+        dkhcInfo.setSubmitstate(getSoapObjectValue(soapObject,"submitstate"));
+        dkhcInfo.setTown(getSoapObjectValue(soapObject,"town"));
+        dkhcInfo.setUpdateTime(getSoapObjectValue(soapObject,"UpdateTime"));
+        dkhcInfo.setVillege(getSoapObjectValue(soapObject,"Villege"));
+        return dkhcInfo;
     }
 
 //    public static String checkUpdate() {
@@ -209,4 +259,6 @@ public class RequestUtil {
         }
         return isSuccess;
     }
+
+
 }

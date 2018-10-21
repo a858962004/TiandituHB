@@ -220,7 +220,9 @@ public class CalculateMapActivity extends BaseActivity {
 
     @Override
     protected void setRightClickListen() {
-        skip(DKCheckActivity.class,false);
+        if (points.size() > 0)
+            DKCheckActivity.getInstence().setPoint(points);
+        finish();
     }
 
     @Override
@@ -321,7 +323,7 @@ public class CalculateMapActivity extends BaseActivity {
                 length = s + " 米";
             }
             textTvjieguo.setText(length);
-        } else if (activity.equals("面积测量")||activity.equals("地块核查")) {
+        } else if (activity.equals("面积测量") || activity.equals("地块核查")) {
             //绘制临时多边形
             getArea(drawLayer);
             //计算当前面积
