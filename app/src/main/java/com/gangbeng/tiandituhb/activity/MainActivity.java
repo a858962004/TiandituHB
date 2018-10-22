@@ -145,40 +145,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                 MyLogUtil.showLog(scale);
             }
         });
-        bmapsView.setOnPanListener(new OnPanListener() {
-            @Override
-            public void prePointerMove(float v, float v1, float v2, float v3) {
-                if (imgQuanjing.getVisibility() == View.VISIBLE) {
-                    bubbletextview.setVisibility(View.GONE);
-                    bubbletextview.setText("正在加载...");
-                    imgQuanjing.setVisibility(View.GONE);
-                    imgQuanjing2.setVisibility(View.VISIBLE);
-                }
-            }
 
-            @Override
-            public void postPointerMove(float v, float v1, float v2, float v3) {
-                MyLogUtil.showLog("pan", "postPointerMove");
-            }
-
-            @Override
-            public void prePointerUp(float v, float v1, float v2, float v3) {
-                MyLogUtil.showLog("pan", "prePointerUp");
-            }
-
-            @Override
-            public void postPointerUp(float v, float v1, float v2, float v3) {
-                MyLogUtil.showLog("pan", "postPointerUp");
-                if (imgQuanjing2.getVisibility() == View.VISIBLE) {
-                    bubbletextview.setVisibility(View.VISIBLE);
-                    imgQuanjing2.setVisibility(View.GONE);
-                    imgQuanjing.setVisibility(View.VISIBLE);
-                }
-                // 通过百度经纬度坐标获取当前位置相关全景信息，包括是否有外景，外景PID，外景名称等
-                Point center = bmapsView.getCenter();
-                setStreetPano(center);
-            }
-        });
         bmapsView.setOnZoomListener(new OnZoomListener() {
             @Override
             public void preAction(float v, float v1, double v2) {
@@ -311,6 +278,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                     imgQuanjing.setVisibility(View.GONE);
                     bubbletextview.setVisibility(View.GONE);
                     bubbletextview.setText("正在查询...");
+                    bmapsView.setOnPanListener(null);
 //                    btSure.setVisibility(View.GONE);
                 } else {
                     imgQuanjing.setVisibility(View.VISIBLE);
@@ -318,6 +286,40 @@ public class MainActivity extends BaseActivity implements BaseView {
                     bubbletextview.setText("正在查询...");
                     Point center = bmapsView.getCenter();
                     setStreetPano(center);
+                    bmapsView.setOnPanListener(new OnPanListener() {
+                        @Override
+                        public void prePointerMove(float v, float v1, float v2, float v3) {
+                            if (imgQuanjing.getVisibility() == View.VISIBLE) {
+                                bubbletextview.setVisibility(View.GONE);
+                                bubbletextview.setText("正在加载...");
+                                imgQuanjing.setVisibility(View.GONE);
+                                imgQuanjing2.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void postPointerMove(float v, float v1, float v2, float v3) {
+                            MyLogUtil.showLog("pan", "postPointerMove");
+                        }
+
+                        @Override
+                        public void prePointerUp(float v, float v1, float v2, float v3) {
+                            MyLogUtil.showLog("pan", "prePointerUp");
+                        }
+
+                        @Override
+                        public void postPointerUp(float v, float v1, float v2, float v3) {
+                            MyLogUtil.showLog("pan", "postPointerUp");
+                            if (imgQuanjing2.getVisibility() == View.VISIBLE) {
+                                bubbletextview.setVisibility(View.VISIBLE);
+                                imgQuanjing2.setVisibility(View.GONE);
+                                imgQuanjing.setVisibility(View.VISIBLE);
+                            }
+                            // 通过百度经纬度坐标获取当前位置相关全景信息，包括是否有外景，外景PID，外景名称等
+                            Point center = bmapsView.getCenter();
+                            setStreetPano(center);
+                        }
+                    });
                 }
                 break;
             case R.id.bubbletextview:
