@@ -30,13 +30,15 @@ public class DKLVAdapter extends BaseAdapter {
     private int state;
     private boolean isAllCheck;
     private CallBack callBack;
+    private String infostate;
 
-    public DKLVAdapter(Context context,List<SoapObject>data,int state,boolean isAllCheck,CallBack callBack){
+    public DKLVAdapter(Context context,List<SoapObject>data,String infostate,int state,boolean isAllCheck,CallBack callBack){
         this.context=context;
         this.data=data;
         this.state=state;
         this.isAllCheck=isAllCheck;
         this.callBack=callBack;
+        this.infostate=infostate;
         checkData=new ArrayList<>();
     }
 
@@ -82,6 +84,7 @@ public class DKLVAdapter extends BaseAdapter {
             viewHolder.tv_time=convertView.findViewById(R.id.tv_time);
             viewHolder.tv_hcr=convertView.findViewById(R.id.tv_hcr2);
             viewHolder.tv_wt=convertView.findViewById(R.id.tv_wt2);
+            viewHolder.tv=convertView.findViewById(R.id.tv_wt);
             viewHolder.checkBox=convertView.findViewById(R.id.cb);
             viewHolder.relativeLayout=convertView.findViewById(R.id.rl_item);
             convertView.setTag(viewHolder);
@@ -94,6 +97,10 @@ public class DKLVAdapter extends BaseAdapter {
         String result = RequestUtil.getSoapObjectValue(soapObject, "result");
         String checkTime = RequestUtil.getSoapObjectValue(soapObject, "checkTime");
         checkTime=checkTime.substring(0,checkTime.indexOf("T"));
+        String string="";
+        if (infostate.equals("0"))string="问题描述：";
+        if (infostate.equals("1"))string ="地点描述";
+        viewHolder.tv.setText(string);
         viewHolder.tv_name.setText(dkid);
         viewHolder.tv_time.setText(checkTime);
         viewHolder.tv_hcr.setText(checkman);
@@ -137,6 +144,7 @@ public class DKLVAdapter extends BaseAdapter {
         private TextView tv_time;
         private TextView tv_hcr;
         private TextView tv_wt;
+        private TextView tv;
         public CheckBox checkBox;
         private RelativeLayout relativeLayout;
     }

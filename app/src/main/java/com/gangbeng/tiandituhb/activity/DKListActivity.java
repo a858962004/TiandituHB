@@ -87,7 +87,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
                     setRightImageBtnText("全选");
                     setToolbarTitle("已选中0项");
                     llTijiao.setVisibility(View.VISIBLE);
-                    adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 1, false, new DKLVAdapter.CallBack() {
+                    adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, infostate,1, false, new DKLVAdapter.CallBack() {
                         @Override
                         public void checkBoxChangeListen() {
                             setToolbarTitle("已选中" + adapter.getCheckData().size() + "项");
@@ -138,7 +138,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
             if (activitystring.equals("地块核查")) skip(DKCheckActivity.class, false);
             if (activitystring.equals("添加信息点")) skip(PointBackActivity.class, false);
         } else if (adapter.getState() == 1) {
-            adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 1, !adapter.getAllCheck(), new DKLVAdapter.CallBack() {
+            adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo,infostate, 1, !adapter.getAllCheck(), new DKLVAdapter.CallBack() {
                 @Override
                 public void checkBoxChangeListen() {
                     setToolbarTitle("已选中" + adapter.getCheckData().size() + "项");
@@ -159,7 +159,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
             setRightImageBtnText("添加");
             setToolbarLeftIcon(R.mipmap.icon_arrow_left);
             llTijiao.setVisibility(View.GONE);
-            adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 0, false, null);
+            adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo,infostate, 0, false, null);
             listDk.setAdapter(adapter);
         }
     }
@@ -230,7 +230,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
                 } else {
                     tvNodata.setVisibility(View.GONE);
                     dkhcInfo = RequestUtil.getObjectValue(soapObject, "DKHCInfo");
-                    adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 0, false, null);
+                    adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, infostate,0, false, null);
                     listDk.setAdapter(adapter);
                 }
             }

@@ -40,6 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -127,7 +128,7 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
         edSz.setText(dkhcInfo.getAddress());
         edWt.setText(dkhcInfo.getResult());
         uris.add("0");
-        askGridAdpter = new AddPhotoAdapter(this, uris,false, null);
+        askGridAdpter = new AddPhotoAdapter(this, uris,false, click);
         gridFeed.setAdapter(askGridAdpter);
         presenter = new GetPhotoPresenter(this);
         Map<String,Object>parameter=new HashMap<>();
@@ -277,6 +278,26 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
             }
             askGridAdpter.setData(uris);
         }
-
     }
+
+    AddPhotoAdapter.OnGridViewClick click = new AddPhotoAdapter.OnGridViewClick() {
+        @Override
+        public void addPhoto(int position) {
+
+        }
+
+        @Override
+        public void showPhoto(int position) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data", (Serializable) uris);
+            bundle.putInt("position", position);
+            skip(ShowPhotosActivity.class, bundle, false);
+        }
+
+        @Override
+        public void onCancel(int position) {
+
+        }
+    };
+
 }

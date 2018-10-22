@@ -48,7 +48,6 @@ public class UserActivity extends BaseActivity implements BaseView {
         setToolbarTitle("个人中心");
         setToolbarRightVisible(false);
         UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
-        tvUsername.setText(user.getUsername());
         presenter = new GetUserPresenter(this);
         Map<String,Object>parameter=new HashMap<>();
         parameter.put("loginname",user.getLoginname());
@@ -98,6 +97,7 @@ public class UserActivity extends BaseActivity implements BaseView {
             String userName = RequestUtil.getSoapObjectValue(object, "UserName");
             String mobilePhone1 = RequestUtil.getSoapObjectValue(object, "MobilePhone1");
             String email = RequestUtil.getSoapObjectValue(object, "EMAIL");
+            tvUsername.setText("姓名："+userName);
             tvTelephone.setText("电话："+mobilePhone1);
             tvEmail.setText("邮箱："+email);
         }
