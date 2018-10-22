@@ -23,10 +23,12 @@ public class AddPhotoAdapter extends BaseAdapter {
     private Context context;
     private List<String>uris;
     private OnGridViewClick listen;
-    public AddPhotoAdapter(Context context, List<String>uris, OnGridViewClick listen){
+    private boolean iscancel=true;
+    public AddPhotoAdapter(Context context, List<String>uris,boolean iscancel, OnGridViewClick listen){
         this.context=context;
         this.uris=uris;
         this.listen=listen;
+        this.iscancel=iscancel;
     }
 
     public void setData(List<String>uris){
@@ -70,6 +72,8 @@ public class AddPhotoAdapter extends BaseAdapter {
         }else {
             viewHolder= (ViewHolder) convertView.getTag();
         }
+        if (iscancel) viewHolder.cancelTV.setVisibility(View.VISIBLE);
+        if (!iscancel) viewHolder.cancelTV.setVisibility(View.GONE);
         if (!uris.get(position).equals("0")) {
             viewHolder.relativeLayout.setVisibility(View.VISIBLE);
             viewHolder.noImgView.setVisibility(View.GONE);
@@ -98,7 +102,7 @@ public class AddPhotoAdapter extends BaseAdapter {
                 viewHolder.noImgView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listen.addPhoto();
+                        listen.addPhoto(position);
                     }
                 });
             }
@@ -115,7 +119,7 @@ public class AddPhotoAdapter extends BaseAdapter {
     }
 
     public interface OnGridViewClick{
-        void addPhoto();
+        void addPhoto(int position);
         void showPhoto(int position);
         void onCancel(int position);
     }

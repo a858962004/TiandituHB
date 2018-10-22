@@ -13,8 +13,10 @@ import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.DKHCInfo;
+import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.presenter.GetDKPresenter;
+import com.gangbeng.tiandituhb.presenter.SubmitDKPresenter;
 import com.gangbeng.tiandituhb.utils.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 
@@ -26,6 +28,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * @author zhanghao
@@ -40,10 +43,12 @@ public class DKListActivity extends BaseActivity implements BaseView {
     @BindView(R.id.ll_tijiao)
     LinearLayout llTijiao;
     private static DKListActivity activity;
-    private static BasePresenter presenter;
+    private static BasePresenter presenter, submitPresenter;
     private static UserEvent user;
     private DKLVAdapter adapter;
     private List<SoapObject> dkhcInfo;
+    private String infostate;
+    private String activitystring;
 
     public static DKListActivity getInstence() {
         return activity;
@@ -53,11 +58,19 @@ public class DKListActivity extends BaseActivity implements BaseView {
     protected void initView() {
         setContentLayout(R.layout.activity_dklist);
         activity = this;
-        setToolbarTitle("地块核查");
         setRightImageBtnText("添加");
         user = (UserEvent) SharedUtil.getSerializeObject("user");
         presenter = new GetDKPresenter(this);
-        setNetWork();
+        Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
+        activitystring = bundleExtra.getString("activity");
+        setToolbarTitle(activitystring);
+        if (activitystring.equals("地块核查")) {
+            infostate = "0";
+        }
+        if (activitystring.equals("添加信息点")) {
+            infostate = "1";
+        }
+        setNetWork(infostate);
         listDk.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -84,6 +97,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
                     SoapObject soapObject = dkhcInfo.get(position);
                     DKHCInfo dkhcInfo = RequestUtil.soapObjectToDKHCInfo(soapObject);
                     Bundle bundle = new Bundle();
+                    bundle.putString("activity",activitystring);
                     bundle.putSerializable("data", dkhcInfo);
                     skip(DKDitailActivity.class, bundle, false);
                 }
@@ -95,11 +109,11 @@ public class DKListActivity extends BaseActivity implements BaseView {
         });
     }
 
-    public static void setNetWork() {
+    public static void setNetWork(String infostate) {
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("loginname", user.getLoginname());
         parameter.put("submitstate", "0");
-        parameter.put("infostate", "0");
+        parameter.put("infostate", infostate);
         presenter.setRequest(parameter);
     }
 
@@ -112,9 +126,10 @@ public class DKListActivity extends BaseActivity implements BaseView {
 
     @Override
     protected void setRightClickListen() {
-        if (adapter.getState() == 0)
-            skip(DKCheckActivity.class, false);
-        if (adapter.getState() == 1) {
+        if (adapter == null || adapter.getState() == 0) {
+            if (activitystring.equals("地块核查")) skip(DKCheckActivity.class, false);
+            if (activitystring.equals("添加信息点")) skip(PointBackActivity.class, false);
+        } else if (adapter.getState() == 1) {
             adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 1, !adapter.getAllCheck(), new DKLVAdapter.CallBack() {
                 @Override
                 public void checkBoxChangeListen() {
@@ -129,9 +144,10 @@ public class DKListActivity extends BaseActivity implements BaseView {
 
     @Override
     protected void setLeftClickListen() {
-        if (adapter.getState() == 0) super.setLeftClickListen();
-        if (adapter.getState() == 1) {
-            setToolbarTitle("地块核查");
+        if (adapter == null || adapter.getState() == 0) {
+            super.setLeftClickListen();
+        } else if (adapter.getState() == 1) {
+            setToolbarTitle(activitystring);
             setRightImageBtnText("添加");
             setToolbarLeftIcon(R.mipmap.icon_arrow_left);
             llTijiao.setVisibility(View.GONE);
@@ -159,14 +175,49 @@ public class DKListActivity extends BaseActivity implements BaseView {
     public void setData(Object data) {
         if (data instanceof SoapObject) {
             SoapObject soapObject = (SoapObject) data;
-            if (soapObject.toString().equals("anyType{}")) {
-                tvNodata.setVisibility(View.VISIBLE);
+            if (submitPresenter == null) {
+                if (soapObject.toString().equals("anyType{}")) {
+                    tvNodata.setVisibility(View.VISIBLE);
+                } else {
+                    tvNodata.setVisibility(View.GONE);
+                    dkhcInfo = RequestUtil.getObjectValue(soapObject, "DKHCInfo");
+                    adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 0, false, null);
+                    listDk.setAdapter(adapter);
+                }
             } else {
-                tvNodata.setVisibility(View.GONE);
-                dkhcInfo = RequestUtil.getObjectValue(soapObject, "DKHCInfo");
-                adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 0, false, null);
-                listDk.setAdapter(adapter);
+                String result = RequestUtil.getSoapObjectValue(soapObject, "result");
+                String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+                String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
+                if (result.equals("ok")) {
+                    showMsg("提交成功");
+                    setToolbarTitle(activitystring);
+                    setRightImageBtnText("添加");
+                    setToolbarLeftIcon(R.mipmap.icon_arrow_left);
+                    llTijiao.setVisibility(View.GONE);
+                    submitPresenter = null;
+                    setNetWork(infostate);
+                } else {
+                    showMsg("提交失败：" + errReason);
+                }
+            }
+
+        }
+    }
+
+    @OnClick(R.id.ll_tijiao)
+    public void onViewClicked() {
+        submitPresenter = new SubmitDKPresenter(DKListActivity.this);
+        List<SoapObject> checkData = adapter.getCheckData();
+        String idlist = "";
+        for (int i = 0; i < checkData.size(); i++) {
+            if (i == 0) {
+                idlist = RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
+            } else {
+                idlist += "," + RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
             }
         }
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("dkid", idlist);
+        submitPresenter.setRequest(parameter);
     }
 }

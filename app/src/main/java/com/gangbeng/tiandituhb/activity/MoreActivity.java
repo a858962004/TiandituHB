@@ -110,8 +110,8 @@ public class MoreActivity extends BaseActivity{
                     break;
                 case "添加信息点":
                     if (user != null) {
-                        bundle.putString("key","addPoint");
-                        skip(MapActivity.class,bundle,false);
+                        bundle.putString("activity","添加信息点");
+                        skip(DKListActivity.class,bundle,false);
                     }else {
                         ShowToast("此功能需登录后使用");
                     }

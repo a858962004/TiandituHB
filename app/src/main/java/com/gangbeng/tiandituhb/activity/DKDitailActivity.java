@@ -3,11 +3,14 @@ package com.gangbeng.tiandituhb.activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.GridView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.MapView;
+import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Line;
@@ -20,20 +23,27 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.AddPhotoAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.base.BasePresenter;
+import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.DKHCInfo;
 import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.presenter.GetPhotoPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
+import com.gangbeng.tiandituhb.utils.RequestUtil;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +53,7 @@ import butterknife.ButterKnife;
  * @date 2018-10-21
  */
 
-public class DKDitailActivity extends BaseActivity {
+public class DKDitailActivity extends BaseActivity implements BaseView {
 
     @BindView(R.id.map_dkditail)
     MapView mapDkditail;
@@ -57,6 +67,22 @@ public class DKDitailActivity extends BaseActivity {
     TextView edWt;
     @BindView(R.id.grid_feed)
     GridView gridFeed;
+    @BindView(R.id.tv_dk)
+    TextView tvDk;
+    @BindView(R.id.rl1)
+    RelativeLayout rl1;
+    @BindView(R.id.tv_lyxz)
+    TextView tvLyxz;
+    @BindView(R.id.rl2)
+    RelativeLayout rl2;
+    @BindView(R.id.tv_sz)
+    TextView tvSz;
+    @BindView(R.id.rl3)
+    RelativeLayout rl3;
+    @BindView(R.id.tv_wt)
+    TextView tvWt;
+    @BindView(R.id.rl4)
+    RelativeLayout rl4;
 
     private static DKDitailActivity activity;
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
@@ -71,26 +97,41 @@ public class DKDitailActivity extends BaseActivity {
     private SimpleLineSymbol lineSymbol;
     private Polygon polygon;
     private List<Point> points = new ArrayList<>();
+    private String activitystring;
+    private BasePresenter presenter;
 
-    public static DKDitailActivity getInstence(){
+    public static DKDitailActivity getInstence() {
         return activity;
     }
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_dkditail);
-        setToolbarTitle("地块信息");
         setRightImageBtnText("修改");
-        activity=this;
+        activity = this;
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
+        activitystring = bundleExtra.getString("activity");
+        if (activitystring.equals("地块核查")) setToolbarTitle("地块信息");
+        if (activitystring.equals("添加信息点")) {
+            setToolbarTitle("信息点");
+            tvDk.setText("地址名称：");
+            tvWt.setText("地点描述：");
+            rl2.setVisibility(View.GONE);
+            rl3.setVisibility(View.GONE);
+        }
+
         dkhcInfo = (DKHCInfo) bundleExtra.getSerializable("data");
         edBianhao.setText(dkhcInfo.getDKID());
         edLyxz.setText(dkhcInfo.getOwner());
         edSz.setText(dkhcInfo.getAddress());
         edWt.setText(dkhcInfo.getResult());
         uris.add("0");
-        askGridAdpter = new AddPhotoAdapter(this, uris, null);
+        askGridAdpter = new AddPhotoAdapter(this, uris,false, null);
         gridFeed.setAdapter(askGridAdpter);
+        presenter = new GetPhotoPresenter(this);
+        Map<String,Object>parameter=new HashMap<>();
+        parameter.put("dkid",dkhcInfo.getID());
+        presenter.setRequest(parameter);
         setMapView();
     }
 
@@ -162,8 +203,17 @@ public class DKDitailActivity extends BaseActivity {
             Graphic graphic = new Graphic(point, markerSymbolred);
             drawPointLayer.addGraphic(graphic);
         }
-        if (points.size()>1)
-        getArea(drawLayer);
+        if (points.size() > 1) getArea(drawLayer);
+        mapDkditail.setOnStatusChangedListener(new OnStatusChangedListener() {
+            @Override
+            public void onStatusChanged(Object o, STATUS status) {
+                if (o == map_lf && status == STATUS.LAYER_LOADED) {
+                    if (points.size() == 1)
+                        mapDkditail.zoomToScale(points.get(0), 50000);
+                }
+            }
+        });
+
     }
 
     //面积测量
@@ -190,7 +240,39 @@ public class DKDitailActivity extends BaseActivity {
     @Override
     protected void setRightClickListen() {
         Bundle bundle = new Bundle();
-        bundle.putSerializable("data",dkhcInfo);
-        skip(DKCheckActivity.class,bundle,false);
+        bundle.putStringArrayList("photo", (ArrayList<String>) uris);
+        bundle.putSerializable("data", dkhcInfo);
+        if (activitystring.equals("地块核查")) skip(DKCheckActivity.class, bundle, false);
+        if (activitystring.equals("添加信息点")) skip(PointBackActivity.class, bundle, false);
+    }
+
+    @Override
+    public void showMsg(String msg) {
+        ShowToast(msg);
+    }
+
+    @Override
+    public void showLoadingDialog(String title, String msg, boolean flag) {
+        showProcessDialog(title, msg, flag);
+    }
+
+    @Override
+    public void canelLoadingDialog() {
+        dismissProcessDialog();
+    }
+
+    @Override
+    public void setData(Object data) {
+        if (data instanceof SoapObject) {
+            SoapObject soapObject=(SoapObject)data;
+            List<SoapObject> objectValue = RequestUtil.getObjectValue(soapObject, "FileData");
+            uris.clear();
+            for (SoapObject object : objectValue) {
+                String fileurl = RequestUtil.getSoapObjectValue(object, "fileurl");
+                uris.add(fileurl);
+            }
+            askGridAdpter.setData(uris);
+        }
+
     }
 }

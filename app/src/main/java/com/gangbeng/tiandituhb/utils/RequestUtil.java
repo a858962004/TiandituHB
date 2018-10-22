@@ -42,6 +42,10 @@ public class RequestUtil {
     public static final String GetDKCheckInfo="GetDKCheckInfo";//获取地块列表
     public static final String AddDKCheckInfo="AddDKCheckInfo";//添加地块信息
     public static final String EditDKCheckInfo="EditDKCheckInfo";//修改地块信息
+    public static final String SubmitDKCheckInfo="SubmitDKCheckInfo";//提交地块信息
+    public static final String DeleteDKCheckInfo="DeleteDKCheckInfo";//删除地块信息
+    public static final String UploadDKCheckPic="UploadDKCheckPic";//上传照片
+    public static final String GetDKCheckPics="GetDKCheckPics";//获取照片
 
     public static String post(String methodName, Map<String,String> param){
 

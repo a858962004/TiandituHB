@@ -113,7 +113,7 @@ public class CalculateMapActivity extends BaseActivity {
         } else if (activity.equals("面积测量")) {
             textTvjuli.setText("面积");
             textTvjieguo.setText("0.0平方米");
-        } else if (activity.equals("地块核查")) {
+        } else if (activity.equals("地块核查")||activity.equals("添加信息点")) {
             calculate.setVisibility(View.GONE);
             setToolbarRightVisible(true);
             setRightImageBtnText("完成");
@@ -220,9 +220,11 @@ public class CalculateMapActivity extends BaseActivity {
 
     @Override
     protected void setRightClickListen() {
-        if (points.size() > 0)
-            DKCheckActivity.getInstence().setPoint(points);
-        finish();
+        if (points.size() > 0){
+            if (activity.equals("地块核查")) DKCheckActivity.getInstence().setPoint(points);
+            if (activity.equals("添加信息点")) PointBackActivity.getInstence().setPoint(points);
+            finish();
+        }
     }
 
     @Override
@@ -288,6 +290,12 @@ public class CalculateMapActivity extends BaseActivity {
         @Override
         public void onSingleTap(float v, float v1) {
             ptCurrent = mapCalculate.toMapPoint(new Point(v, v1));
+            if (activity.equals("添加信息点")){
+                ptStart=null;
+                points.clear();
+                drawLayer.removeAll();//第一次开始前，清空全部graphic
+                drawPointLayer.removeAll();
+            }
             points.add(ptCurrent);
             if (ptStart == null) {//画线或多边形的第一个点
                 drawLayer.removeAll();//第一次开始前，清空全部graphic

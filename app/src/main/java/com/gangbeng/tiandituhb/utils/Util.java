@@ -1,7 +1,13 @@
 package com.gangbeng.tiandituhb.utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,5 +79,43 @@ public class Util {
             time=h+"小时"+m+"分钟";
         }
         return time;
+    }
+
+    public static String picPathToBase64(String filePath){
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+        String str = bitmapToBase64(bitmap);
+        if(bitmap!=null&&!bitmap.isRecycled()){
+            bitmap.recycle();
+        }
+        return str;
+    }
+
+    public static String bitmapToBase64(Bitmap bitmap){
+        String result = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            if (bitmap != null) {
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+
+                baos.flush();
+                baos.close();
+
+                byte[] bitmapBytes = baos.toByteArray();
+                result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (baos != null) {
+                    baos.flush();
+                    baos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }

@@ -3,11 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <RelativeLayout style="@style/style_register_linear">
+
         <com.esri.android.map.MapView
             android:id="@+id/map_dkditail"
             android:layout_width="match_parent"
-            android:layout_height="200dp"/>
+            android:layout_height="200dp" />
     </RelativeLayout>
 
     <ScrollView
@@ -24,103 +26,109 @@
 
 
             <RelativeLayout style="@style/style_register_linear">
+
                 <RelativeLayout
                     android:id="@+id/rl1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
-                        android:layout_centerVertical="true"
                         android:id="@+id/tv_dk"
-                        android:text="地块编号："
-                        android:textSize="17sp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="地块编号："
+                        android:textSize="17sp" />
+
                     <TextView
-                        android:layout_toRightOf="@+id/tv_dk"
                         android:id="@+id/ed_bianhao"
                         style="@style/style_register_ed2"
+                        android:layout_toRightOf="@+id/tv_dk"
                         android:hint="请输入地块编号"
-                        android:maxLines="1"/>
+                        android:maxLines="1" />
                 </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/rl2"
-                    android:layout_below="@+id/rl1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rl1">
+
                     <TextView
-                        android:layout_centerVertical="true"
                         android:id="@+id/tv_lyxz"
-                        android:text="利用现状："
-                        android:textSize="17sp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="利用现状："
+                        android:textSize="17sp" />
+
                     <TextView
-                        android:layout_toRightOf="@+id/tv_lyxz"
                         android:id="@+id/ed_lyxz"
                         style="@style/style_register_ed2"
+                        android:layout_toRightOf="@+id/tv_lyxz"
                         android:hint="请输入地块编号" />
                 </RelativeLayout>
-            </RelativeLayout>
-            <RelativeLayout style="@style/style_register_linear">
+
                 <RelativeLayout
                     android:id="@+id/rl3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rl2">
+
                     <TextView
-                        android:layout_centerVertical="true"
                         android:id="@+id/tv_sz"
-                        android:text="四至信息："
-                        android:textSize="17sp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="四至信息："
+                        android:textSize="17sp" />
+
                     <TextView
-                        android:layout_toRightOf="@+id/tv_sz"
                         android:id="@+id/ed_sz"
                         style="@style/style_register_ed2"
+                        android:layout_toRightOf="@+id/tv_sz"
                         android:hint="请输入四至信息" />
                 </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/rl4"
-                    android:layout_below="@+id/rl3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rl3">
+
                     <TextView
-                        android:layout_centerVertical="true"
                         android:id="@+id/tv_wt"
-                        android:text="问题描述："
-                        android:textSize="17sp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="问题描述："
+                        android:textSize="17sp" />
+
                     <TextView
-                        android:layout_toRightOf="@+id/tv_wt"
                         android:id="@+id/ed_wt"
                         style="@style/style_register_ed2"
+                        android:layout_toRightOf="@+id/tv_wt"
                         android:hint="请输入问题描述"
-                        android:maxLines="1"/>
+                        android:maxLines="1" />
                 </RelativeLayout>
-                <LinearLayout style="@style/style_register_linear"
-                    android:orientation="horizontal"
-                    android:layout_below="@+id/rl4">
-                    <GridView
-                        android:id="@+id/grid_feed"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginTop="5dp"
-                        android:horizontalSpacing="5dp"
-                        android:numColumns="1" />
-                    <TextView
-                        android:text="添加照片"
-                        android:visibility="gone"
-                        android:layout_marginRight="20dp"
-                        android:layout_gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
 
-                </LinearLayout>
             </RelativeLayout>
 
+            <LinearLayout
+                style="@style/style_register_linear"
+                android:orientation="horizontal">
+
+                <GridView
+                    android:id="@+id/grid_feed"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="5dp"
+                    android:horizontalSpacing="5dp"
+                    android:numColumns="3" />
+
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

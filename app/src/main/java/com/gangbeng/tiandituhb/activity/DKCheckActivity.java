@@ -80,7 +80,7 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
         presenter = new AddDKPresenter(this);
         editPresenter=new EditDKPresenter(this);
         uris.add("0");
-        askGridAdpter = new AddPhotoAdapter(this, uris, null);
+        askGridAdpter = new AddPhotoAdapter(this, uris,true, null);
         gridFeed.setAdapter(askGridAdpter);
     }
 
@@ -133,8 +133,9 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
         parameter.put("result", wenti);
         parameter.put("checkman", user.getUsername());
         parameter.put("checktime", time);
+        parameter.put("infostate","0");
         if (data==null) presenter.setRequest(parameter);
-        if (date!=null) {
+        if (data!=null) {
             parameter.put("id",data.getID());
             editPresenter.setRequest(parameter);
         }
@@ -177,15 +178,15 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
     }
 
     @Override
-    public void setData(Object data) {
-        if (data instanceof SoapObject) {
-            SoapObject soapObject = (SoapObject) data;
+    public void setData(Object bean) {
+        if (bean instanceof SoapObject) {
+            SoapObject soapObject = (SoapObject) bean;
             String result = RequestUtil.getSoapObjectValue(soapObject, "result");
             String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
             String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
             if (result.equals("ok")) {
                 showMsg("添加成功");
-                DKListActivity.getInstence().setNetWork();
+                DKListActivity.getInstence().setNetWork("0");
                 if (data!=null) DKDitailActivity.getInstence().finish();
                 finish();
             } else {
