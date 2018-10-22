@@ -90,6 +90,7 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
     private GraphicsLayer drawPointLayer, drawLayer;
     private DKHCInfo dkhcInfo;
     private List<String> uris = new ArrayList<>();
+    private List<String> ids=new ArrayList<>();
     private AddPhotoAdapter askGridAdpter;
     private GoogleApiClient client;
     private PictureMarkerSymbol markerSymbolred;
@@ -242,6 +243,7 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
         Bundle bundle = new Bundle();
         bundle.putStringArrayList("photo", (ArrayList<String>) uris);
         bundle.putSerializable("data", dkhcInfo);
+        bundle.putStringArrayList("ids", (ArrayList<String>) ids);
         if (activitystring.equals("地块核查")) skip(DKCheckActivity.class, bundle, false);
         if (activitystring.equals("添加信息点")) skip(PointBackActivity.class, bundle, false);
     }
@@ -269,7 +271,9 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
             uris.clear();
             for (SoapObject object : objectValue) {
                 String fileurl = RequestUtil.getSoapObjectValue(object, "fileurl");
+                String id = RequestUtil.getSoapObjectValue(object, "picid");
                 uris.add(fileurl);
+                ids.add(id);
             }
             askGridAdpter.setData(uris);
         }

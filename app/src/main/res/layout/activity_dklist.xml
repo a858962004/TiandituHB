@@ -20,16 +20,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="@color/white"
         android:layout_alignParentBottom="true">
         <TextView
             style="@style/horizonline"/>
-        <TextView
-            android:text="提交"
-            android:textSize="17sp"
-            android:gravity="center"
-            android:background="@color/white"
-            android:layout_width="match_parent"
-            android:layout_height="40dp" />
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tv_delete"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:drawableTop="@mipmap/icon_delete"
+                android:text="删除"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tv_upload"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:drawableTop="@mipmap/icon_upload"
+                android:text="提交"
+                android:layout_marginLeft="30dp"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
     </LinearLayout>
 
 

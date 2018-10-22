@@ -1,6 +1,10 @@
 package com.gangbeng.tiandituhb.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -15,15 +19,22 @@ import com.gangbeng.tiandituhb.bean.DKHCInfo;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.presenter.AddDKPresenter;
+import com.gangbeng.tiandituhb.presenter.DeletePicPresenter;
 import com.gangbeng.tiandituhb.presenter.EditDKPresenter;
+import com.gangbeng.tiandituhb.presenter.UploadPhotoPresenter;
+import com.gangbeng.tiandituhb.utils.ContentUriUtil;
 import com.gangbeng.tiandituhb.utils.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
+import com.gangbeng.tiandituhb.utils.Upphoto;
+import com.gangbeng.tiandituhb.utils.Util;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
 
+import java.io.File;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,12 +65,28 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
     @BindView(R.id.grid_feed)
     GridView gridFeed;
     private static DKCheckActivity activity;
+    @BindView(R.id.input_popupwindows_camera)
+    Button inputPopupwindowsCamera;
+    @BindView(R.id.input_popupwindows_Photo)
+    Button inputPopupwindowsPhoto;
+    @BindView(R.id.input_popupwindows_cancel)
+    Button inputPopupwindowsCancel;
     private List<String> uris = new ArrayList<>();
     private AddPhotoAdapter askGridAdpter;
-    private List<Point> points=new ArrayList<>();
-    private BasePresenter presenter,editPresenter;
+    private List<Point> points = new ArrayList<>();
+    private BasePresenter presenter, editPresenter, photoPresenter,deletePresenter;
     private UserEvent user;
     private DKHCInfo data;
+    private View takephoteview;
+    private Upphoto mUpphoto;
+    private ArrayList<String> ids = new ArrayList<>();
+    private List<String> deleteids = new ArrayList<>();
+    private List<String> picurl = new ArrayList<>();
+    private List<File> files = new ArrayList<>();
+    private List<String> successpic=new ArrayList<>();
+    private File cameraphoto;
+    private String path;
+    private File photofile;
 
     public static DKCheckActivity getInstence() {
         return activity;
@@ -71,6 +98,17 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
         setToolbarTitle("地块核查");
         setRightImageBtnText("保存");
         activity = this;
+        takephoteview = findViewById(R.id.include_commit_takephote);
+        takephoteview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takephoteview.setVisibility(View.GONE);
+            }
+        });
+        mUpphoto = new Upphoto(this);
+        uris.add("0");
+        askGridAdpter = new AddPhotoAdapter(this, uris, true, click);
+        gridFeed.setAdapter(askGridAdpter);
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         if (bundleExtra != null) {
             setToolbarTitle("地块修改");
@@ -78,10 +116,7 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
         }
         user = (UserEvent) SharedUtil.getSerializeObject("user");
         presenter = new AddDKPresenter(this);
-        editPresenter=new EditDKPresenter(this);
-        uris.add("0");
-        askGridAdpter = new AddPhotoAdapter(this, uris,true, null);
-        gridFeed.setAdapter(askGridAdpter);
+        editPresenter = new EditDKPresenter(this);
     }
 
     @Override
@@ -133,19 +168,12 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
         parameter.put("result", wenti);
         parameter.put("checkman", user.getUsername());
         parameter.put("checktime", time);
-        parameter.put("infostate","0");
-        if (data==null) presenter.setRequest(parameter);
-        if (data!=null) {
-            parameter.put("id",data.getID());
+        parameter.put("infostate", "0");
+        if (data == null) presenter.setRequest(parameter);
+        if (data != null) {
+            parameter.put("id", data.getID());
             editPresenter.setRequest(parameter);
         }
-    }
-
-    @OnClick(R.id.ed_dikuai)
-    public void onViewClicked() {
-        Bundle bundle = new Bundle();
-        bundle.putString("activity", "地块核查");
-        skip(CalculateMapActivity.class, bundle, false);
     }
 
     public void setPoint(List<Point> points) {
@@ -184,13 +212,49 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
             String result = RequestUtil.getSoapObjectValue(soapObject, "result");
             String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
             String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
-            if (result.equals("ok")) {
-                showMsg("添加成功");
-                DKListActivity.getInstence().setNetWork("0");
-                if (data!=null) DKDitailActivity.getInstence().finish();
-                finish();
+            String id = "";
+            if (photoPresenter == null) {
+                if (result.equals("ok")) {
+                    showMsg("信息保存成功");
+                    if (deleteids.size()>0){
+                        deletePresenter=new DeletePicPresenter(this);
+                        for (String deleteid : deleteids) {
+                            Map<String,Object>parameter=new HashMap<>();
+                            parameter.put("picid",deleteid);
+                            deletePresenter.setRequest(parameter);
+                        }
+                    }
+                    if (files.size() > 0) {
+                        if (data != null) {
+                            id = data.getID();
+                        } else {
+                            id = okString;
+                        }
+                                uploadPhoto(id);
+
+                    } else {
+                        DKListActivity.getInstence().setNetWork("0");
+                        if (data != null) DKDitailActivity.getInstence().finish();
+                        finish();
+                    }
+                } else {
+                    showMsg("添加失败：" + errReason);
+                }
             } else {
-                showMsg("添加失败：" + errReason);
+                if (result.equals("ok")) {
+                    successpic.add(successpic.size()+"");
+                    if (successpic.size()==files.size()){
+                        showMsg("照片保存成功");
+                        DKListActivity.getInstence().setNetWork("0");
+                        if (data != null) DKDitailActivity.getInstence().finish();
+                        finish();
+                    }
+                } else {
+                    showMsg("照片保存失败");
+                    DKListActivity.getInstence().setNetWork("1");
+                    if (data != null) DKDitailActivity.getInstence().finish();
+                    finish();
+                }
             }
         }
 
@@ -198,6 +262,17 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
 
     public void setview(Bundle bundle) {
         data = (DKHCInfo) bundle.getSerializable("data");
+        ArrayList<String> photo = bundle.getStringArrayList("photo");
+        ids = bundle.getStringArrayList("ids");
+        if (photo.size() > 0) {
+            uris.clear();
+            for (String string : photo) {
+                uris.add(string);
+                picurl.add(string);
+            }
+            if (uris.size()<3)uris.add("0");
+            askGridAdpter.setData(uris);
+        }
         edBianhao.setText(data.getDKID());
         edXianzhuang.setText(data.getOwner());
         edDikuai.setText(data.getGeometryStr());
@@ -218,4 +293,119 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
             return;
         }
     }
+
+
+    AddPhotoAdapter.OnGridViewClick click = new AddPhotoAdapter.OnGridViewClick() {
+        @Override
+        public void addPhoto(int position) {
+            takephoteview.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void showPhoto(int position) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data", (Serializable) uris);
+            bundle.putInt("position", position);
+            skip(ShowPhotosActivity.class, bundle, false);
+        }
+
+        @Override
+        public void onCancel(int position) {
+            if (position > picurl.size() - 1) {
+                files.remove(position - picurl.size());
+            } else {
+                picurl.remove(position);
+                deleteids.add(ids.get(position));
+                ids.remove(position);
+            }
+            chageGridByFiles(files);
+        }
+    };
+
+    /**
+     * 根据files修改gridview
+     *
+     * @param files
+     */
+    private void chageGridByFiles(List<File> files) {
+        List<String> uri = new ArrayList<>();
+        uris.clear();
+        if (picurl.size() > 0) {
+            for (String s : picurl) {
+                uris.add(s);
+            }
+        }
+        if (files != null && files.size() > 0) {
+            for (File file1 : files) {
+                uris.add(file1.getPath());
+            }
+        }
+        uri.addAll(uris);
+        if (uris.size() < 3) {
+            uri.add("0");
+        }
+        askGridAdpter.setData(uri);
+    }
+
+    @OnClick({R.id.ed_dikuai,R.id.input_popupwindows_camera, R.id.input_popupwindows_Photo, R.id.input_popupwindows_cancel})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.ed_dikuai:
+                Bundle bundle = new Bundle();
+                bundle.putString("activity", "地块核查");
+                skip(CalculateMapActivity.class, bundle, false);
+                break;
+            case R.id.input_popupwindows_camera:
+                takephoteview.setVisibility(View.GONE);
+                cameraphoto = mUpphoto.photo();
+                break;
+            case R.id.input_popupwindows_Photo:
+                takephoteview.setVisibility(View.GONE);
+                mUpphoto.photo_album();
+                break;
+            case R.id.input_popupwindows_cancel:
+                takephoteview.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PubConst.SHOW_PHOTO_ALBUM:
+                if (data != null) {
+                    Uri uri = data.getData();
+                    path = ContentUriUtil.getPath(this, uri);
+                    if (resultCode == RESULT_OK) {
+                        photofile = new File(path);
+                        files.add(photofile);
+                        chageGridByFiles(files);
+                    }
+                }
+                break;
+            case PubConst.SHOW_PHOTO:
+                if (cameraphoto != null) {
+                    files.add(cameraphoto);
+                    chageGridByFiles(files);
+                }
+                break;
+        }
+    }
+    private void uploadPhoto(String okString) {
+        for (File file : files) {
+            String name = file.getName();
+            String path = file.getPath();
+            String string = Util.picPathToBase64(path);
+            photoPresenter = new UploadPhotoPresenter(this);
+            Map<String, Object> parameter = new HashMap<>();
+            parameter.put("loginname", user.getLoginname());
+            parameter.put("dkid", okString);
+            parameter.put("fname", name);
+            parameter.put("data", string);
+            photoPresenter.setRequest(parameter);
+        }
+
+    }
+
+
 }

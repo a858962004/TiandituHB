@@ -19,6 +19,7 @@ import com.gangbeng.tiandituhb.bean.DKHCInfo;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.presenter.AddDKPresenter;
+import com.gangbeng.tiandituhb.presenter.DeletePicPresenter;
 import com.gangbeng.tiandituhb.presenter.EditDKPresenter;
 import com.gangbeng.tiandituhb.presenter.UploadPhotoPresenter;
 import com.gangbeng.tiandituhb.utils.ContentUriUtil;
@@ -77,10 +78,14 @@ public class PointBackActivity extends BaseActivity implements BaseView {
     private String path;
     private List<Point> points;
     private UserEvent user;
-    private BasePresenter presenter, editPresenter, photoPresenter;
+    private BasePresenter presenter, editPresenter, photoPresenter,deletePresenter;
     private DKHCInfo data;
     private View takephoteview;
     private File cameraphoto;
+    private ArrayList<String> ids=new ArrayList<>();
+    private List<String> deleteids=new ArrayList<>();
+    private List<String> picurl=new ArrayList<>();
+    private List<String> successpic=new ArrayList<>();
 
     public static PointBackActivity getInstence() {
         return activity;
@@ -200,7 +205,13 @@ public class PointBackActivity extends BaseActivity implements BaseView {
 
         @Override
         public void onCancel(int position) {
-            files.remove(position);
+            if (position>picurl.size()-1){
+                files.remove(position-picurl.size());
+            }else {
+                picurl.remove(position);
+                deleteids.add(ids.get(position));
+                ids.remove(position);
+            }
             chageGridByFiles(files);
         }
     };
@@ -213,12 +224,17 @@ public class PointBackActivity extends BaseActivity implements BaseView {
     private void chageGridByFiles(List<File> files) {
         List<String> uri = new ArrayList<>();
         uris.clear();
+        if (picurl.size()>0){
+            for (String s : picurl) {
+                uris.add(s);
+            }
+        }
         if (files != null && files.size() > 0) {
             for (File file1 : files) {
                 uris.add(file1.getPath());
             }
-            uri.addAll(uris);
         }
+        uri.addAll(uris);
         if (uris.size() < 3) {
             uri.add("0");
         }
@@ -265,13 +281,30 @@ public class PointBackActivity extends BaseActivity implements BaseView {
             if (photoPresenter == null) {
                 if (result.equals("ok")) {
                     showMsg("信息保存成功");
+                    if (deleteids.size()>0){
+                        deletePresenter=new DeletePicPresenter(this);
+                        for (String deleteid : deleteids) {
+                            Map<String,Object>parameter=new HashMap<>();
+                            parameter.put("picid",deleteid);
+                            deletePresenter.setRequest(parameter);
+                        }
+                    }
                     if (files.size() > 0) {
                         if (data != null) {
                             id = data.getID();
                         } else {
                             id = okString;
                         }
+//                        showLoadingDialog("请稍后","正在上传照片",false);
                         uploadPhoto(id);
+//                        final String finalId = id;
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                            }
+//                        }).start();
+
                     } else {
                         DKListActivity.getInstence().setNetWork("1");
                         if (data != null) DKDitailActivity.getInstence().finish();
@@ -282,40 +315,50 @@ public class PointBackActivity extends BaseActivity implements BaseView {
                 }
             } else {
                 if (result.equals("ok")) {
-                    showMsg("照片保存成功");
+                    successpic.add(successpic.size()+"");
+                    if (successpic.size()==files.size()){
+//                        photoPresenter=null;
+//                        canelLoadingDialog();
+                        showMsg("照片保存成功");
+                        DKListActivity.getInstence().setNetWork("1");
+                        if (data != null) DKDitailActivity.getInstence().finish();
+                        finish();
+                    }
+                } else {
+                    showMsg("照片保存失败");
                     DKListActivity.getInstence().setNetWork("1");
                     if (data != null) DKDitailActivity.getInstence().finish();
                     finish();
-                } else {
-                    showMsg("照片保存失败");
-                    data = new DKHCInfo();
-                    data.setID(id);
                 }
             }
         }
     }
 
     private void uploadPhoto(String okString) {
-        File file = files.get(0);
-        String name = file.getName();
-        String path = file.getPath();
-        String string = Util.picPathToBase64(path);
-        photoPresenter = new UploadPhotoPresenter(this);
-        Map<String, Object> parameter = new HashMap<>();
-        parameter.put("loginname", user.getLoginname());
-        parameter.put("dkid", okString);
-        parameter.put("fname", name);
-        parameter.put("data", string);
-        photoPresenter.setRequest(parameter);
+        for (File file : files) {
+            String name = file.getName();
+            String path = file.getPath();
+            String string = Util.picPathToBase64(path);
+            photoPresenter = new UploadPhotoPresenter(this);
+            Map<String, Object> parameter = new HashMap<>();
+            parameter.put("loginname", user.getLoginname());
+            parameter.put("dkid", okString);
+            parameter.put("fname", name);
+            parameter.put("data", string);
+            photoPresenter.setRequest(parameter);
+        }
+
     }
 
     public void setview(Bundle bundle) {
         data = (DKHCInfo) bundle.getSerializable("data");
         ArrayList<String> photo = bundle.getStringArrayList("photo");
+         ids = bundle.getStringArrayList("ids");
         if (photo.size() > 0) {
             uris.clear();
             for (String string : photo) {
                 uris.add(string);
+                picurl.add(string);
             }
             if (uris.size()<3)uris.add("0");
             askGridAdpter.setData(uris);

@@ -15,6 +15,8 @@ import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.DKHCInfo;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
+import com.gangbeng.tiandituhb.presenter.DeleteDKPresenter;
+import com.gangbeng.tiandituhb.presenter.DeletePicPresenter;
 import com.gangbeng.tiandituhb.presenter.GetDKPresenter;
 import com.gangbeng.tiandituhb.presenter.SubmitDKPresenter;
 import com.gangbeng.tiandituhb.utils.RequestUtil;
@@ -22,6 +24,7 @@ import com.gangbeng.tiandituhb.utils.SharedUtil;
 
 import org.ksoap2.serialization.SoapObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +46,17 @@ public class DKListActivity extends BaseActivity implements BaseView {
     @BindView(R.id.ll_tijiao)
     LinearLayout llTijiao;
     private static DKListActivity activity;
-    private static BasePresenter presenter, submitPresenter;
+    private static BasePresenter presenter, submitPresenter,deletePresenter;
     private static UserEvent user;
+    @BindView(R.id.tv_delete)
+    TextView tvDelete;
+    @BindView(R.id.tv_upload)
+    TextView tvUpload;
     private DKLVAdapter adapter;
     private List<SoapObject> dkhcInfo;
     private String infostate;
     private String activitystring;
+    private List<String>deletedata=new ArrayList<>();
 
     public static DKListActivity getInstence() {
         return activity;
@@ -97,7 +105,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
                     SoapObject soapObject = dkhcInfo.get(position);
                     DKHCInfo dkhcInfo = RequestUtil.soapObjectToDKHCInfo(soapObject);
                     Bundle bundle = new Bundle();
-                    bundle.putString("activity",activitystring);
+                    bundle.putString("activity", activitystring);
                     bundle.putSerializable("data", dkhcInfo);
                     skip(DKDitailActivity.class, bundle, false);
                 }
@@ -158,6 +166,18 @@ public class DKListActivity extends BaseActivity implements BaseView {
 
     @Override
     public void showMsg(String msg) {
+        if (msg.equals("服务器连接失败")){
+            if (deletePresenter!=null)deletedata.add(deletedata.size()+"");
+            if (deletedata.size()==adapter.getCheckData().size()){
+                setToolbarTitle(activitystring);
+                setRightImageBtnText("添加");
+                setToolbarLeftIcon(R.mipmap.icon_arrow_left);
+                llTijiao.setVisibility(View.GONE);
+                setNetWork(infostate);
+                deletePresenter = null;
+            }
+            submitPresenter = null;
+        }
         ShowToast(msg);
     }
 
@@ -175,16 +195,8 @@ public class DKListActivity extends BaseActivity implements BaseView {
     public void setData(Object data) {
         if (data instanceof SoapObject) {
             SoapObject soapObject = (SoapObject) data;
-            if (submitPresenter == null) {
-                if (soapObject.toString().equals("anyType{}")) {
-                    tvNodata.setVisibility(View.VISIBLE);
-                } else {
-                    tvNodata.setVisibility(View.GONE);
-                    dkhcInfo = RequestUtil.getObjectValue(soapObject, "DKHCInfo");
-                    adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 0, false, null);
-                    listDk.setAdapter(adapter);
-                }
-            } else {
+            if (submitPresenter!=null){
+                submitPresenter = null;
                 String result = RequestUtil.getSoapObjectValue(soapObject, "result");
                 String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
                 String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
@@ -194,30 +206,72 @@ public class DKListActivity extends BaseActivity implements BaseView {
                     setRightImageBtnText("添加");
                     setToolbarLeftIcon(R.mipmap.icon_arrow_left);
                     llTijiao.setVisibility(View.GONE);
-                    submitPresenter = null;
                     setNetWork(infostate);
                 } else {
                     showMsg("提交失败：" + errReason);
+                }
+            }else if (deletePresenter!=null){
+                String result = RequestUtil.getSoapObjectValue(soapObject, "result");
+                String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+                String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
+                deletedata.add(deletedata.size()+"");
+                if (deletedata.size()==adapter.getCheckData().size()){
+                    deletePresenter = null;
+                    setToolbarTitle(activitystring);
+                    setRightImageBtnText("添加");
+                    setToolbarLeftIcon(R.mipmap.icon_arrow_left);
+                    llTijiao.setVisibility(View.GONE);
+                    setNetWork(infostate);
+
+                }
+            }else {
+                if (soapObject.toString().equals("anyType{}")) {
+                    tvNodata.setVisibility(View.VISIBLE);
+                } else {
+                    tvNodata.setVisibility(View.GONE);
+                    dkhcInfo = RequestUtil.getObjectValue(soapObject, "DKHCInfo");
+                    adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, 0, false, null);
+                    listDk.setAdapter(adapter);
                 }
             }
 
         }
     }
 
-    @OnClick(R.id.ll_tijiao)
-    public void onViewClicked() {
-        submitPresenter = new SubmitDKPresenter(DKListActivity.this);
-        List<SoapObject> checkData = adapter.getCheckData();
-        String idlist = "";
-        for (int i = 0; i < checkData.size(); i++) {
-            if (i == 0) {
-                idlist = RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
-            } else {
-                idlist += "," + RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
-            }
+    @OnClick({R.id.tv_delete, R.id.tv_upload})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.tv_delete:
+                deletePresenter=new DeleteDKPresenter(this);
+                List<SoapObject> deletedata = adapter.getCheckData();
+                if (deletedata.size()>0){
+                    for (SoapObject deletedatum : deletedata) {
+                        String dkid = RequestUtil.getSoapObjectValue(deletedatum, "ID");
+                        Map<String,Object> parameter=new HashMap<>();
+                        parameter.put("loginname",user.getLoginname());
+                        parameter.put("dkid",dkid);
+                        deletePresenter.setRequest(parameter);
+                    }
+                }
+
+                break;
+            case R.id.tv_upload:
+                submitPresenter = new SubmitDKPresenter(DKListActivity.this);
+                List<SoapObject> checkData = adapter.getCheckData();
+                String idlist = "";
+                if (checkData.size()>0){
+                    for (int i = 0; i < checkData.size(); i++) {
+                        if (i == 0) {
+                            idlist = RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
+                        } else {
+                            idlist += "," + RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
+                        }
+                    }
+                    Map<String, Object> parameter = new HashMap<>();
+                    parameter.put("dkid", idlist);
+                    submitPresenter.setRequest(parameter);
+                }
+                break;
         }
-        Map<String, Object> parameter = new HashMap<>();
-        parameter.put("dkid", idlist);
-        submitPresenter.setRequest(parameter);
     }
 }

@@ -46,6 +46,7 @@ public class RequestUtil {
     public static final String DeleteDKCheckInfo="DeleteDKCheckInfo";//删除地块信息
     public static final String UploadDKCheckPic="UploadDKCheckPic";//上传照片
     public static final String GetDKCheckPics="GetDKCheckPics";//获取照片
+    public static final String DeleteDKCheckPic="DeleteDKCheckPic";//删除照片
 
     public static String post(String methodName, Map<String,String> param){
 
