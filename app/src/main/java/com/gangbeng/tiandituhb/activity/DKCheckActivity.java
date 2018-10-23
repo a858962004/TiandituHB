@@ -304,6 +304,12 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
         @Override
         public void showPhoto(int position) {
             Bundle bundle = new Bundle();
+            for (int i = 0; i < uris.size(); i++) {
+                if (uris.get(i).equals("0")){
+                    uris.remove(i);
+                    break;
+                }
+            }
             bundle.putSerializable("data", (Serializable) uris);
             bundle.putInt("position", position);
             skip(ShowPhotosActivity.class, bundle, false);

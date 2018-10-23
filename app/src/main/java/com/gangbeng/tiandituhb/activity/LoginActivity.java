@@ -47,6 +47,8 @@ public class LoginActivity extends BaseActivity implements BaseView {
         setToolbarTitle("用户登录");
         setToolbarRightVisible(false);
         presenter = new LoginPrenter(this);
+        String memorylogin = SharedUtil.getString("memorylogin", "");
+        account.setText(memorylogin);
     }
 
     @Override
@@ -109,6 +111,7 @@ public class LoginActivity extends BaseActivity implements BaseView {
                 userEvent.setUsername(okString);
                 userEvent.setLoginname(loginnamestring);
                 SharedUtil.saveSerializeObject("user",userEvent);
+                SharedUtil.setString("memorylogin",userEvent.getLoginname());
                 MoreActivity.instence().setListData();
                 finish();
             }else {

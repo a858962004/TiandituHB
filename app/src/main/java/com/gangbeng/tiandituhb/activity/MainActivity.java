@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -40,6 +41,7 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
+import com.github.library.bubbleview.BubbleLinearLayout;
 import com.github.library.bubbleview.BubbleTextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -85,8 +87,14 @@ public class MainActivity extends BaseActivity implements BaseView {
     MapScaleView mapviewscale;
     @BindView(R.id.mapzoom)
     MapZoomView mapzoom;
-//    @BindView(R.id.bubblell)
-//    BubbleLinearLayout bubblell;
+    @BindView(R.id.location_tuceng)
+    CardView locationTuceng;
+    @BindView(R.id.cb_lyxz)
+    CheckBox cbLyxz;
+    @BindView(R.id.cb_xcbj)
+    CheckBox cbXcbj;
+    @BindView(R.id.bubbletuceng)
+    BubbleLinearLayout bubbletuceng;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
@@ -101,7 +109,6 @@ public class MainActivity extends BaseActivity implements BaseView {
         setToolbarVisibility(false);
         setMapView();
         locationGPS();
-
     }
 
     private void setMapView() {
@@ -220,9 +227,16 @@ public class MainActivity extends BaseActivity implements BaseView {
     }
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
-            R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview, R.id.location_tianqi})
+            R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview, R.id.location_tianqi, R.id.location_tuceng})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.location_tuceng:
+                if (bubbletuceng.getVisibility() == View.VISIBLE){
+                    bubbletuceng.setVisibility(View.GONE);
+                }else {
+                    bubbletuceng.setVisibility(View.VISIBLE);
+                }
+                break;
             case R.id.bt_around:
                 setEventBus("around");
                 skip(AroundActivity.class, false);
@@ -374,6 +388,10 @@ public class MainActivity extends BaseActivity implements BaseView {
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
+    }
+
+    @OnClick(R.id.location_tuceng)
+    public void onViewClicked() {
     }
 
 
