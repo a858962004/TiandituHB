@@ -3,20 +3,26 @@ package com.gangbeng.tiandituhb.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.baidu.lbsapi.model.BaiduPanoData;
 import com.baidu.lbsapi.panoramaview.PanoramaRequest;
 import com.baidu.lbsapi.tools.CoordinateConverter;
+import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnPanListener;
@@ -24,20 +30,30 @@ import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
+import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
+import com.esri.core.map.Graphic;
+import com.esri.core.symbol.PictureMarkerSymbol;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
+import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
+import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.event.MapExtent;
 import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
+import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
+import com.gangbeng.tiandituhb.utils.DensityUtil;
+import com.gangbeng.tiandituhb.utils.MapUtil;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
@@ -45,6 +61,10 @@ import com.github.library.bubbleview.BubbleLinearLayout;
 import com.github.library.bubbleview.BubbleTextView;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -95,18 +115,35 @@ public class MainActivity extends BaseActivity implements BaseView {
     CheckBox cbXcbj;
     @BindView(R.id.bubbletuceng)
     BubbleLinearLayout bubbletuceng;
+    @BindView(R.id.img_collect)
+    ImageView imgCollect;
+    @BindView(R.id.tv_name)
+    TextView tvName;
+    @BindView(R.id.tv_address)
+    TextView tvAddress;
+    @BindView(R.id.ll_around)
+    LinearLayout llAround;
+    @BindView(R.id.ll_route)
+    LinearLayout llRoute;
+    @BindView(R.id.rl_bottom)
+    RelativeLayout rlBottom;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
+    private GraphicsLayer pointlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
     private boolean isFirstlocal = true;
+    private BasePresenter presenter;
+    private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
+    private boolean islocation = false;
 
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_main);
         setToolbarVisibility(false);
+        presenter = new AroundSearchPresenter(this);
         setMapView();
         locationGPS();
     }
@@ -123,6 +160,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        pointlayer = new GraphicsLayer();
         bmapsView.setMaxScale(4000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
@@ -134,6 +172,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         bmapsView.addLayer(map_xzq, 6);
         bmapsView.addLayer(map_lf_text, 7);
         bmapsView.addLayer(map_lfimg_text, 8);
+        bmapsView.addLayer(pointlayer, 9);
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
@@ -145,18 +184,11 @@ public class MainActivity extends BaseActivity implements BaseView {
                 MyLogUtil.showLog("tag", o.toString() + ":" + status);
             }
         });
-        bmapsView.setOnSingleTapListener(new OnSingleTapListener() {
-            @Override
-            public void onSingleTap(float v, float v1) {
-                double scale = bmapsView.getScale();
-                MyLogUtil.showLog(scale);
-            }
-        });
 
         bmapsView.setOnZoomListener(new OnZoomListener() {
             @Override
             public void preAction(float v, float v1, double v2) {
-
+//                mapviewscale.refreshScaleView(bmapsView.getScale());
             }
 
             @Override
@@ -165,6 +197,29 @@ public class MainActivity extends BaseActivity implements BaseView {
             }
         });
         mapzoom.setMapView(bmapsView);
+        bmapsView.setOnSingleTapListener(new OnSingleTapListener() {
+            @Override
+            public void onSingleTap(float v, float v1) {
+                islocation = false;
+                hideBottom();
+                Point point = bmapsView.toMapPoint(v, v1);
+                setPointRequest(point);
+            }
+        });
+    }
+
+    private void setPointRequest(Point point) {
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("maxitems", "20");
+        parameter.put("page", "1");
+        Graphic graphic = MapUtil.setDistanceGraphicsLayer(point, "100");
+        Geometry geometry = graphic.getGeometry();
+        Envelope envelope = new Envelope();
+        geometry.queryEnvelope(envelope);
+        String geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
+        parameter.put("geo", geo);
+        parameter.put("where", "1=1");
+        presenter.setRequest(parameter);
     }
 
     private void setStreetPano(Point center) {
@@ -227,13 +282,14 @@ public class MainActivity extends BaseActivity implements BaseView {
     }
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
-            R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview, R.id.location_tianqi, R.id.location_tuceng})
+            R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview,
+            R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.location_tuceng:
-                if (bubbletuceng.getVisibility() == View.VISIBLE){
+                if (bubbletuceng.getVisibility() == View.VISIBLE) {
                     bubbletuceng.setVisibility(View.GONE);
-                }else {
+                } else {
                     bubbletuceng.setVisibility(View.VISIBLE);
                 }
                 break;
@@ -282,7 +338,13 @@ public class MainActivity extends BaseActivity implements BaseView {
                 skip(PlanActivity.class, false);
                 break;
             case R.id.location_map:
+                this.bean = null;
+                islocation = true;
+                hideBottom();
+                setPointRequest(ptCurrent);
                 bmapsView.zoomToScale(ptCurrent, 50000);
+                RefreshOnThread();
+//                mapviewscale.refreshScaleView(bmapsView.getScale());
                 break;
             case R.id.location_tianqi:
                 skip(WeatherActivity.class, false);
@@ -295,6 +357,9 @@ public class MainActivity extends BaseActivity implements BaseView {
                     bmapsView.setOnPanListener(null);
 //                    btSure.setVisibility(View.GONE);
                 } else {
+//                    this.bean = null;
+//                    islocation = false;
+                    hideBottom();
                     imgQuanjing.setVisibility(View.VISIBLE);
                     bubbletextview.setVisibility(View.VISIBLE);
                     bubbletextview.setText("正在查询...");
@@ -347,6 +412,26 @@ public class MainActivity extends BaseActivity implements BaseView {
                 intent.putExtra("lontitude", doubles);
                 this.startActivity(intent);
                 break;
+            case R.id.ll_around:
+                setEventBus("around");
+                if (!islocation) {
+                    EventBus.getDefault().postSticky(bean);
+                    EventBus.getDefault().postSticky(new ChannelEvent("around"));
+                }
+                skip(AroundActivity.class, false);
+                break;
+            case R.id.ll_route:
+                setEventBus("route");
+                if (!islocation) {
+                    EndPoint endPoint = new EndPoint();
+                    endPoint.setName(bean.getProperties().get名称());
+                    endPoint.setX(String.valueOf(bean.getGeometry().getCoordinates().get(0)));
+                    endPoint.setY(String.valueOf(bean.getGeometry().getCoordinates().get(1)));
+                    EventBus.getDefault().postSticky(endPoint);
+                    EventBus.getDefault().postSticky(new ChannelEvent("route"));
+                }
+                skip(PlanActivity.class, false);
+                break;
         }
     }
 
@@ -381,6 +466,20 @@ public class MainActivity extends BaseActivity implements BaseView {
 
     @Override
     public void setData(Object data) {
+        if (data instanceof NewSearchBean) {
+            NewSearchBean bean = (NewSearchBean) data;
+            NewSearchBean.ContentBean content = bean.getContent();
+            if (content != null) {
+                NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
+                List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
+                if (features1.size() > 0) {
+                    this.bean = features1.get(0);
+                    setbottom(this.bean);
+                }
+            } else {
+                this.bean = null;
+            }
+        }
 
     }
 
@@ -388,10 +487,6 @@ public class MainActivity extends BaseActivity implements BaseView {
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
-    }
-
-    @OnClick(R.id.location_tuceng)
-    public void onViewClicked() {
     }
 
 
@@ -409,5 +504,97 @@ public class MainActivity extends BaseActivity implements BaseView {
         }
     }
 
+    private void setbottom(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+        pointlayer.removeAll();
+        rlBottom.setVisibility(View.VISIBLE);
+        int i = DensityUtil.dip2px(this, 10);
+        int i1 = DensityUtil.dip2px(this, 20);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params.addRule(RelativeLayout.ABOVE, R.id.rl_bottom); //设置控件的位置
+        params.setMargins(i1, 0, 0, i);//左上右下
+        mapviewscale.setLayoutParams(params);
+        RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params2.addRule(RelativeLayout.ABOVE, R.id.rl_bottom); //设置控件的位置
+        params2.setMargins(0, 0, i, i1);//左上右下
+        mapzoom.setLayoutParams(params2);
+        imgCollect.setVisibility(View.GONE);
+        Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
+        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
+        PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
+        picSymbol.setOffsetY(drawable1.getIntrinsicHeight() / 2);
+        if (islocation) {
+//            Graphic g = new Graphic(ptCurrent, picSymbol);
+//            pointlayer.addGraphic(g);
+            tvName.setText(bean.getProperties().get名称() + "附近");
+            tvName.setMaxLines(3);
+            tvAddress.setText("");
+        } else {
+            Point point = zoom2bean(bean.getGeometry().getCoordinates());
+            Graphic g = new Graphic(point, picSymbol);
+            pointlayer.addGraphic(g);
+            tvName.setText(bean.getProperties().get名称());
+            tvName.setMaxLines(3);
+            tvAddress.setText(bean.getProperties().get地址());
+            tvAddress.setMaxLines(3);
+        }
+    }
 
+    private void hideBottom() {
+        pointlayer.removeAll();
+        rlBottom.setVisibility(View.GONE);
+        int i = DensityUtil.dip2px(this, 10);
+        int i1 = DensityUtil.dip2px(this, 20);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params.setMargins(i1, 0, 0, i);//左上右下
+        mapviewscale.setLayoutParams(params);
+        RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params2.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params2.setMargins(0, 0, i, i1);//左上右下
+        mapzoom.setLayoutParams(params2);
+
+    }
+
+    private Point zoom2bean(List<Double> coordinates) {
+        Point point = new Point();
+        point.setX(coordinates.get(0));
+        point.setY(coordinates.get(1));
+        bmapsView.zoomToScale(point, 5000);
+        RefreshOnThread();
+        return point;
+    }
+
+    private void RefreshOnThread() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(300);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mapviewscale.refreshScaleView(bmapsView.getScale());
+                        }
+                    });
+                } catch (InterruptedException e) {
+
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {//当返回按键被按下
+            if (rlBottom.getVisibility() == View.VISIBLE) {
+                hideBottom();
+                islocation = false;
+            } else {
+                finish();
+            }
+        }
+        return false;
+    }
 }

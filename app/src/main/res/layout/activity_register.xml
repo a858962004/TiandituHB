@@ -41,23 +41,23 @@
             android:inputType="textEmailAddress"
             android:hint="请输入电子邮箱"
             style="@style/style_register_ed2" />
-        <TextView
-            style="@style/horizonline"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_gravity="center_vertical"
-                android:id="@+id/img_yzm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:id="@+id/ed_yzm"
-                android:inputType="textEmailAddress"
-                android:hint="请输入验证码"
-                style="@style/style_register_ed2" />
-        </LinearLayout>
+        <!--<TextView-->
+            <!--style="@style/horizonline"/>-->
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal">-->
+            <!--<ImageView-->
+                <!--android:layout_gravity="center_vertical"-->
+                <!--android:id="@+id/img_yzm"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content" />-->
+            <!--<EditText-->
+                <!--android:id="@+id/ed_yzm"-->
+                <!--android:inputType="textEmailAddress"-->
+                <!--android:hint="请输入验证码"-->
+                <!--style="@style/style_register_ed2" />-->
+        <!--</LinearLayout>-->
 
     </LinearLayout>
 

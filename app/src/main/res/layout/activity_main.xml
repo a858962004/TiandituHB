@@ -146,46 +146,6 @@
         app:arrowLocation="bottom"
         app:arrowWidth="8dp"
         app:bubbleColor="#7EC0EE" />
-    <!--<com.github.library.bubbleview.BubbleLinearLayout-->
-    <!--android:id="@+id/bubblell"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_above="@+id/ll_center"-->
-    <!--android:layout_centerHorizontal="true"-->
-    <!--android:padding="5dp"-->
-    <!--app:arrowWidth="8dp"-->
-    <!--app:angle="3dp"-->
-    <!--app:arrowHeight="10dp"-->
-    <!--app:arrowLocation="bottom"-->
-    <!--app:arrowCenter="true"-->
-    <!--app:bubbleColor="#7EC0EE"-->
-    <!--android:visibility="visible">-->
-    <!--<LinearLayout-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:orientation="vertical"-->
-    <!--&gt;-->
-    <!--<ImageView-->
-    <!--android:scaleType="center"-->
-    <!--android:layout_width="60dp"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_marginRight="5dp"-->
-    <!--android:layout_marginLeft="5dp"-->
-    <!--android:layout_marginTop="5dp"-->
-    <!--android:src="@drawable/bg_street"-->
-    <!--android:layout_gravity="center"/>-->
-    <!--<TextView-->
-    <!--android:text="正在加载..."-->
-    <!--android:textSize="10sp"-->
-    <!--android:textColor="@android:color/white"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginLeft="10dp"-->
-    <!--android:layout_marginRight="10dp"-->
-    <!--android:layout_marginBottom="10dp"-->
-    <!--android:gravity="center"/>-->
-    <!--</LinearLayout>-->
-    <!--</com.github.library.bubbleview.BubbleLinearLayout>-->
 
 
     <android.support.v7.widget.CardView
@@ -243,6 +203,16 @@
         android:layout_marginRight="10dp">
 
     </com.gangbeng.tiandituhb.widget.MapZoomView>
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/rl_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@null">
+
+        <include layout="@layout/item_seardhresult" />
+    </RelativeLayout>
 
 
 </RelativeLayout>

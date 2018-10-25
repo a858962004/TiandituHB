@@ -1,11 +1,9 @@
 package com.gangbeng.tiandituhb.activity;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
@@ -13,7 +11,6 @@ import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.presenter.EditPasswordPresenter;
-import com.gangbeng.tiandituhb.utils.CodeUtils;
 import com.gangbeng.tiandituhb.utils.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 
@@ -38,13 +35,13 @@ public class EditPasswordActivity extends BaseActivity implements BaseView {
     EditText edNewpassword;
     @BindView(R.id.ed_renewpassword)
     EditText edRenewpassword;
-    @BindView(R.id.img_yzm)
-    ImageView imgYzm;
-    @BindView(R.id.ed_yzm)
-    EditText edYzm;
+//    @BindView(R.id.img_yzm)
+//    ImageView imgYzm;
+//    @BindView(R.id.ed_yzm)
+//    EditText edYzm;
     @BindView(R.id.bt_editpassword)
     Button btEditpassword;
-    private CodeUtils instance;
+//    private CodeUtils instance;
     private BasePresenter presenter;
 
     @Override
@@ -52,10 +49,10 @@ public class EditPasswordActivity extends BaseActivity implements BaseView {
         setContentLayout(R.layout.activity_editpassword);
         setToolbarTitle("修改密码");
         setToolbarRightVisible(false);
-        instance = CodeUtils.getInstance();
-        Bitmap bitmap = instance.createBitmap();
-        imgYzm.setImageBitmap(bitmap);
         presenter = new EditPasswordPresenter(this);
+//        instance = CodeUtils.getInstance();
+//        Bitmap bitmap = instance.createBitmap();
+//        imgYzm.setImageBitmap(bitmap);
     }
 
     @Override
@@ -65,19 +62,19 @@ public class EditPasswordActivity extends BaseActivity implements BaseView {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.img_yzm, R.id.bt_editpassword})
+    @OnClick({R.id.bt_editpassword})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.img_yzm:
-                Bitmap bitmap = instance.createBitmap();
-                imgYzm.setImageBitmap(bitmap);
-                break;
+//            case R.id.img_yzm:
+//                Bitmap bitmap = instance.createBitmap();
+//                imgYzm.setImageBitmap(bitmap);
+//                break;
             case R.id.bt_editpassword:
                 String oldpassword = String.valueOf(edOldpassword.getText());
                 String newpassword = String.valueOf(edNewpassword.getText());
                 String renewpassword = String.valueOf(edRenewpassword.getText());
-                String yzm = String.valueOf(edYzm.getText());
-                String code = instance.getCode();
+//                String yzm = String.valueOf(edYzm.getText());
+//                String code = instance.getCode();
                 UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
                 if (oldpassword.equals("")) {
                     ShowToast("请输入原始密码");
@@ -91,14 +88,14 @@ public class EditPasswordActivity extends BaseActivity implements BaseView {
                     ShowToast("请再次输入新密码");
                     return;
                 }
-                if (yzm.equals("")) {
-                    ShowToast("请输入验证码");
-                    return;
-                }
-                if (!code.equals(yzm)) {
-                    ShowToast("您输入的验证码有误");
-                    return;
-                }
+//                if (yzm.equals("")) {
+//                    ShowToast("请输入验证码");
+//                    return;
+//                }
+//                if (!code.equals(yzm)) {
+//                    ShowToast("您输入的验证码有误");
+//                    return;
+//                }
                 Map<String,Object> parameter=new HashMap<>();
                 parameter.put("loginName",user.getLoginname());
                 parameter.put("oldPassword",oldpassword);

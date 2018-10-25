@@ -24,18 +24,18 @@ public class AroundSearchModel implements BaseModel {
         String page = String.valueOf(parameter.get("page"));//当前页
         String where = String.valueOf(parameter.get("where"));//查询条件
         String geo = String.valueOf(parameter.get("geo"));//空间范围
-        StringBuilder url=new StringBuilder(PubConst.aroundapi);
-        url.append("?layer=dmdz&text=&geotype=bbox&geo=")
-                .append(geo)
-                .append("&srsin=&where=")
-                .append(where)
-                .append("&fieldsout=&page=")
-                .append(page)
-                .append("&maxitems=")
-                .append(maxitems)
-                .append("&format=json");
         OkHttpUtils.get()
-                .url(url.toString())
+                .url(PubConst.searchapi)
+                .addParams("maxitems", maxitems)
+                .addParams("geotype","bbox")
+                .addParams("geo",geo)
+                .addParams("page", page)
+                .addParams("fieldsout", "*")
+                .addParams("srsout", "EPSG:4326")
+                .addParams("srsin", "EPSG:4326")
+                .addParams("layer", "dmdz")
+                .addParams("format", "json")
+                .addParams("where", where)
                 .build()
                 .execute(new StringCallback() {
                     @Override

@@ -1,6 +1,7 @@
 package com.gangbeng.tiandituhb.activity;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -16,7 +17,6 @@ import com.gangbeng.tiandituhb.bean.DKHCInfo;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.presenter.DeleteDKPresenter;
-import com.gangbeng.tiandituhb.presenter.DeletePicPresenter;
 import com.gangbeng.tiandituhb.presenter.GetDKPresenter;
 import com.gangbeng.tiandituhb.presenter.SubmitDKPresenter;
 import com.gangbeng.tiandituhb.utils.RequestUtil;
@@ -155,12 +155,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
         if (adapter == null || adapter.getState() == 0) {
             super.setLeftClickListen();
         } else if (adapter.getState() == 1) {
-            setToolbarTitle(activitystring);
-            setRightImageBtnText("添加");
-            setToolbarLeftIcon(R.mipmap.icon_arrow_left);
-            llTijiao.setVisibility(View.GONE);
-            adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo,infostate, 0, false, null);
-            listDk.setAdapter(adapter);
+            cancelLongpress();
         }
     }
 
@@ -273,5 +268,25 @@ public class DKListActivity extends BaseActivity implements BaseView {
                 }
                 break;
         }
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {//当返回按键被按下
+            if (adapter == null || adapter.getState() == 0) {
+                finish();
+            } else if (adapter.getState() == 1) {
+                cancelLongpress();
+            }
+        }
+        return false;
+    }
+
+    private void cancelLongpress() {
+        setToolbarTitle(activitystring);
+        setRightImageBtnText("添加");
+        setToolbarLeftIcon(R.mipmap.icon_arrow_left);
+        llTijiao.setVisibility(View.GONE);
+        adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo,infostate, 0, false, null);
+        listDk.setAdapter(adapter);
     }
 }
