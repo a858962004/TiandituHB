@@ -67,7 +67,7 @@
             android:layout_marginTop="5dp"
             android:paddingLeft="10dp"
             android:textSize="15sp"
-            android:text="利用现状" />
+            android:text="土地利用现状" />
 
         <CheckBox
             android:id="@+id/cb_xcbj"

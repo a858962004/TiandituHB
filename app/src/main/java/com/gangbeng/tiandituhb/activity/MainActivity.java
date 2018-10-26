@@ -203,16 +203,16 @@ public class MainActivity extends BaseActivity implements BaseView {
                 islocation = false;
                 hideBottom();
                 Point point = bmapsView.toMapPoint(v, v1);
-                setPointRequest(point);
+                setPointRequest(point,"50");
             }
         });
     }
 
-    private void setPointRequest(Point point) {
+    private void setPointRequest(Point point,String distence) {
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("maxitems", "20");
         parameter.put("page", "1");
-        Graphic graphic = MapUtil.setDistanceGraphicsLayer(point, "100");
+        Graphic graphic = MapUtil.setDistanceGraphicsLayer(point, distence);
         Geometry geometry = graphic.getGeometry();
         Envelope envelope = new Envelope();
         geometry.queryEnvelope(envelope);
@@ -341,7 +341,7 @@ public class MainActivity extends BaseActivity implements BaseView {
                 this.bean = null;
                 islocation = true;
                 hideBottom();
-                setPointRequest(ptCurrent);
+                setPointRequest(ptCurrent,"100");
                 bmapsView.zoomToScale(ptCurrent, 50000);
                 RefreshOnThread();
 //                mapviewscale.refreshScaleView(bmapsView.getScale());

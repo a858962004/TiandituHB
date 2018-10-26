@@ -394,6 +394,10 @@ public class PointBackActivity extends BaseActivity implements BaseView {
             case R.id.ed_didian_feed:
                 Bundle bundle = new Bundle();
                 bundle.putString("activity", "添加信息点");
+                String dikuai = String.valueOf(edDidianFeed.getText());
+                if (!dikuai.equals("")){
+                    bundle.putString("dikuai",dikuai);
+                }
                 skip(CalculateMapActivity.class, bundle, false);
                 break;
             case R.id.input_popupwindows_camera:

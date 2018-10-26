@@ -359,6 +359,10 @@ public class DKCheckActivity extends BaseActivity implements BaseView {
             case R.id.ed_dikuai:
                 Bundle bundle = new Bundle();
                 bundle.putString("activity", "地块核查");
+                String dikuai = String.valueOf(edDikuai.getText());
+                if (!dikuai.equals("")){
+                    bundle.putString("dikuai",dikuai);
+                }
                 skip(CalculateMapActivity.class, bundle, false);
                 break;
             case R.id.input_popupwindows_camera:

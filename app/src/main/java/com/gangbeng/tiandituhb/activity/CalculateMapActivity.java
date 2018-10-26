@@ -20,6 +20,7 @@ import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
+import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Line;
 import com.esri.core.geometry.Point;
@@ -45,6 +46,8 @@ import com.gangbeng.tiandituhb.widget.MapZoomView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -98,6 +101,7 @@ public class CalculateMapActivity extends BaseActivity {
     private Polyline polyline;
     private Polygon polygon = null;//记录绘制过程中的多边形
     private MapExtent extent;
+    private String dikuai="";
 
 
     @Override
@@ -106,6 +110,9 @@ public class CalculateMapActivity extends BaseActivity {
         setToolbarRightVisible(false);
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         activity = bundleExtra.getString("activity");
+        if (bundleExtra.getString("dikuai") != null) {
+            dikuai = bundleExtra.getString("dikuai");
+        }
         setToolbarTitle(activity);
         if (activity.equals("点距测量")) {
             textTvjuli.setText("距离");
@@ -113,14 +120,14 @@ public class CalculateMapActivity extends BaseActivity {
         } else if (activity.equals("面积测量")) {
             textTvjuli.setText("面积");
             textTvjieguo.setText("0.0平方米");
-        } else if (activity.equals("地块核查")||activity.equals("添加信息点")) {
+        } else if (activity.equals("地块核查") || activity.equals("添加信息点")) {
             calculate.setVisibility(View.GONE);
             setToolbarRightVisible(true);
             setRightImageBtnText("完成");
         }
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
-        locationGPS();
         setMapview();
+        locationGPS();
 
     }
 
@@ -178,13 +185,48 @@ public class CalculateMapActivity extends BaseActivity {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
                 if (o.equals(map_lf) && status == STATUS.LAYER_LOADED) {
-                    mapCalculate.zoomToScale(extent.getCenter(), extent.getScale());
-                    mapviewscale.refreshScaleView(extent.getScale());
+                    if (!dikuai.equals("")){
+                        if (points.size() == 1) {
+                            mapCalculate.zoomToScale(points.get(0), 50000);
+                        } else {
+                            Envelope envelope = new Envelope();
+                            polygon.queryEnvelope(envelope);
+                            mapCalculate.zoomToScale(envelope.getCenter(), 70000);
+                        }
+                        mapviewscale.refreshScaleView(extent.getScale());
+                    }else {
+                        mapCalculate.zoomToScale(extent.getCenter(), extent.getScale());
+                        mapviewscale.refreshScaleView(extent.getScale());
+                    }
+
+
 
                 }
             }
         });
         mapzoom.setMapView(mapCalculate);
+        if (!dikuai.equals("")) {
+            try {
+                JSONArray jsonArray = new JSONArray(dikuai);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    Point point = new Point();
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String x = jsonObject.getString("x");
+                    String y = jsonObject.getString("y");
+                    point.setX(Double.valueOf(x));
+                    point.setY(Double.valueOf(y));
+                    points.add(point);
+                }
+            } catch (Exception e) {
+                return;
+            }
+            for (Point point : points) {
+                Graphic graphic = new Graphic(point, markerSymbolred);
+                drawPointLayer.addGraphic(graphic);
+            }
+            if (points.size() > 1) getArea(drawLayer);
+            ptStart=points.get(points.size()-1);
+        }
     }
 
     private void locationGPS() {
@@ -220,7 +262,7 @@ public class CalculateMapActivity extends BaseActivity {
 
     @Override
     protected void setRightClickListen() {
-        if (points.size() > 0){
+        if (points.size() > 0) {
             if (activity.equals("地块核查")) DKCheckActivity.getInstence().setPoint(points);
             if (activity.equals("添加信息点")) PointBackActivity.getInstence().setPoint(points);
             finish();
@@ -290,8 +332,8 @@ public class CalculateMapActivity extends BaseActivity {
         @Override
         public void onSingleTap(float v, float v1) {
             ptCurrent = mapCalculate.toMapPoint(new Point(v, v1));
-            if (activity.equals("添加信息点")){
-                ptStart=null;
+            if (activity.equals("添加信息点")) {
+                ptStart = null;
                 points.clear();
                 drawLayer.removeAll();//第一次开始前，清空全部graphic
                 drawPointLayer.removeAll();

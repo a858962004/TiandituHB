@@ -21,7 +21,6 @@
         android:text="确定"
         android:textSize="18sp"
         android:textColor="@color/white"
-        android:alpha="0.5"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
