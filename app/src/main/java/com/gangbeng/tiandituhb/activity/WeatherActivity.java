@@ -53,6 +53,7 @@ import com.gangbeng.tiandituhb.json.WeatherJson;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1065,6 +1066,8 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             hourlyWeather = new HourlyWeather();
             hourlyWeather.hourlyTime = hourlyForecast.date.substring(11, 13);
             try {
+                String s = hourlyForecast.weatherRegime.code + ".png";
+                InputStream open = this.getAssets().open(hourlyForecast.weatherRegime.code + ".png");
                 hourlyWeather.hourlyImageBit = BitmapFactory.decodeStream(this.getAssets().open(hourlyForecast.weatherRegime.code + ".png"));
             } catch (IOException e) {
                 e.printStackTrace();

@@ -113,6 +113,46 @@
                 />
         </LinearLayout>
     </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/ll_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/img_dingweizhen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:src="@mipmap/icon_dingweizhen2"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/img_dingweizhen2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:src="@mipmap/icon_dingweizhen2"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <com.github.library.bubbleview.BubbleTextView
+        android:clickable="true"
+        android:id="@+id/btv_calculate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ll_center"
+        android:layout_centerHorizontal="true"
+        android:padding="5dp"
+        android:text="确定位置"
+        android:visibility="gone"
+        app:angle="3dp"
+        app:arrowCenter="true"
+        app:arrowHeight="10dp"
+        app:arrowLocation="bottom"
+        app:arrowWidth="8dp"
+        app:bubbleColor="#7EC0EE" />
 
 
 </RelativeLayout>

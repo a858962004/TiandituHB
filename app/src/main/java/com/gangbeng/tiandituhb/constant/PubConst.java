@@ -19,5 +19,12 @@ public class PubConst {
     public final static String searchapi=mapurl+"feature";
     public final static String aroundapi=mapurl+"feature";
 
+    public final static String countryString="{\"countries\":[{\"Latitude\":\"39.436466\",\"Longitude\":\"116.2999\",\"name\":\"固安\"}," +
+            "{\"Latitude\":\"39.319717\",\"Longitude\":\"116.49809\",\"name\":\"永清\"},{\"Latitude\":\"39.757214\",\"Longitude\":\"117.007164\",\"name\":\"香河\"}," +
+            "{\"Latitude\":\"38.699215\",\"Longitude\":\"116.64073\",\"name\":\"大城\"},{\"Latitude\":\"38.866802\",\"Longitude\":\"116.460106\",\"name\":\"文安\"}," +
+            "{\"Latitude\":\"39.889267\",\"Longitude\":\"116.9865\",\"name\":\"大厂\"},{\"Latitude\":\"39.117332\",\"Longitude\":\"116.39202\",\"name\":\"霸州\"}," +
+            "{\"Latitude\":\"39.982777\",\"Longitude\":\"117.07702\",\"name\":\"三河\"},{\"Latitude\":\"39.502567\",\"Longitude\":\"116.69454\",\"name\":\"安次\"}," +
+            "{\"Latitude\":\"39.52193\",\"Longitude\":\"116.71371\",\"name\":\"广阳\"}]}";
+
 
 }

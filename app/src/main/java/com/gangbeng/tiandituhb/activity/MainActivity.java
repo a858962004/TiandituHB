@@ -139,6 +139,7 @@ public class MainActivity extends BaseActivity implements BaseView {
     private boolean islocation = false;
 
 
+
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_main);
@@ -355,7 +356,6 @@ public class MainActivity extends BaseActivity implements BaseView {
                     bubbletextview.setVisibility(View.GONE);
                     bubbletextview.setText("正在查询...");
                     bmapsView.setOnPanListener(null);
-//                    btSure.setVisibility(View.GONE);
                 } else {
 //                    this.bean = null;
 //                    islocation = false;
