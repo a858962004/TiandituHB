@@ -3,6 +3,9 @@ package com.gangbeng.tiandituhb.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -39,9 +43,12 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
+import com.gangbeng.tiandituhb.bean.CountryBean;
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.bean.WeatherBean;
+import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.event.MapExtent;
@@ -49,6 +56,7 @@ import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
 import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
+import com.gangbeng.tiandituhb.presenter.WeatherPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
@@ -59,9 +67,11 @@ import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
 import com.github.library.bubbleview.BubbleLinearLayout;
 import com.github.library.bubbleview.BubbleTextView;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,17 +137,32 @@ public class MainActivity extends BaseActivity implements BaseView {
     LinearLayout llRoute;
     @BindView(R.id.rl_bottom)
     RelativeLayout rlBottom;
+    @BindView(R.id.tv1_weather)
+    TextView tv1Weather;
+    @BindView(R.id.tv2_weather)
+    TextView tv2Weather;
+    @BindView(R.id.tv3_weather)
+    TextView tv3Weather;
+    @BindView(R.id.tv4_weather)
+    TextView tv4Weather;
+    @BindView(R.id.tv5_weather)
+    TextView tv5Weather;
+    @BindView(R.id.rl_weather_bottom)
+    RelativeLayout rlWeatherBottom;
+    @BindView(R.id.tv6_weather)
+    TextView tv6Weather;
+    @BindView(R.id.tv7_weather)
+    TextView tv7Weather;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-    private GraphicsLayer pointlayer;
+    private GraphicsLayer pointlayer, weatherlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
     private boolean isFirstlocal = true;
-    private BasePresenter presenter;
+    private BasePresenter presenter, weatherpresenter;
     private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private boolean islocation = false;
-
 
 
     @Override
@@ -145,8 +170,26 @@ public class MainActivity extends BaseActivity implements BaseView {
         setContentLayout(R.layout.activity_main);
         setToolbarVisibility(false);
         presenter = new AroundSearchPresenter(this);
+        weatherpresenter = new WeatherPresenter(this);
         setMapView();
         locationGPS();
+        setWeather();
+    }
+
+    private void setWeather() {
+        Gson gson = new Gson();
+        String countryString = PubConst.countryString;
+        CountryBean countryBean = gson.fromJson(countryString, CountryBean.class);
+        List<CountryBean.CountriesBean> countries = countryBean.getCountries();
+        for (CountryBean.CountriesBean country : countries) {
+            Map<String, Object> parameter = new HashMap<>();
+            MyLogUtil.showLog(country.getLatitude() + "," + country.getLongitude());
+            parameter.put("city", country.getLatitude() + "," + country.getLongitude());
+
+            weatherpresenter.setRequest(parameter);
+        }
+
+
     }
 
     private void setMapView() {
@@ -162,6 +205,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         pointlayer = new GraphicsLayer();
+        weatherlayer = new GraphicsLayer();
         bmapsView.setMaxScale(4000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
@@ -174,6 +218,8 @@ public class MainActivity extends BaseActivity implements BaseView {
         bmapsView.addLayer(map_lf_text, 7);
         bmapsView.addLayer(map_lfimg_text, 8);
         bmapsView.addLayer(pointlayer, 9);
+        bmapsView.addLayer(weatherlayer, 10);
+        weatherlayer.setVisible(false);
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
@@ -198,18 +244,10 @@ public class MainActivity extends BaseActivity implements BaseView {
             }
         });
         mapzoom.setMapView(bmapsView);
-        bmapsView.setOnSingleTapListener(new OnSingleTapListener() {
-            @Override
-            public void onSingleTap(float v, float v1) {
-                islocation = false;
-                hideBottom();
-                Point point = bmapsView.toMapPoint(v, v1);
-                setPointRequest(point,"50");
-            }
-        });
+        bmapsView.setOnSingleTapListener(mapclick);
     }
 
-    private void setPointRequest(Point point,String distence) {
+    private void setPointRequest(Point point, String distence) {
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("maxitems", "20");
         parameter.put("page", "1");
@@ -284,7 +322,7 @@ public class MainActivity extends BaseActivity implements BaseView {
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
             R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview,
-            R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route})
+            R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route,R.id.tv7_weather})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.location_tuceng:
@@ -342,13 +380,28 @@ public class MainActivity extends BaseActivity implements BaseView {
                 this.bean = null;
                 islocation = true;
                 hideBottom();
-                setPointRequest(ptCurrent,"100");
+                setPointRequest(ptCurrent, "100");
                 bmapsView.zoomToScale(ptCurrent, 50000);
                 RefreshOnThread();
 //                mapviewscale.refreshScaleView(bmapsView.getScale());
                 break;
             case R.id.location_tianqi:
-                skip(WeatherActivity.class, false);
+                weatherlayer.clearSelection();
+                hideBottom();
+                if (weatherlayer.isVisible()) {
+                    weatherlayer.setVisible(false);
+                    bmapsView.setOnSingleTapListener(mapclick);
+                    hideWeatherBottom();
+                } else {
+                    imgQuanjing.setVisibility(View.GONE);
+                    bubbletextview.setVisibility(View.GONE);
+                    bubbletextview.setText("正在查询...");
+                    bmapsView.setOnPanListener(null);
+                    bmapsView.zoomToScale(new Point(116.75750057616959, 39.31351869282022), 1500000);
+                    weatherlayer.setVisible(true);
+                    bmapsView.setOnSingleTapListener(weatherclick);
+                }
+
                 break;
             case R.id.location_quanjing:
                 if (imgQuanjing.getVisibility() == View.VISIBLE) {
@@ -356,10 +409,14 @@ public class MainActivity extends BaseActivity implements BaseView {
                     bubbletextview.setVisibility(View.GONE);
                     bubbletextview.setText("正在查询...");
                     bmapsView.setOnPanListener(null);
+                    bmapsView.setOnSingleTapListener(mapclick);
                 } else {
 //                    this.bean = null;
 //                    islocation = false;
+                    weatherlayer.setVisible(false);
                     hideBottom();
+                    hideWeatherBottom();
+                    bmapsView.setOnSingleTapListener(null);
                     imgQuanjing.setVisibility(View.VISIBLE);
                     bubbletextview.setVisibility(View.VISIBLE);
                     bubbletextview.setText("正在查询...");
@@ -432,6 +489,15 @@ public class MainActivity extends BaseActivity implements BaseView {
                 }
                 skip(PlanActivity.class, false);
                 break;
+            case R.id.tv7_weather:
+                int[] selectionIDs = weatherlayer.getSelectionIDs();
+                Graphic graphic = weatherlayer.getGraphic(selectionIDs[0]);
+                Point selectpoint = (Point) graphic.getGeometry();
+                Bundle bundle=new Bundle();
+                bundle.putString("x", String.valueOf(selectpoint.getX()));
+                bundle.putString("y", String.valueOf(selectpoint.getY()));
+                skip(WeatherActivity.class,bundle, false);
+                break;
         }
     }
 
@@ -480,6 +546,44 @@ public class MainActivity extends BaseActivity implements BaseView {
                 this.bean = null;
             }
         }
+        if (data instanceof WeatherBean) {
+            WeatherBean bean = (WeatherBean) data;
+            WeatherBean.HeWeather5Bean heWeather5Bean = bean.getHeWeather5().get(0);
+            WeatherBean.HeWeather5Bean.AqiBean aqi = heWeather5Bean.getAqi();
+            WeatherBean.HeWeather5Bean.NowBean now = heWeather5Bean.getNow();
+            WeatherBean.HeWeather5Bean.BasicBean basic = heWeather5Bean.getBasic();
+            List<WeatherBean.HeWeather5Bean.DailyForecastBean> daily_forecast = heWeather5Bean.getDaily_forecast();
+            try {
+                String code = now.getCond().getCode();
+                MyLogUtil.showLog(code);
+                Bitmap bitmap = BitmapFactory.decodeStream(this.getAssets().open(now.getCond().getCode() + ".png"));
+                View inflate = LayoutInflater.from(this).inflate(R.layout.view_weather, null);
+                ImageView view = inflate.findViewById(R.id.img_weather);
+                TextView textView = inflate.findViewById(R.id.tv_weather);
+                view.setImageBitmap(bitmap);
+                textView.setText(now.getCond().getTxt());
+                Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
+                Drawable drawable = new BitmapDrawable(viewbitmap);
+                Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable1);
+                Point point = new Point(Double.valueOf(basic.getLon()), Double.valueOf(basic.getLat()));
+                Map<String, Object> parameter = new HashMap<>();
+                parameter.put("basiccity", basic.getCity());
+                parameter.put("tmpmax", daily_forecast.get(0).getTmp().getMax());//最高温度
+                parameter.put("tmpmin", daily_forecast.get(0).getTmp().getMin());//最低温度
+                parameter.put("condtext", now.getCond().getTxt());//当前天气
+                parameter.put("cityqlty", aqi.getCity().getQlty());//空气质量
+                parameter.put("winddir", now.getWind().getDir());//风向
+                parameter.put("windsc", now.getWind().getSc());//风级
+                parameter.put("nowfl", now.getFl());//体感温度
+                parameter.put("nowhum", now.getHum());//湿度
+                parameter.put("nowtmp", now.getTmp());//当前气温
+                Graphic graphic = new Graphic(point, symbol, parameter);
+                weatherlayer.addGraphic(graphic);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -488,6 +592,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         super.onResume();
         EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
     }
+
 
 
     private static class DemoInfo {
@@ -538,6 +643,52 @@ public class MainActivity extends BaseActivity implements BaseView {
             tvAddress.setText(bean.getProperties().get地址());
             tvAddress.setMaxLines(3);
         }
+    }
+
+    private void setWeatherBottom(Graphic graphic) {
+        rlWeatherBottom.setVisibility(View.VISIBLE);
+        int i = DensityUtil.dip2px(this, 10);
+        int i1 = DensityUtil.dip2px(this, 20);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params.addRule(RelativeLayout.ABOVE, R.id.rl_weather_bottom); //设置控件的位置
+        params.setMargins(i1, 0, 0, i);//左上右下
+        mapviewscale.setLayoutParams(params);
+        RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params2.addRule(RelativeLayout.ABOVE, R.id.rl_weather_bottom); //设置控件的位置
+        params2.setMargins(0, 0, i, i1);//左上右下
+        mapzoom.setLayoutParams(params2);
+        String basiccity = String.valueOf(graphic.getAttributeValue("basiccity"));//城市名称
+        String tmpmax = String.valueOf(graphic.getAttributeValue("tmpmax"));//最高温度
+        String tmpmin = String.valueOf(graphic.getAttributeValue("tmpmin"));//最低温度
+        String condtext = String.valueOf(graphic.getAttributeValue("condtext"));//当前天气
+        String cityqlty = String.valueOf(graphic.getAttributeValue("cityqlty"));//空气质量
+        String winddir = String.valueOf(graphic.getAttributeValue("winddir"));//风向
+        String windsc = String.valueOf(graphic.getAttributeValue("windsc"));//风级
+        String nowfl = String.valueOf(graphic.getAttributeValue("nowfl"));//体感温度
+        String nowhum = String.valueOf(graphic.getAttributeValue("nowhum"));//湿度
+        String nowtmp = String.valueOf(graphic.getAttributeValue("nowtmp"));//当前气温
+        tv1Weather.setText(basiccity);
+        tv2Weather.setText(condtext + "  " + tmpmin + "～" + tmpmax+"℃");
+        tv3Weather.setText("空气质量：" + cityqlty);
+        tv4Weather.setText(winddir + " " + windsc + "级");
+        tv5Weather.setText("体感温度：" + nowfl+"℃");
+        tv6Weather.setText("湿度：" + nowhum+"%");
+    }
+
+    private void hideWeatherBottom() {
+        rlWeatherBottom.setVisibility(View.GONE);
+        int i = DensityUtil.dip2px(this, 10);
+        int i1 = DensityUtil.dip2px(this, 20);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params.setMargins(i1, 0, 0, i);//左上右下
+        mapviewscale.setLayoutParams(params);
+        RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params2.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params2.setMargins(0, 0, i, i1);//左上右下
+        mapzoom.setLayoutParams(params2);
     }
 
     private void hideBottom() {
@@ -597,4 +748,32 @@ public class MainActivity extends BaseActivity implements BaseView {
         }
         return false;
     }
+
+    OnSingleTapListener mapclick = new OnSingleTapListener() {
+        @Override
+        public void onSingleTap(float v, float v1) {
+//            Point center = bmapsView.getCenter();
+//            double scale = bmapsView.getScale();
+//            MyLogUtil.showLog(center+":"+scale);
+            islocation = false;
+            hideBottom();
+            Point point = bmapsView.toMapPoint(v, v1);
+            setPointRequest(point, "20");
+        }
+    };
+
+    OnSingleTapListener weatherclick = new OnSingleTapListener() {
+        @Override
+        public void onSingleTap(float v, float v1) {
+            int[] graphicIDs = weatherlayer.getGraphicIDs(v, v1, 25);
+            if (graphicIDs != null && graphicIDs.length > 0) {
+                weatherlayer.clearSelection();
+                int graphicID = graphicIDs[0];
+                Graphic graphic = weatherlayer.getGraphic(graphicID);
+                weatherlayer.setSelectedGraphics(new int[]{graphicID}, true);
+                bmapsView.zoomToScale((Point) graphic.getGeometry(), 1500000);
+                setWeatherBottom(graphic);
+            }
+        }
+    };
 }

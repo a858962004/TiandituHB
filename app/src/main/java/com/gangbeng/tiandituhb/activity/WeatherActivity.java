@@ -1,6 +1,5 @@
 package com.gangbeng.tiandituhb.activity;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,12 +9,8 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -32,15 +27,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.Poi;
 import com.bumptech.glide.Glide;
-import com.gangbeng.tiandituhb.provider.BaiduLocation;
+import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.HourlyWeather;
 import com.gangbeng.tiandituhb.adpter.HourlyWeatherAdapter;
-import com.gangbeng.tiandituhb.utils.LogUtil;
-import com.gangbeng.tiandituhb.R;
+import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.db.SelectedCounty;
 import com.gangbeng.tiandituhb.gson.DailyForecast;
 import com.gangbeng.tiandituhb.gson.HeWeather5;
@@ -49,6 +40,8 @@ import com.gangbeng.tiandituhb.http.MyCallBack;
 import com.gangbeng.tiandituhb.http.MyHttp;
 import com.gangbeng.tiandituhb.http.OkHttp;
 import com.gangbeng.tiandituhb.json.WeatherJson;
+import com.gangbeng.tiandituhb.provider.BaiduLocation;
+import com.gangbeng.tiandituhb.utils.LogUtil;
 
 import org.litepal.crud.DataSupport;
 
@@ -209,34 +202,81 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
         weatherBufferSet = new HashSet();
         hourlyWeatherList = new ArrayList<HourlyWeather>();
         vp = (ViewPager) findViewById(R.id.viewpager);
-        //先申请定位需要用到的权限
-        List<String> permissionList = new ArrayList<>();
-        if (ContextCompat.checkSelfPermission(WeatherActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED ) {
-            permissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
-        if (ContextCompat.checkSelfPermission(WeatherActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        //没有权限则申请
-        if (!permissionList.isEmpty()) {
-            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(this, permissions, 1);
-        } else {
-            //有权限开启定位功能，异步
-            baiduLocation = new BaiduLocation(getApplicationContext());
-            //获取locationservice实例，建议应用中只初始化1个location实例，然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
-            baiduLocation.registerListener(mListener);
-            //注册监听
-            baiduLocation.setLocationOption(baiduLocation.getDefaultLocationClientOption());
-            baiduLocation.start();
-            //显示进度条
-            LogUtil.d(TAG, "initView: baiduLocation worked");
-        }
-        //防止界面无响应，显示进度圈
-        showProgressDialog();
+        Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
+        String x = String.valueOf(bundleExtra.get("x"));
+        String y = String.valueOf(bundleExtra.get("y"));
+        setWeatherRequest(x,y);
 
+//        //先申请定位需要用到的权限
+//        List<String> permissionList = new ArrayList<>();
+//        if (ContextCompat.checkSelfPermission(WeatherActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED ) {
+//            permissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+//        }
+//        if (ContextCompat.checkSelfPermission(WeatherActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+//        }
+//        //没有权限则申请
+//        if (!permissionList.isEmpty()) {
+//            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
+//            ActivityCompat.requestPermissions(this, permissions, 1);
+//        } else {
+//            //有权限开启定位功能，异步
+//            baiduLocation = new BaiduLocation(getApplicationContext());
+//            //获取locationservice实例，建议应用中只初始化1个location实例，然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
+//            baiduLocation.registerListener(mListener);
+//            //注册监听
+//            baiduLocation.setLocationOption(baiduLocation.getDefaultLocationClientOption());
+//            baiduLocation.start();
+//            //显示进度条
+//            LogUtil.d(TAG, "initView: baiduLocation worked");
+//        }
+//        //防止界面无响应，显示进度圈
+//        showProgressDialog();
+
+    }
+
+    private void setWeatherRequest(String x,String y) {
+        locationCountyWeatherId=x+","+y;
+        String weatherUrl = "https://free-api.heweather.com/v5/weather?city="+locationCountyWeatherId+"&key=" + KEY;
+        MyHttp.sendRequestOkHttpForGet(weatherUrl, new MyCallBack() {
+            @Override
+            public void onFailure(IOException e) {
+                if (DEBUG) LogUtil.d(TAG, "onFailure: netWork error");
+            }
+
+            @Override
+            public void onResponse(String response) throws IOException {
+                final String responseText = response;
+                if (DEBUG) LogUtil.d(TAG, "onResponse: responseText: " + responseText);
+                final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(responseText);
+                SharedPreferences.Editor edit = getSharedPreferences("location", MODE_PRIVATE).edit();
+                if (heWeather5 != null && "ok".equals(heWeather5.status)) {
+                    //获取的地理位置信息有效，保存定位结果，等下次Oncreate的时候直接调用
+                    edit.putString("locationWeatherId", locationCountyWeatherId);
+                    locationCountyWeatherName = heWeather5.basic.cityName;
+                    edit.apply();
+//                    Message msg = new Message();
+//                    msg.what = TOAST_LOCATION_SUCCEED;
+//                    myHandler.sendMessage(msg);
+                } else {
+                    //定位的城市信息无效，保存为空
+                    locationCountyWeatherId = null;
+                    locationCountyWeatherName = null;
+                    edit.putString("locationWeatherId", locationCountyWeatherId);
+                    edit.apply();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initView();
+                    }
+                });
+            }
+
+
+        });
     }
 
     /**
@@ -351,161 +391,161 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
     /**
      * 百度定位结果回调，重写onReceiveLocation方法
      */
-    private BDLocationListener mListener = new BDLocationListener() {
-
-        @Override
-        public void onReceiveLocation(BDLocation location) {
-            if (DEBUG) LogUtil.d(TAG, "onReceiveLocation: start");
-            if (isFirstonReceiveLocation) {
-                isFirstonReceiveLocation = false;
-            } else {
-                return;
-            }
-            if (null != location && location.getLocType() != BDLocation.TypeServerError) {
-                Log.v(TAG, "latitude " + location.getLatitude() + "  longitude:" + location.getLongitude());
-                String tempString1 = String.valueOf(location.getLatitude()); // 经度
-                String tempString2 = String.valueOf(location.getLongitude()); // 纬度
-                if (DEBUG) LogUtil.d(TAG, "onReceiveLocation: 经度: " + tempString1);
-                if (DEBUG) LogUtil.d(TAG, "onReceiveLocation: 纬度: " + tempString2);
-
-                /**
-                 * 先判断得到的天气ID能不能返回正确的天气数据再确定要不要保存
-                 * 以免定位到一些比较奇怪的地方时获取不到数据
-                 */
-                String district = location.getDistrict();
-                locationCountyWeatherId = tempString2.substring(0,tempString2.indexOf('.') + 4)
-                        + "," + tempString1.substring(0, tempString1.indexOf('.') + 4);
-                String weatherUrl = "https://free-api.heweather.com/v5/weather?city="
-                        + locationCountyWeatherId + "&key=" + KEY;
-                MyHttp.sendRequestOkHttpForGet(weatherUrl, new MyCallBack() {
-                            @Override
-                            public void onFailure(IOException e) {
-                                if (DEBUG) LogUtil.d(TAG, "onFailure: netWork error");
-                            }
-
-                            @Override
-                            public void onResponse(String response) throws IOException {
-                                final String responseText = response;
-                                if (DEBUG) LogUtil.d(TAG, "onResponse: responseText: " + responseText);
-                                final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(responseText);
-                                SharedPreferences.Editor edit = getSharedPreferences("location", MODE_PRIVATE).edit();
-                                  if (heWeather5 != null && "ok".equals(heWeather5.status)) {
-                                      //获取的地理位置信息有效，保存定位结果，等下次Oncreate的时候直接调用
-                                      edit.putString("locationWeatherId", locationCountyWeatherId);
-                                      locationCountyWeatherName = heWeather5.basic.cityName;
-                                      edit.apply();
-                                      Message msg = new Message();
-                                      msg.what = TOAST_LOCATION_SUCCEED;
-                                      myHandler.sendMessage(msg);
-                                  } else {
-                                      //定位的城市信息无效，保存为空
-                                      locationCountyWeatherId = null;
-                                      locationCountyWeatherName = null;
-                                      edit.putString("locationWeatherId", locationCountyWeatherId);
-                                      edit.apply();
-                                  }
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        initView();
-                                    }
-                                });
-                            }
-
-
-                        });
-                        Log.d(TAG, "locationCountyWeatherId: " + locationCountyWeatherId);
-
-                StringBuffer sb = new StringBuffer(256);
-                sb.append("time : ");
-                /**
-                 * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间；
-                 * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变
-                 */
-                sb.append(location.getTime());
-                sb.append("\nlocType : ");// 定位类型
-                sb.append(location.getLocType());
-                sb.append("\nlocType description : ");// *****对应的定位类型说明*****
-                sb.append(location.getLocTypeDescription());
-                sb.append("\nlatitude : ");// 纬度
-                sb.append(location.getLatitude());
-                sb.append("\nlontitude : ");// 经度
-                sb.append(location.getLongitude());
-                sb.append("\nradius : ");// 半径
-                sb.append(location.getRadius());
-                sb.append("\nCountryCode : ");// 国家码
-                sb.append(location.getCountryCode());
-                sb.append("\nCountry : ");// 国家名称
-                sb.append(location.getCountry());
-                sb.append("\ncitycode : ");// 城市编码
-                sb.append(location.getCityCode());
-                sb.append("\ncity : ");// 城市
-                sb.append(location.getCity());
-                sb.append("\nDistrict : ");// 区
-                sb.append(location.getDistrict());
-                sb.append("\nStreet : ");// 街道
-                sb.append(location.getStreet());
-                sb.append("\naddr : ");// 地址信息
-                sb.append(location.getAddrStr());
-                sb.append("\nUserIndoorState: ");// *****返回用户室内外判断结果*****
-                sb.append(location.getUserIndoorState());
-                sb.append("\nDirection(not all devices have value): ");
-                sb.append(location.getDirection());// 方向
-                sb.append("\nlocationdescribe: ");
-                sb.append(location.getLocationDescribe());// 位置语义化信息
-                sb.append("\nPoi: ");// POI信息
-                if (location.getPoiList() != null && !location.getPoiList().isEmpty()) {
-                    for (int i = 0; i < location.getPoiList().size(); i++) {
-                        Poi poi = (Poi) location.getPoiList().get(i);
-                        sb.append(poi.getName() + ";");
-                    }
-                }
-                if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
-                    sb.append("\nspeed : ");
-                    sb.append(location.getSpeed());// 速度 单位：km/h
-                    sb.append("\nsatellite : ");
-                    sb.append(location.getSatelliteNumber());// 卫星数目
-                    sb.append("\nheight : ");
-                    sb.append(location.getAltitude());// 海拔高度 单位：米
-                    sb.append("\ngps status : ");
-                    sb.append(location.getGpsAccuracyStatus());// *****gps质量判断*****
-                    sb.append("\ndescribe : ");
-                    sb.append("gps定位成功");
-                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
-                    // 运营商信息
-                    if (location.hasAltitude()) {// *****如果有海拔高度*****
-                        sb.append("\nheight : ");
-                        sb.append(location.getAltitude());// 单位：米
-                    }
-                    sb.append("\noperationers : ");// 运营商信息
-                    sb.append(location.getOperators());
-                    sb.append("\ndescribe : ");
-                    sb.append("网络定位成功");
-                } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
-                    sb.append("\ndescribe : ");
-                    sb.append("离线定位成功，离线定位结果也是有效的");
-                } else if (location.getLocType() == BDLocation.TypeServerError) {
-                    sb.append("\ndescribe : ");
-                    sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
-                } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
-                    sb.append("\ndescribe : ");
-                    sb.append("网络不同导致定位失败，请检查网络是否通畅");
-                } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
-                    sb.append("\ndescribe : ");
-                    sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
-                }
-                Log.d(TAG, "onReceiveLocation: " + sb.toString() );
-            } else {
-                //网络定位失败时把数据置零
-                SharedPreferences.Editor edit = getSharedPreferences("location", MODE_PRIVATE).edit();
-                edit.putString("locationWeatherId", locationCountyWeatherId = null);
-                edit.apply();
-            }
-        }
-
-        public void onConnectHotSpotMessage(String s, int i){
-        }
-    };
+//    private BDLocationListener mListener = new BDLocationListener() {
+//
+//        @Override
+//        public void onReceiveLocation(BDLocation location) {
+//            if (DEBUG) LogUtil.d(TAG, "onReceiveLocation: start");
+//            if (isFirstonReceiveLocation) {
+//                isFirstonReceiveLocation = false;
+//            } else {
+//                return;
+//            }
+//            if (null != location && location.getLocType() != BDLocation.TypeServerError) {
+//                Log.v(TAG, "latitude " + location.getLatitude() + "  longitude:" + location.getLongitude());
+//                String tempString1 = String.valueOf(location.getLatitude()); // 经度
+//                String tempString2 = String.valueOf(location.getLongitude()); // 纬度
+//                if (DEBUG) LogUtil.d(TAG, "onReceiveLocation: 经度: " + tempString1);
+//                if (DEBUG) LogUtil.d(TAG, "onReceiveLocation: 纬度: " + tempString2);
+//
+//                /**
+//                 * 先判断得到的天气ID能不能返回正确的天气数据再确定要不要保存
+//                 * 以免定位到一些比较奇怪的地方时获取不到数据
+//                 */
+//                String district = location.getDistrict();
+//                locationCountyWeatherId = tempString2.substring(0,tempString2.indexOf('.') + 4)
+//                        + "," + tempString1.substring(0, tempString1.indexOf('.') + 4);
+//                String weatherUrl = "https://free-api.heweather.com/v5/weather?city="
+//                        + locationCountyWeatherId + "&key=" + KEY;
+//                MyHttp.sendRequestOkHttpForGet(weatherUrl, new MyCallBack() {
+//                            @Override
+//                            public void onFailure(IOException e) {
+//                                if (DEBUG) LogUtil.d(TAG, "onFailure: netWork error");
+//                            }
+//
+//                            @Override
+//                            public void onResponse(String response) throws IOException {
+//                                final String responseText = response;
+//                                if (DEBUG) LogUtil.d(TAG, "onResponse: responseText: " + responseText);
+//                                final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(responseText);
+//                                SharedPreferences.Editor edit = getSharedPreferences("location", MODE_PRIVATE).edit();
+//                                  if (heWeather5 != null && "ok".equals(heWeather5.status)) {
+//                                      //获取的地理位置信息有效，保存定位结果，等下次Oncreate的时候直接调用
+//                                      edit.putString("locationWeatherId", locationCountyWeatherId);
+//                                      locationCountyWeatherName = heWeather5.basic.cityName;
+//                                      edit.apply();
+////                                      Message msg = new Message();
+////                                      msg.what = TOAST_LOCATION_SUCCEED;
+////                                      myHandler.sendMessage(msg);
+//                                  } else {
+//                                      //定位的城市信息无效，保存为空
+//                                      locationCountyWeatherId = null;
+//                                      locationCountyWeatherName = null;
+//                                      edit.putString("locationWeatherId", locationCountyWeatherId);
+//                                      edit.apply();
+//                                  }
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        initView();
+//                                    }
+//                                });
+//                            }
+//
+//
+//                        });
+//                        Log.d(TAG, "locationCountyWeatherId: " + locationCountyWeatherId);
+//
+//                StringBuffer sb = new StringBuffer(256);
+//                sb.append("time : ");
+//                /**
+//                 * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间；
+//                 * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变
+//                 */
+//                sb.append(location.getTime());
+//                sb.append("\nlocType : ");// 定位类型
+//                sb.append(location.getLocType());
+//                sb.append("\nlocType description : ");// *****对应的定位类型说明*****
+//                sb.append(location.getLocTypeDescription());
+//                sb.append("\nlatitude : ");// 纬度
+//                sb.append(location.getLatitude());
+//                sb.append("\nlontitude : ");// 经度
+//                sb.append(location.getLongitude());
+//                sb.append("\nradius : ");// 半径
+//                sb.append(location.getRadius());
+//                sb.append("\nCountryCode : ");// 国家码
+//                sb.append(location.getCountryCode());
+//                sb.append("\nCountry : ");// 国家名称
+//                sb.append(location.getCountry());
+//                sb.append("\ncitycode : ");// 城市编码
+//                sb.append(location.getCityCode());
+//                sb.append("\ncity : ");// 城市
+//                sb.append(location.getCity());
+//                sb.append("\nDistrict : ");// 区
+//                sb.append(location.getDistrict());
+//                sb.append("\nStreet : ");// 街道
+//                sb.append(location.getStreet());
+//                sb.append("\naddr : ");// 地址信息
+//                sb.append(location.getAddrStr());
+//                sb.append("\nUserIndoorState: ");// *****返回用户室内外判断结果*****
+//                sb.append(location.getUserIndoorState());
+//                sb.append("\nDirection(not all devices have value): ");
+//                sb.append(location.getDirection());// 方向
+//                sb.append("\nlocationdescribe: ");
+//                sb.append(location.getLocationDescribe());// 位置语义化信息
+//                sb.append("\nPoi: ");// POI信息
+//                if (location.getPoiList() != null && !location.getPoiList().isEmpty()) {
+//                    for (int i = 0; i < location.getPoiList().size(); i++) {
+//                        Poi poi = (Poi) location.getPoiList().get(i);
+//                        sb.append(poi.getName() + ";");
+//                    }
+//                }
+//                if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
+//                    sb.append("\nspeed : ");
+//                    sb.append(location.getSpeed());// 速度 单位：km/h
+//                    sb.append("\nsatellite : ");
+//                    sb.append(location.getSatelliteNumber());// 卫星数目
+//                    sb.append("\nheight : ");
+//                    sb.append(location.getAltitude());// 海拔高度 单位：米
+//                    sb.append("\ngps status : ");
+//                    sb.append(location.getGpsAccuracyStatus());// *****gps质量判断*****
+//                    sb.append("\ndescribe : ");
+//                    sb.append("gps定位成功");
+//                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
+//                    // 运营商信息
+//                    if (location.hasAltitude()) {// *****如果有海拔高度*****
+//                        sb.append("\nheight : ");
+//                        sb.append(location.getAltitude());// 单位：米
+//                    }
+//                    sb.append("\noperationers : ");// 运营商信息
+//                    sb.append(location.getOperators());
+//                    sb.append("\ndescribe : ");
+//                    sb.append("网络定位成功");
+//                } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
+//                    sb.append("\ndescribe : ");
+//                    sb.append("离线定位成功，离线定位结果也是有效的");
+//                } else if (location.getLocType() == BDLocation.TypeServerError) {
+//                    sb.append("\ndescribe : ");
+//                    sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
+//                } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
+//                    sb.append("\ndescribe : ");
+//                    sb.append("网络不同导致定位失败，请检查网络是否通畅");
+//                } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
+//                    sb.append("\ndescribe : ");
+//                    sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
+//                }
+//                Log.d(TAG, "onReceiveLocation: " + sb.toString() );
+//            } else {
+//                //网络定位失败时把数据置零
+//                SharedPreferences.Editor edit = getSharedPreferences("location", MODE_PRIVATE).edit();
+//                edit.putString("locationWeatherId", locationCountyWeatherId = null);
+//                edit.apply();
+//            }
+//        }
+//
+//        public void onConnectHotSpotMessage(String s, int i){
+//        }
+//    };
 
     /**
      * 请求权限的回调函数，不管用户有没有允许，都会调用该函数
@@ -530,14 +570,14 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
         }
     }
 
-    private Handler myHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == TOAST_LOCATION_SUCCEED) {
-                Toast.makeText(WeatherActivity.this, "城市定位成功", Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
+//    private Handler myHandler = new Handler(){
+//        @Override
+//        public void handleMessage(Message msg) {
+//            if (msg.what == TOAST_LOCATION_SUCCEED) {
+//                Toast.makeText(WeatherActivity.this, "城市定位成功", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    };
 
 
     @Override

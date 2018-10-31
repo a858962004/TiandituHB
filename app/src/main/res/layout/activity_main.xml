@@ -213,6 +213,17 @@
 
         <include layout="@layout/item_seardhresult" />
     </RelativeLayout>
+    <RelativeLayout
+        android:clickable="true"
+        android:visibility="gone"
+        android:id="@+id/rl_weather_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@null">
+        <include layout="@layout/view_bottom_weather"/>
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

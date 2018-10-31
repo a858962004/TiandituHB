@@ -357,20 +357,16 @@ public class CalculateMapActivity extends BaseActivity {
                 break;
             case R.id.btnchexiao:
                 if (oldPoints.size()>1){
-                    points.clear();
+                    this.points.clear();
                     oldPoints.remove(oldPoints.size()-1);
-                    points.addAll(oldPoints.get(oldPoints.size()-1));
+                    List<Point> points = oldPoints.get(oldPoints.size() - 1);
+                    List<Point> addpoints=new ArrayList<>();
+                    for (Point point : points) {
+                        addpoints.add(new Point(point.getX(),point.getY()));
+                    }
+                    this.points.addAll(addpoints);
                     reDrawLayer();
                 }
-//                if (points.size() > 0) {
-//                    points.remove(points.size() - 1);
-//                    drawPointLayer.removeAll();
-//                    setLengthArea();
-//                    for (Point point : points) {
-//                        Graphic graphic = new Graphic(point, markerSymbolblue);
-//                        drawPointLayer.addGraphic(graphic);
-//                    }
-//                }
                 break;
             case R.id.change_calulate:
                 if (map_lfimg.isVisible()) {
@@ -427,7 +423,9 @@ public class CalculateMapActivity extends BaseActivity {
             int[] graphicIDs = drawPointLayer.getGraphicIDs(v, v1, 25);
             if (graphicIDs != null && graphicIDs.length > 0) {
                 setCallout(graphicIDs);
-            } else {
+            } else if (callout.isShowing()){
+                callout.hide();
+            }else {
                 ptCurrent = mapCalculate.toMapPoint(new Point(v, v1));
                 if (activity.equals("添加信息点")) {
                     ptStart = null;
