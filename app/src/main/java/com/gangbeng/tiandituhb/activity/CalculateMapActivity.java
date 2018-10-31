@@ -423,7 +423,7 @@ public class CalculateMapActivity extends BaseActivity {
             int[] graphicIDs = drawPointLayer.getGraphicIDs(v, v1, 25);
             if (graphicIDs != null && graphicIDs.length > 0) {
                 setCallout(graphicIDs);
-            } else if (callout.isShowing()){
+            } else if (callout!=null&&callout.isShowing()){
                 callout.hide();
             }else {
                 ptCurrent = mapCalculate.toMapPoint(new Point(v, v1));
