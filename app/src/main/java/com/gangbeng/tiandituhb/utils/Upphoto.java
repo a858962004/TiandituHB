@@ -35,8 +35,10 @@ public class Upphoto {
         File file;
 
 
-        mImage = new File(Environment.getExternalStorageDirectory() + File.separator
-                + "houseCollect" + File.separator + "Cash" + File.separator, picName);
+//        mImage = new File(Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF" + File.separator
+//                + File.separator + "Cash" + File.separator, picName);
+        mImage=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(),
+                Calendar.getInstance().getTimeInMillis()+".jpg");
         file = mImage;
 
         //创建File对象,用于存储选择的照片
@@ -51,6 +53,7 @@ public class Upphoto {
             e.printStackTrace();
         }
         imageUri = Uri.fromFile(file);
+//        imageUri=Uri.parse(file.getPath());
         //隐式意图启动相机
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);

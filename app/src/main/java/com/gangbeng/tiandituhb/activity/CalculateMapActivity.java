@@ -222,7 +222,11 @@ public class CalculateMapActivity extends BaseActivity {
                         } else {
                             Envelope envelope = new Envelope();
                             polygon.queryEnvelope(envelope);
-                            mapCalculate.setExtent(polygon);
+                            envelope.setXMin(envelope.getXMin()-0.001);
+                            envelope.setYMin(envelope.getYMin()-0.001);
+                            envelope.setXMax(envelope.getXMax()+0.001);
+                            envelope.setYMax(envelope.getYMax()+0.001);
+                            mapCalculate.setExtent(envelope);
 //                            mapCalculate.zoomToScale(envelope.getCenter(), 70000);
                         }
                         mapviewscale.refreshScaleView(extent.getScale());

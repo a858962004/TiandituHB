@@ -180,7 +180,8 @@ public class PointBackActivity extends BaseActivity implements BaseView {
                 }
                 break;
             case PubConst.SHOW_PHOTO:
-                if (cameraphoto != null) {
+                long length = cameraphoto.length();
+                if (length!=0){
                     files.add(cameraphoto);
                     chageGridByFiles(files);
                 }
