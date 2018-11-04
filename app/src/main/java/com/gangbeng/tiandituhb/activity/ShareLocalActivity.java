@@ -331,6 +331,8 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
         for (int i = 0; i < graphicIDs.length; i++) {
             Graphic graphic = drawPointLayer.getGraphic(graphicIDs[i]);
             if (graphic.getAttributeValue("username").equals(username)) {
+                drawPointLayer.clearSelection();
+                drawPointLayer.setSelectedGraphics(new int[]{graphic.getUid()},true);
                 setBottom(graphic);
                 return;
             }
@@ -430,10 +432,21 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
                         map.put("updateTime", updateTime);
                         PictureMarkerSymbol symbol = state.equals("0") ? markerSymbolgred : markerSymbolblue;
                         Point point = new Point(Double.valueOf(x), Double.valueOf(y));
-                        Graphic graphic = new Graphic(point, symbol, map);
+                        final Graphic graphic = new Graphic(point, symbol, map);
                         drawPointLayer.addGraphic(graphic);
                         if (chooseuser.equals(loginname)) {
                             mapSharelocal.zoomToScale(point, mapSharelocal.getScale());
+                        }
+                    }
+                    if (!chooseuser.equals("")){
+                        int[] graphicIDs = drawPointLayer.getGraphicIDs();
+                        for (int i = 0; i < graphicIDs.length; i++) {
+                            Graphic graphic = drawPointLayer.getGraphic(graphicIDs[i]);
+                            if (graphic.getAttributeValue("loginname").equals(chooseuser)) {
+                                drawPointLayer.clearSelection();
+                                drawPointLayer.setSelectedGraphics(new int[]{graphic.getUid()},true);
+                                break;
+                            }
                         }
                     }
                     qtetSearchlocal.addTextChangedListener(textWatcher);
@@ -453,10 +466,12 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
     OnSingleTapListener onSingleTapListener = new OnSingleTapListener() {
         @Override
         public void onSingleTap(float v, float v1) {
+            drawPointLayer.clearSelection();
             int[] graphicIDs = drawPointLayer.getGraphicIDs(v, v1, 25);
             if (graphicIDs != null && graphicIDs.length > 0) {
                 int graphicID = graphicIDs[0];
                 Graphic graphic = drawPointLayer.getGraphic(graphicID);
+                drawPointLayer.setSelectedGraphics(new int[]{graphicID},true);
                 setBottom(graphic);
             } else {
                 chooseuser = "";
