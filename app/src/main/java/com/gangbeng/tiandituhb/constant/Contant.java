@@ -11,6 +11,15 @@ public class Contant {
     private static  Contant mIns;
     private Gps startGps;
     private Gps endGps;
+    private boolean localState=false;
+
+    public boolean isLocalState() {
+        return localState;
+    }
+
+    public void setLocalState(boolean localState) {
+        this.localState = localState;
+    }
 
     public Gps getStartGps() {
         return startGps;

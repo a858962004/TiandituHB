@@ -103,6 +103,7 @@
         <activity android:name=".activity.EditPasswordActivity" />
         <activity android:name=".activity.DKListActivity" />
         <activity android:name=".activity.DKDitailActivity" />
+        <activity android:name=".activity.ShareLocalActivity" />
         <!--<activity android:name=".activity.DKCheckActivity" />-->
 
         <receiver android:name=".provider.WidgetProvider">

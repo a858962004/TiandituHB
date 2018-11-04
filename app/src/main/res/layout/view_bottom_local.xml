@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:layout_below="@+id/rl1_local"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/tv3_local"
+                android:text=""
+                style="@style/style_weather_bottom" />
+            <TextView
+                android:layout_below="@+id/tv3_local"
+                android:id="@+id/tv4_local"
+                android:text=""
+                style="@style/style_weather_bottom" />
+            <ProgressBar
+                android:visibility="gone"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv3_local"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/progressBar2_local" />
+            <ProgressBar
+                android:visibility="gone"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/tv4_local"
+                android:layout_below="@+id/tv3_local"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/progressBar3_local" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl1_local"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+        <TextView
+            android:id="@+id/tv1_local"
+            android:text=""
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv7_local"
+            android:layout_alignParentRight="true"
+            android:text="位置刷新"
+            android:textSize="17sp"
+            android:textColor="@color/skyblue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ProgressBar
+            android:visibility="gone"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/tv7_local"
+            android:layout_marginRight="20dp"
+            android:id="@+id/progressBar1_local" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

@@ -31,8 +31,8 @@ public class MoreActivity extends BaseActivity{
 
     public static MoreActivity activity;
 
-    String[] names = new String[]{"登录/注册","地块核查","添加信息点","收藏夹", "点距测量", "面积测量","绘图板","地图对比","信息反馈"};
-    int[] resource = new int[]{R.mipmap.icon_user,R.mipmap.icon_dikuaihecha,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_shoucang1, R.mipmap.icon_dianju, R.mipmap.icon_mianji,
+    String[] names = new String[]{"登录/注册","地块核查","添加信息点","位置共享","收藏夹", "点距测量", "面积测量","绘图板","地图对比","信息反馈"};
+    int[] resource = new int[]{R.mipmap.icon_user,R.mipmap.icon_dikuaihecha,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_weizhigongxiang,R.mipmap.icon_shoucang1, R.mipmap.icon_dianju, R.mipmap.icon_mianji,
             R.mipmap.icon_huitu,R.mipmap.icon_duibi,R.mipmap.icon_fankui};
 
     public static MoreActivity instence(){
@@ -125,6 +125,14 @@ public class MoreActivity extends BaseActivity{
                     break;
                 case "个人中心":
                     skip(UserActivity.class,false);
+                    break;
+                case "位置共享":
+                    if (user!=null){
+                        skip(ShareLocalActivity.class,false);
+                    }else {
+                        ShowToast("此功能需登录后使用");
+                    }
+
                     break;
             }
         }

@@ -117,7 +117,7 @@ public class MapScaleView extends View {
         mPaint.setColor(textColor);
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(textSize);
-        mPaint.setTypeface(Typeface.DEFAULT_BOLD);
+        mPaint.setTypeface(Typeface.DEFAULT);
         float textWidth = mPaint.measureText(text);
         canvas.drawText(text, (width - textWidth) / 2, textSize, mPaint);
 //        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon_scale);

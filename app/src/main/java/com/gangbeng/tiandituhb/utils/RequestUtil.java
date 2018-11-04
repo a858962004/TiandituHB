@@ -47,6 +47,9 @@ public class RequestUtil {
     public static final String UploadDKCheckPic="UploadDKCheckPic";//上传照片
     public static final String GetDKCheckPics="GetDKCheckPics";//获取照片
     public static final String DeleteDKCheckPic="DeleteDKCheckPic";//删除照片
+    public static final String UploadLocation="UploadLocation";//上传位置共享信息
+    public static final String GetNewestLocation="GetNewestLocation";//获取共享位置信息
+    public static final String GetHistoryLocationByLoginname="GetHistoryLocationByLoginname";//获取历史共享信息
 
     public static String post(String methodName, Map<String,String> param){
 

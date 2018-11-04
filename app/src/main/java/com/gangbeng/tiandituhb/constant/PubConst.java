@@ -28,5 +28,8 @@ public class PubConst {
             "{\"Latitude\":\"39.982777\",\"Longitude\":\"117.07702\",\"name\":\"三河\"},{\"Latitude\":\"39.502567\",\"Longitude\":\"116.69454\",\"name\":\"安次\"}," +
             "{\"Latitude\":\"39.52193\",\"Longitude\":\"116.71371\",\"name\":\"广阳\"}]}";
 
+    public final static String LABLE_START_SHARE="startShare";
+    public final static String LABLE_CLOSE_SHARE="closeShare";
+    public final static String LABLE_GET_SHARE="getShare";
 
 }

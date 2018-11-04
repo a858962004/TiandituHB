@@ -43,19 +43,24 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
+import com.gangbeng.tiandituhb.base.NewBasePresenter;
+import com.gangbeng.tiandituhb.base.NewBaseView;
 import com.gangbeng.tiandituhb.bean.CountryBean;
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
 import com.gangbeng.tiandituhb.bean.WeatherBean;
+import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
 import com.gangbeng.tiandituhb.event.MapExtent;
 import com.gangbeng.tiandituhb.event.StartPoint;
+import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
 import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
+import com.gangbeng.tiandituhb.presenter.UploadLocationPresenter;
 import com.gangbeng.tiandituhb.presenter.WeatherPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
@@ -63,6 +68,7 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.MapUtil;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
+import com.gangbeng.tiandituhb.utils.SharedUtil;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
 import com.github.library.bubbleview.BubbleLinearLayout;
@@ -80,7 +86,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends BaseActivity implements BaseView {
+public class MainActivity extends BaseActivity implements BaseView, NewBaseView {
 
     public static final int WGS84 = 9;// 大地坐标系方式
     public static final int GCJ02 = 10;// 国测局加密方式
@@ -163,6 +169,8 @@ public class MainActivity extends BaseActivity implements BaseView {
     private BasePresenter presenter, weatherpresenter;
     private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private boolean islocation = false;
+    private NewBasePresenter uploadpresenter;
+    private UserEvent user;
 
 
     @Override
@@ -171,6 +179,8 @@ public class MainActivity extends BaseActivity implements BaseView {
         setToolbarVisibility(false);
         presenter = new AroundSearchPresenter(this);
         weatherpresenter = new WeatherPresenter(this);
+        uploadpresenter=new UploadLocationPresenter(this);
+        user = (UserEvent) SharedUtil.getSerializeObject("user");
         setMapView();
         locationGPS();
         setWeather();
@@ -285,11 +295,11 @@ public class MainActivity extends BaseActivity implements BaseView {
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
+                    if (Contant.ins().isLocalState())setLocal("1",PubConst.LABLE_START_SHARE);
                     if (isFirstlocal) {
                         bmapsView.zoomToScale(ptCurrent, 50000);
                         mapviewscale.refreshScaleView(50000);
                     }
-
                     isFirstlocal = false;
                 }
 
@@ -531,6 +541,11 @@ public class MainActivity extends BaseActivity implements BaseView {
     }
 
     @Override
+    public void setData(Object data, String lable) {
+
+    }
+
+    @Override
     public void setData(Object data) {
         if (data instanceof NewSearchBean) {
             NewSearchBean bean = (NewSearchBean) data;
@@ -686,7 +701,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         mapviewscale.setLayoutParams(params);
         RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
         params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params2.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params2.addRule(RelativeLayout.ABOVE, R.id.mapviewscale); //设置控件的位置
         params2.setMargins(0, 0, i, i1);//左上右下
         mapzoom.setLayoutParams(params2);
     }
@@ -702,7 +717,7 @@ public class MainActivity extends BaseActivity implements BaseView {
         mapviewscale.setLayoutParams(params);
         RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
         params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params2.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params2.addRule(RelativeLayout.ABOVE, R.id.mapviewscale); //设置控件的位置
         params2.setMargins(0, 0, i, i1);//左上右下
         mapzoom.setLayoutParams(params2);
 
@@ -776,4 +791,15 @@ public class MainActivity extends BaseActivity implements BaseView {
             }
         }
     };
+
+    private void setLocal(String state, String label) {
+        MyLogUtil.showLog("1234");
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("loginname", user.getLoginname());
+        parameter.put("username", user.getUsername());
+        parameter.put("x", ptCurrent.getX());
+        parameter.put("y", ptCurrent.getY());
+        parameter.put("state", state);
+        uploadpresenter.setRequest(parameter, label);
+    }
 }
