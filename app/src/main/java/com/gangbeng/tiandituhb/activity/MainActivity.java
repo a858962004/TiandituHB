@@ -216,7 +216,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
-        bmapsView.setMaxScale(4000);
+//        bmapsView.setMaxScale(4000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
         bmapsView.addLayer(mapRSServiceLayer, 2);
@@ -475,7 +475,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 intent.putExtra("type", demoInfo.type);
                 Gps gps = PositionUtil.gps84_To_Gcj02(center.getY(), center.getX());
                 double[] doubles = new double[]{gps.getWgLat(), gps.getWgLon()};
-                MyLogUtil.showLog("zuobiao", gps.getWgLat() + "---" + gps.getWgLon());
+//                MyLogUtil.showLog("zuobiao", gps.getWgLat() + "---" + gps.getWgLon());
                 intent.putExtra("lontitude", doubles);
                 this.startActivity(intent);
                 break;
@@ -512,6 +512,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     }
 
     private void setEventBus(String route) {
+        MapExtent extent = new MapExtent();
+        extent.setCenter(bmapsView.getCenter());
+        extent.setScale(bmapsView.getScale());
+        EventBus.getDefault().postSticky(extent);
         ChannelEvent channelEvent = new ChannelEvent(route);
         EventBus.getDefault().postSticky(channelEvent);
         PointBean pointBean = new PointBean();
@@ -727,7 +731,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         Point point = new Point();
         point.setX(coordinates.get(0));
         point.setY(coordinates.get(1));
-        bmapsView.zoomToScale(point, 5000);
+        bmapsView.zoomToScale(point, 3000);
         RefreshOnThread();
         return point;
     }
@@ -767,9 +771,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     OnSingleTapListener mapclick = new OnSingleTapListener() {
         @Override
         public void onSingleTap(float v, float v1) {
-//            Point center = bmapsView.getCenter();
-//            double scale = bmapsView.getScale();
-//            MyLogUtil.showLog(center+":"+scale);
             islocation = false;
             hideBottom();
             Point point = bmapsView.toMapPoint(v, v1);

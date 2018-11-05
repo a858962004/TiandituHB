@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,6 +23,9 @@ import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.RecordBean;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
+import com.gangbeng.tiandituhb.event.EndPoint;
+import com.gangbeng.tiandituhb.event.IsStart;
+import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
 import com.gangbeng.tiandituhb.presenter.SearchPresenter;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
@@ -59,15 +64,24 @@ public class AroundActivity extends BaseActivity implements BaseView {
     ListView lvAround;
     @BindView(R.id.tv_clear)
     TextView tvClear;
+    @BindView(R.id.ll_choosepoint)
+    LinearLayout llChoosepoint;
+    @BindView(R.id.bt_local)
+    Button btLocal;
+    @BindView(R.id.bt_collect)
+    Button btCollect;
+    @BindView(R.id.bt_map)
+    Button btMap;
 
     private SortGridViewAdapter gridViewAdapter;
     private AroundLVAdapter aroundLVAdapter;
     private MyToolbar toolbar;
-    private BasePresenter presenter,aroundPresenter;
+    private BasePresenter presenter, aroundPresenter;
     private static AroundActivity activity;
     private ChannelEvent channelEvent;
     private String qury;
-    private String geo="";
+    private String geo = "";
+    private IsStart isStart;
 
     public static AroundActivity getInstence() {
         return activity;
@@ -92,7 +106,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
         setToolbarVisibility(true);
         toolbar = getToolBar();
         presenter = new SearchPresenter(this);
-        aroundPresenter=new AroundSearchPresenter(this);
+        aroundPresenter = new AroundSearchPresenter(this);
         key = channelEvent.getChannel();
         setView(channelEvent.getChannel());
         gridViewAdapter = new SortGridViewAdapter(this, sortImgs, sortStrs);
@@ -116,6 +130,15 @@ public class AroundActivity extends BaseActivity implements BaseView {
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
+    }
+
+    /**
+     * 选择起始点还是终止点
+     * @param isStart
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetPoint(IsStart isStart) {
+        this.isStart = isStart;
     }
 
     /**
@@ -277,7 +300,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
     public void setData(Object data) {
         if (data instanceof NewSearchBean) {
             NewSearchBean bean = (NewSearchBean) data;
-            if (bean.getHeader()==null){
+            if (bean.getHeader() == null) {
                 showMsg("未查找到相应数据");
                 return;
             }
@@ -289,8 +312,8 @@ public class AroundActivity extends BaseActivity implements BaseView {
             List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features = bean.getContent().getFeatures().getFeatures();
             Bundle bundle = new Bundle();
             bundle.putSerializable("data", (Serializable) bean);
-            if (!geo.equals("")){
-                bundle.putString("geo",geo);
+            if (!geo.equals("")) {
+                bundle.putString("geo", geo);
             }
             bundle.putString("key", key);
             bundle.putString("keywords", qury);
@@ -302,6 +325,10 @@ public class AroundActivity extends BaseActivity implements BaseView {
         if (channel.equals("search") || channel.equals("route") || channel.equals("navi")) {
             setRightImageBtnText("搜索");
             showEditText();
+            if (channel.equals("route") || channel.equals("navi")) {
+                sourceAround.setVisibility(View.GONE);
+                llChoosepoint.setVisibility(View.VISIBLE);
+            }
         } else {
             String address = "当前位置";
             if (bean != null) address = bean.getProperties().get名称();
@@ -313,43 +340,44 @@ public class AroundActivity extends BaseActivity implements BaseView {
 
     /**
      * 分类查询
+     *
      * @return
      */
     public String getQury(String data) {
-        String qury="";
-        switch (data){
+        String qury = "";
+        switch (data) {
             case "公共管理":
-                qury="yifl = '01'";
+                qury = "yifl = '01'";
                 break;
             case "住宿餐饮":
-                qury="yifl = '06'";
+                qury = "yifl = '06'";
                 break;
             case "金融保险":
-                qury="yifl = '03    '";
+                qury = "yifl = '03    '";
                 break;
             case "交通运输":
-                qury="yifl = '02'";
+                qury = "yifl = '02'";
                 break;
             case "房产楼盘":
-                qury="yifl = '04'";
+                qury = "yifl = '04'";
                 break;
             case "生活服务":
-                qury="yifl = '05'";
+                qury = "yifl = '05'";
                 break;
             case "休闲娱乐":
-                qury="yifl = '07'";
+                qury = "yifl = '07'";
                 break;
             case "旅游服务":
-                qury="yifl = '08'";
+                qury = "yifl = '08'";
                 break;
             case "医疗卫生":
-                qury="yifl = '09'";
+                qury = "yifl = '09'";
                 break;
             case "文化媒体":
-                qury="yifl = '10'";
+                qury = "yifl = '10'";
                 break;
             case "其他行业":
-                qury="yifl = '11'";
+                qury = "yifl = '11'";
                 break;
         }
 
@@ -366,10 +394,45 @@ public class AroundActivity extends BaseActivity implements BaseView {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode==KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
             EventBus.getDefault().removeStickyEvent(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean.class);
         }
         return false;
+    }
+
+    @OnClick({R.id.bt_local, R.id.bt_collect, R.id.bt_map})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.bt_local:
+                if (isStart.isstart()){
+                    StartPoint startPoint = new StartPoint();
+                    startPoint.setName("当前位置");
+                    String x=String.valueOf(ptpoint.getX());
+                    String y=String.valueOf(ptpoint.getY());
+                    startPoint.setX(x);
+                    startPoint.setY(y);
+                    EventBus.getDefault().postSticky(startPoint);
+                }else {
+                    EndPoint endPoint = new EndPoint();
+                    endPoint.setName("当前位置");
+                    String x=String.valueOf(ptpoint.getX());
+                    String y=String.valueOf(ptpoint.getY());
+                    endPoint.setX(x);
+                    endPoint.setY(y);
+                    EventBus.getDefault().postSticky(endPoint);
+                }
+                skip(PlanActivity.class,true);
+                finish();
+                break;
+            case R.id.bt_collect:
+                skip(CollectActivity.class,false);
+                break;
+            case R.id.bt_map:
+                Bundle bundle = new Bundle();
+                bundle.putString("key", "addPoint");
+                skip(MapActivity.class, bundle, false);
+                break;
+        }
     }
 }

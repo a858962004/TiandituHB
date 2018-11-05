@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -24,20 +25,28 @@ import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
+import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.base.BasePresenter;
+import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
+import com.gangbeng.tiandituhb.event.IsStart;
 import com.gangbeng.tiandituhb.event.MapExtent;
+import com.gangbeng.tiandituhb.event.StartPoint;
+import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
+import com.gangbeng.tiandituhb.utils.MapUtil;
 import com.gangbeng.tiandituhb.utils.Util;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
@@ -50,7 +59,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,7 +72,7 @@ import butterknife.OnClick;
  * @date 2018-08-01
  */
 
-public class MapActivity extends BaseActivity {
+public class MapActivity extends BaseActivity implements BaseView {
     @BindView(R.id.id_map)
     MapView idMap;
     @BindView(R.id.img_collect)
@@ -94,27 +105,32 @@ public class MapActivity extends BaseActivity {
     CardView changeMap;
     @BindView(R.id.location_map)
     CardView locationMap;
+    @BindView(R.id.ll_button)
+    LinearLayout llButton;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf,map_lfimg,  map_xzq;
-    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer,mapRStextLayer, mapRSServiceLayer;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
+    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private GraphicsLayer pointlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent, choosePoint;
     private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private String key;
     private boolean isFirstlocal = true;
+    private BasePresenter presenter;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
     private MapExtent extent;
+    private IsStart isStart;
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_map);
         setToolbarTitle("查询结果");
         setToolbarRightVisible(false);
+        presenter = new AroundSearchPresenter(this);
         locationGPS();
         setMapView();
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
@@ -123,13 +139,14 @@ public class MapActivity extends BaseActivity {
             bean = (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean) bundleExtra.getSerializable("data");
             setbottom(bean);
         } else if (key.equals("addPoint")) {
-            mapviewscale.setVisibility(View.VISIBLE);
-            mapzoom.setVisibility(View.VISIBLE);
-            changeMap.setVisibility(View.VISIBLE);
-            locationMap.setVisibility(View.VISIBLE);
-            setToolbarTitle("添加信息点");
-            setRightImageBtnText("完成");
-            Toast.makeText(this, "选择图上一点并按完成按钮", Toast.LENGTH_LONG).show();
+//            mapviewscale.setVisibility(View.VISIBLE);
+//            mapzoom.setVisibility(View.VISIBLE);
+//            changeMap.setVisibility(View.VISIBLE);
+//            locationMap.setVisibility(View.VISIBLE);
+            llButton.setVisibility(View.GONE);
+            setToolbarTitle("地图选点");
+            setRightImageBtnText("确定");
+            Toast.makeText(this, "选择图上一点并按确定按钮", Toast.LENGTH_LONG).show();
             Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
             Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
             final PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
@@ -138,10 +155,9 @@ public class MapActivity extends BaseActivity {
                 @Override
                 public void onSingleTap(float v, float v1) {
                     pointlayer.removeAll();
+                    hideBottom();
                     Point point = idMap.toMapPoint(v, v1);
-                    choosePoint = point;
-                    Graphic graphic = new Graphic(point, picSymbol);
-                    pointlayer.addGraphic(graphic);
+                    setPointRequest(point,"20");
                 }
             });
             idMap.setOnStatusChangedListener(new OnStatusChangedListener() {
@@ -159,22 +175,41 @@ public class MapActivity extends BaseActivity {
 
     @Override
     protected void setRightClickListen() {
-        if (choosePoint == null) {
+        if (bean == null) {
             ShowToast("请先选择位置");
         } else {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("point", choosePoint);
-            skip(PointBackActivity.class, bundle, false);
+            AroundActivity.getInstence().finish();
+            if (isStart.isstart()) {
+                StartPoint startPoint = new StartPoint();
+                startPoint.setName(bean.getProperties().get名称());
+                String x = String.valueOf(bean.getGeometry().getCoordinates().get(0));
+                String y = String.valueOf(bean.getGeometry().getCoordinates().get(1));
+                startPoint.setX(x);
+                startPoint.setY(y);
+                EventBus.getDefault().postSticky(startPoint);
+            } else {
+                EndPoint endPoint = new EndPoint();
+                endPoint.setName(bean.getProperties().get名称());
+                String x = String.valueOf(bean.getGeometry().getCoordinates().get(0));
+                String y = String.valueOf(bean.getGeometry().getCoordinates().get(1));
+                endPoint.setX(x);
+                endPoint.setY(y);
+                EventBus.getDefault().postSticky(endPoint);
+            }
+            skip(PlanActivity.class, true);
+            finish();
         }
     }
 
     private void setbottom(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
         pointlayer.removeAll();
         rlBottom.setVisibility(View.VISIBLE);
-        mapviewscale.setVisibility(View.GONE);
-        mapzoom.setVisibility(View.GONE);
-        changeMap.setVisibility(View.GONE);
-        locationMap.setVisibility(View.GONE);
+        int i = DensityUtil.dip2px(this, 10);
+        int i1 = DensityUtil.dip2px(this, 20);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params.addRule(RelativeLayout.ABOVE, R.id.rl_bottom); //设置控件的位置
+        params.setMargins(i1, 0, 0, i);//左上右下
+        mapviewscale.setLayoutParams(params);
         Point point = zoom2bean(bean.getGeometry().getCoordinates());
         Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
         Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
@@ -193,6 +228,16 @@ public class MapActivity extends BaseActivity {
             imgCollect.setVisibility(View.VISIBLE);
             imgCollect2.setVisibility(View.GONE);
         }
+    }
+
+    private void hideBottom() {
+        rlBottom.setVisibility(View.GONE);
+        int i = DensityUtil.dip2px(this, 10);
+        int i1 = DensityUtil.dip2px(this, 20);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params.setMargins(i1, 0, 0, i);//左上右下
+        mapviewscale.setLayoutParams(params);
     }
 
     @NonNull
@@ -295,8 +340,22 @@ public class MapActivity extends BaseActivity {
         }
     }
 
+    private void setPointRequest(Point point, String distence) {
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("maxitems", "20");
+        parameter.put("page", "1");
+        Graphic graphic = MapUtil.setDistanceGraphicsLayer(point, distence);
+        Geometry geometry = graphic.getGeometry();
+        Envelope envelope = new Envelope();
+        geometry.queryEnvelope(envelope);
+        String geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
+        parameter.put("geo", geo);
+        parameter.put("where", "1=1");
+        presenter.setRequest(parameter);
+    }
 
-    @OnClick({R.id.img_collect, R.id.img_collect2, R.id.rl_item, R.id.ll_around, R.id.ll_route,R.id.change_map,R.id.location_map})
+
+    @OnClick({R.id.img_collect, R.id.img_collect2, R.id.rl_item, R.id.ll_around, R.id.ll_route, R.id.change_map, R.id.location_map})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_collect:
@@ -410,4 +469,47 @@ public class MapActivity extends BaseActivity {
         this.extent = extent;
     }
 
+    /**
+     * 选择起始点还是终止点
+     *
+     * @param isStart
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetPoint(IsStart isStart) {
+        this.isStart = isStart;
+    }
+
+    @Override
+    public void showMsg(String msg) {
+        ShowToast(msg);
+    }
+
+    @Override
+    public void showLoadingDialog(String title, String msg, boolean flag) {
+        showProcessDialog(title, msg, flag);
+    }
+
+    @Override
+    public void canelLoadingDialog() {
+        dismissProcessDialog();
+    }
+
+    @Override
+    public void setData(Object data) {
+        if (data instanceof NewSearchBean) {
+            NewSearchBean bean = (NewSearchBean) data;
+            NewSearchBean.ContentBean content = bean.getContent();
+            if (content != null) {
+                NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
+                List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
+                if (features1.size() > 0) {
+                    this.bean = features1.get(0);
+                    setbottom(this.bean);
+                }
+            } else {
+                this.bean = null;
+            }
+        }
+
+    }
 }

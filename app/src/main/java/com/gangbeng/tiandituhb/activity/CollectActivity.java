@@ -11,7 +11,15 @@ import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.callback.SearchAdpaterCancelBack;
 import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
+import com.gangbeng.tiandituhb.event.ChannelEvent;
+import com.gangbeng.tiandituhb.event.EndPoint;
+import com.gangbeng.tiandituhb.event.IsStart;
+import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -30,6 +38,9 @@ public class CollectActivity extends BaseActivity {
     TextView tvNote;
 
     private SearchResultAdpter adpter;
+    private ChannelEvent channelEvent;
+    private IsStart isStart;
+
 
     @Override
     protected void initView() {
@@ -55,6 +66,7 @@ public class CollectActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
@@ -73,10 +85,33 @@ public class CollectActivity extends BaseActivity {
 
         @Override
         public void itemclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
-            Bundle bundle = new Bundle();
-            bundle.putString("key", "point");
-            bundle.putSerializable("data", bean);
-            skip(MapActivity.class, bundle, false);
+            if (channelEvent.getChannel().equals("route") || channelEvent.getChannel().equals("navi")) {
+                AroundActivity.getInstence().finish();
+                if (isStart.isstart()){
+                    StartPoint startPoint = new StartPoint();
+                    startPoint.setName(bean.getProperties().get名称());
+                    String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
+                    String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
+                    startPoint.setX(x);
+                    startPoint.setY(y);
+                    EventBus.getDefault().postSticky(startPoint);
+                }else {
+                    EndPoint endPoint = new EndPoint();
+                    endPoint.setName(bean.getProperties().get名称());
+                    String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
+                    String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
+                    endPoint.setX(x);
+                    endPoint.setY(y);
+                    EventBus.getDefault().postSticky(endPoint);
+                }
+                skip(PlanActivity.class,true);
+                finish();
+            }else {
+                Bundle bundle = new Bundle();
+                bundle.putString("key", "point");
+                bundle.putSerializable("data", bean);
+                skip(MapActivity.class, bundle, false);
+            }
         }
     };
 
@@ -91,5 +126,24 @@ public class CollectActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         setData();
+    }
+
+    /**
+     * eventbus接收channel
+     *
+     * @param channelEvent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetChannel(ChannelEvent channelEvent) {
+        this.channelEvent = channelEvent;
+    }
+
+    /**
+     * 选择起始点还是终止点
+     * @param isStart
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onGetPoint(IsStart isStart) {
+        this.isStart = isStart;
     }
 }
