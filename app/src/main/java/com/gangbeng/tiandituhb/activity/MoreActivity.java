@@ -8,6 +8,7 @@ import android.widget.ListView;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.MoreLVAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 
@@ -31,9 +32,12 @@ public class MoreActivity extends BaseActivity{
 
     public static MoreActivity activity;
 
-    String[] names = new String[]{"登录/注册","地块核查","添加信息点","位置共享","收藏夹", "点距测量", "面积测量","绘图板","地图对比","信息反馈"};
-    int[] resource = new int[]{R.mipmap.icon_user,R.mipmap.icon_dikuaihecha,R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_weizhigongxiang,R.mipmap.icon_shoucang1, R.mipmap.icon_dianju, R.mipmap.icon_mianji,
-            R.mipmap.icon_huitu,R.mipmap.icon_duibi,R.mipmap.icon_fankui};
+    String[] names = new String[]{"登录/注册","地块核查","添加信息点","位置共享",
+            "收藏夹", "点距测量", "面积测量","绘图板","地图对比","地图卷帘","信息反馈","版本更新"};
+    int[] resource = new int[]{R.mipmap.icon_user,R.mipmap.icon_dikuaihecha,
+            R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_weizhigongxiang,R.mipmap.icon_shoucang1,
+            R.mipmap.icon_dianju, R.mipmap.icon_mianji,R.mipmap.icon_huitu,R.mipmap.icon_duibi,
+            R.mipmap.icon_juanlian,R.mipmap.icon_fankui,R.mipmap.icon_gengxin};
 
     public static MoreActivity instence(){
         return activity;
@@ -62,7 +66,7 @@ public class MoreActivity extends BaseActivity{
             map.put("resource", resource[i]);
             data.add(map);
         }
-        adapter = new MoreLVAdapter(this, data);
+        adapter = new MoreLVAdapter(this, data, Contant.ins().isnewest());
         lvMore.setAdapter(adapter);
         lvMore.setOnItemClickListener(listener);
     }
@@ -108,6 +112,9 @@ public class MoreActivity extends BaseActivity{
                 case "地图对比":
                     skip(ComparisonActivity.class,false);
                     break;
+                case "地图卷帘":
+                    skip(ShadeActivity.class,false);
+                    break;
                 case "添加信息点":
                     if (user != null) {
                         bundle.putString("activity","添加信息点");
@@ -132,6 +139,8 @@ public class MoreActivity extends BaseActivity{
                     }else {
                         ShowToast("此功能需登录后使用");
                     }
+                    break;
+                case "版本更新":
 
                     break;
             }

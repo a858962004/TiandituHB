@@ -78,11 +78,6 @@
                 style="@style/style_tab_map"
                 android:text="地图选点" />
         </LinearLayout>
-
-        <TextView style="@style/style_line_vertical"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"/>
-
     </LinearLayout>
 
 </RelativeLayout>

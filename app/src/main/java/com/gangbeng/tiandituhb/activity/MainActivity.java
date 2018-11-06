@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.baidu.lbsapi.model.BaiduPanoData;
 import com.baidu.lbsapi.panoramaview.PanoramaRequest;
 import com.baidu.lbsapi.tools.CoordinateConverter;
 import com.esri.android.map.GraphicsLayer;
@@ -159,6 +158,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     TextView tv6Weather;
     @BindView(R.id.tv7_weather)
     TextView tv7Weather;
+    @BindView(R.id.img_more_tab)
+    ImageView imgMoreTab;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
@@ -179,7 +180,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         setToolbarVisibility(false);
         presenter = new AroundSearchPresenter(this);
         weatherpresenter = new WeatherPresenter(this);
-        uploadpresenter=new UploadLocationPresenter(this);
+        uploadpresenter = new UploadLocationPresenter(this);
         user = (UserEvent) SharedUtil.getSerializeObject("user");
         setMapView();
         locationGPS();
@@ -245,7 +246,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         bmapsView.setOnZoomListener(new OnZoomListener() {
             @Override
             public void preAction(float v, float v1, double v2) {
-//                mapviewscale.refreshScaleView(bmapsView.getScale());
             }
 
             @Override
@@ -253,7 +253,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 mapviewscale.refreshScaleView(bmapsView.getScale());
             }
         });
+
         mapzoom.setMapView(bmapsView);
+
         bmapsView.setOnSingleTapListener(mapclick);
     }
 
@@ -275,15 +277,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         com.baidu.lbsapi.tools.Point sourcePoint = new com.baidu.lbsapi.tools.Point(center.getX(), center.getY());
         com.baidu.lbsapi.tools.Point converter = CoordinateConverter.converter(CoordinateConverter.COOR_TYPE.COOR_TYPE_WGS84, sourcePoint);
         PanoramaRequest panoramaRequest = PanoramaRequest.getInstance(MainActivity.this);
-        BaiduPanoData mPanoDataWithLatLon = panoramaRequest.getPanoramaInfoByLatLon(converter.x, converter.y);
-//                Gps bd09 = PositionUtil.gps84_To_bd09(center.getY(), center.getX());
         bubbletextview.setText("查看全景");
-//        if (mPanoDataWithLatLon.hasStreetPano()) {
-//        }else {
-//            bubbletextview.setText("该地区没有全景数据");
-//        }
     }
-
 
     private void locationGPS() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, 0);
@@ -295,7 +290,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
-                    if (Contant.ins().isLocalState())setLocal("1",PubConst.LABLE_START_SHARE);
+                    if (Contant.ins().isLocalState()) setLocal("1", PubConst.LABLE_START_SHARE);
                     if (isFirstlocal) {
                         bmapsView.zoomToScale(ptCurrent, 50000);
                         mapviewscale.refreshScaleView(50000);
@@ -322,7 +317,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -332,7 +326,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
             R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview,
-            R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route,R.id.tv7_weather})
+            R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route, R.id.tv7_weather})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.location_tuceng:
@@ -503,10 +497,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 int[] selectionIDs = weatherlayer.getSelectionIDs();
                 Graphic graphic = weatherlayer.getGraphic(selectionIDs[0]);
                 Point selectpoint = (Point) graphic.getGeometry();
-                Bundle bundle=new Bundle();
+                Bundle bundle = new Bundle();
                 bundle.putString("x", String.valueOf(selectpoint.getX()));
                 bundle.putString("y", String.valueOf(selectpoint.getY()));
-                skip(WeatherActivity.class,bundle, false);
+                skip(WeatherActivity.class, bundle, false);
                 break;
         }
     }
@@ -575,12 +569,12 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             try {
                 String code = now.getCond().getCode();
                 MyLogUtil.showLog(code);
-                Bitmap bitmap = BitmapFactory.decodeStream(this.getAssets().open(now.getCond().getCode() + ".png"));
+                Bitmap bitmap = BitmapFactory.decodeStream(this.getAssets().open(daily_forecast.get(0).getCond().getCode_d() + ".png"));
                 View inflate = LayoutInflater.from(this).inflate(R.layout.view_weather, null);
                 ImageView view = inflate.findViewById(R.id.img_weather);
                 TextView textView = inflate.findViewById(R.id.tv_weather);
                 view.setImageBitmap(bitmap);
-                textView.setText(now.getCond().getTxt());
+                textView.setText(daily_forecast.get(0).getCond().getTxt_d());
                 Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
                 Drawable drawable = new BitmapDrawable(viewbitmap);
                 Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
@@ -590,7 +584,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 parameter.put("basiccity", basic.getCity());
                 parameter.put("tmpmax", daily_forecast.get(0).getTmp().getMax());//最高温度
                 parameter.put("tmpmin", daily_forecast.get(0).getTmp().getMin());//最低温度
-                parameter.put("condtext", now.getCond().getTxt());//当前天气
+                parameter.put("condtext", daily_forecast.get(0).getCond().getTxt_d());//当前天气
                 parameter.put("cityqlty", aqi.getCity().getQlty());//空气质量
                 parameter.put("winddir", now.getWind().getDir());//风向
                 parameter.put("windsc", now.getWind().getSc());//风级
@@ -611,7 +605,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         super.onResume();
         EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
     }
-
 
 
     private static class DemoInfo {
@@ -688,11 +681,11 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         String nowhum = String.valueOf(graphic.getAttributeValue("nowhum"));//湿度
         String nowtmp = String.valueOf(graphic.getAttributeValue("nowtmp"));//当前气温
         tv1Weather.setText(basiccity);
-        tv2Weather.setText(condtext + "  " + tmpmin + "～" + tmpmax+"℃");
+        tv2Weather.setText(condtext + "  " + tmpmin + "～" + tmpmax + "℃");
         tv3Weather.setText("空气质量：" + cityqlty);
         tv4Weather.setText(winddir + " " + windsc + "级");
-        tv5Weather.setText("体感温度：" + nowfl+"℃");
-        tv6Weather.setText("湿度：" + nowhum+"%");
+        tv5Weather.setText("体感温度：" + nowfl + "℃");
+        tv6Weather.setText("湿度：" + nowhum + "%");
     }
 
     private void hideWeatherBottom() {

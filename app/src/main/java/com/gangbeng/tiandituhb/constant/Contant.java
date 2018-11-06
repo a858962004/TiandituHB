@@ -12,6 +12,15 @@ public class Contant {
     private Gps startGps;
     private Gps endGps;
     private boolean localState=false;
+    private boolean isnewest=true;
+
+    public boolean isnewest() {
+        return isnewest;
+    }
+
+    public void setIsnewest(boolean isnewest) {
+        this.isnewest = isnewest;
+    }
 
     public boolean isLocalState() {
         return localState;

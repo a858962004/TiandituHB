@@ -77,20 +77,33 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"/>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="horizontal">
-
             <ImageView
+                android:visibility="gone"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:id="@+id/img_more_tab"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/icon_redpoint"
+                android:layout_width="10dp"
+                android:layout_height="10dp" />
+            <ImageView
+                android:id="@+id/img1_tab"
                 android:background="@mipmap/icon_more"
-                style="@style/style_maptab_img" />
+                style="@style/style_maptab_img"
+                android:layout_centerVertical="true"/>
 
             <Button
                 android:id="@+id/bt_more"
                 style="@style/style_tab_map"
-                android:text="@string/tab_more" />
-        </LinearLayout>
+                android:text="@string/tab_more"
+                android:layout_toRightOf="@+id/img1_tab"
+                />
+
+        </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>
