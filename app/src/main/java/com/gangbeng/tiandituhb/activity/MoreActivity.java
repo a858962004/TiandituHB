@@ -25,27 +25,27 @@ import butterknife.ButterKnife;
  * @date 2018-08-04
  */
 
-public class MoreActivity extends BaseActivity{
+public class MoreActivity extends BaseActivity {
     @BindView(R.id.lv_more)
     ListView lvMore;
     MoreLVAdapter adapter;
 
     public static MoreActivity activity;
 
-    String[] names = new String[]{"登录/注册","地块核查","添加信息点","位置共享",
-            "收藏夹", "点距测量", "面积测量","绘图板","地图对比","地图卷帘","信息反馈","版本更新"};
-    int[] resource = new int[]{R.mipmap.icon_user,R.mipmap.icon_dikuaihecha,
-            R.mipmap.icon_tianjiaxinxi,R.mipmap.icon_weizhigongxiang,R.mipmap.icon_shoucang1,
-            R.mipmap.icon_dianju, R.mipmap.icon_mianji,R.mipmap.icon_huitu,R.mipmap.icon_duibi,
-            R.mipmap.icon_juanlian,R.mipmap.icon_fankui,R.mipmap.icon_gengxin};
+    String[] names = new String[]{"登录/注册", "地块核查", "添加信息点", "位置共享",
+            "收藏夹", "点距测量", "面积测量", "绘图板", "地图对比", "地图卷帘", "信息反馈", "版本更新"};
+    int[] resource = new int[]{R.mipmap.icon_user, R.mipmap.icon_dikuaihecha,
+            R.mipmap.icon_tianjiaxinxi, R.mipmap.icon_weizhigongxiang, R.mipmap.icon_shoucang1,
+            R.mipmap.icon_dianju, R.mipmap.icon_mianji, R.mipmap.icon_huitu, R.mipmap.icon_duibi,
+            R.mipmap.icon_juanlian, R.mipmap.icon_fankui, R.mipmap.icon_gengxin};
 
-    public static MoreActivity instence(){
+    public static MoreActivity instence() {
         return activity;
     }
 
     @Override
     protected void initView() {
-        activity=this;
+        activity = this;
         setContentLayout(R.layout.activity_more);
         setToolbarTitle("更多");
         setToolbarRightVisible(false);
@@ -54,10 +54,10 @@ public class MoreActivity extends BaseActivity{
 
     public void setListData() {
         UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
-        if (user!=null){
-            names[0]="个人中心";
-        }else {
-            names[0]="登录/注册";
+        if (user != null) {
+            names[0] = "个人中心";
+        } else {
+            names[0] = "登录/注册";
         }
         List<Map<String, Object>> data = new ArrayList<>();
         for (int i = 0; i < names.length; i++) {
@@ -85,13 +85,13 @@ public class MoreActivity extends BaseActivity{
             UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
             switch (names[position]) {
                 case "登录/注册":
-                    skip(LoginActivity.class,false);
-                      break;
+                    skip(LoginActivity.class, false);
+                    break;
                 case "地块核查":
                     if (user != null) {
-                        bundle.putString("activity","地块核查");
-                        skip(DKListActivity.class,bundle,false);
-                    }else {
+                        bundle.putString("activity", "地块核查");
+                        skip(DKListActivity.class, bundle, false);
+                    } else {
                         ShowToast("此功能需登录后使用");
                     }
                     break;
@@ -99,49 +99,49 @@ public class MoreActivity extends BaseActivity{
                     skip(CollectActivity.class, false);
                     break;
                 case "点距测量":
-                    bundle.putString("activity","点距测量");
-                    skip(CalculateMapActivity.class,bundle,false);
+                    bundle.putString("activity", "点距测量");
+                    skip(CalculateMapActivity.class, bundle, false);
                     break;
                 case "面积测量":
-                    bundle.putString("activity","面积测量");
-                    skip(CalculateMapActivity.class,bundle,false);
+                    bundle.putString("activity", "面积测量");
+                    skip(CalculateMapActivity.class, bundle, false);
                     break;
                 case "绘图板":
-                    skip(PaintActivity.class,false);
+                    skip(PaintActivity.class, false);
                     break;
                 case "地图对比":
-                    skip(ComparisonActivity.class,false);
+                    skip(ComparisonActivity.class, false);
                     break;
                 case "地图卷帘":
-                    skip(ShadeActivity.class,false);
+                    skip(ShadeActivity.class, false);
                     break;
                 case "添加信息点":
                     if (user != null) {
-                        bundle.putString("activity","添加信息点");
-                        skip(DKListActivity.class,bundle,false);
-                    }else {
+                        bundle.putString("activity", "添加信息点");
+                        skip(DKListActivity.class, bundle, false);
+                    } else {
                         ShowToast("此功能需登录后使用");
                     }
                     break;
                 case "信息反馈":
-                    if (user!=null){
-                        skip(FeedBackActivity.class,false);
-                    }else {
+                    if (user != null) {
+                        skip(FeedBackActivity.class, false);
+                    } else {
                         ShowToast("此功能需登录后使用");
                     }
                     break;
                 case "个人中心":
-                    skip(UserActivity.class,false);
+                    skip(UserActivity.class, false);
                     break;
                 case "位置共享":
-                    if (user!=null){
-                        skip(ShareLocalActivity.class,false);
-                    }else {
+                    if (user != null) {
+                        skip(ShareLocalActivity.class, false);
+                    } else {
                         ShowToast("此功能需登录后使用");
                     }
                     break;
                 case "版本更新":
-
+                    ShowToast("已是最新版本");
                     break;
             }
         }

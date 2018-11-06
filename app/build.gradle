@@ -72,6 +72,10 @@ dependencies {
     compile 'com.zhy:okhttputils:2.6.2'
     //下拉刷新
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-12'
+    //文件下载
+    compile 'com.liulishuo.filedownloader:library:1.4.1'
+    //气泡弹窗
+    compile 'com.github.lguipeng:BubbleView:1.0.1'
     compile files('libs/gson-2.3.1.jar')
     compile files('libs/arcgis-android-api.jar')
     compile files('libs/AMap_Location_V2.4.1_20160414.jar')
@@ -81,7 +85,6 @@ dependencies {
     compile files('libs/AMap_Location_V2.4.1_20160414.jar')
     compile files('libs/AMap_Navi_v1.6.0_20151229.jar')
     compile project(path: ':library')
-    compile 'com.github.lguipeng:BubbleView:1.0.1'
     compile files('libs/BaiduLBS_Android.jar')
     compile files('libs/ksoap2-android-assembly-2.5.8-jar-with-dependencies.jar')
 }
