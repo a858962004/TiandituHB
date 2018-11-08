@@ -2,6 +2,7 @@ package com.gangbeng.tiandituhb.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -68,6 +69,8 @@ import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.MapUtil;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
+import com.gangbeng.tiandituhb.utils.ShowDialog;
+import com.gangbeng.tiandituhb.utils.Util;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
 import com.github.library.bubbleview.BubbleLinearLayout;
@@ -172,12 +175,19 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private boolean islocation = false;
     private NewBasePresenter uploadpresenter;
     private UserEvent user;
+    private static MainActivity activity;
+    private boolean isnormalQuit = false;
+
+    public static MainActivity getInstense() {
+        return activity;
+    }
 
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_main);
         setToolbarVisibility(false);
+        activity = this;
         presenter = new AroundSearchPresenter(this);
         weatherpresenter = new WeatherPresenter(this);
         uploadpresenter = new UploadLocationPresenter(this);
@@ -196,7 +206,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             Map<String, Object> parameter = new HashMap<>();
             MyLogUtil.showLog(country.getLatitude() + "," + country.getLongitude());
             parameter.put("city", country.getLatitude() + "," + country.getLongitude());
-
             weatherpresenter.setRequest(parameter);
         }
 
@@ -322,6 +331,23 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
+        String string = SharedUtil.getString(PubConst.LABLE_NORMAL_QUIT, "");
+        String quitString = Util.getQuitString();
+        if (quitString.equals(PubConst.LABLE_UNNORMAL_QUIT)) {
+            Contant.ins().setLocalState(true);
+            ShowDialog.showAttention(MainActivity.this, "请注意", "系统检测到位置共享功能未正常关闭，现已开启！如需关闭，请在位置共享页面关闭！", new ShowDialog.DialogCallBack() {
+                @Override
+                public void dialogSure(DialogInterface dialog) {
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void dialogCancle(DialogInterface dialog) {
+                    dialog.dismiss();
+                }
+            });
+        }
+
     }
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
@@ -606,7 +632,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
     }
 
-
     private static class DemoInfo {
         public int type;
         public int title;
@@ -755,7 +780,23 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 hideBottom();
                 islocation = false;
             } else {
-                finish();
+                ShowDialog.showAttention(MainActivity.this, "请注意", "是否退出程序", new ShowDialog.DialogCallBack() {
+                    @Override
+                    public void dialogSure(DialogInterface dialog) {
+                        Contant.ins().setNormalQuit(true);
+                        boolean localState = Contant.ins().isLocalState();
+                        if (Contant.ins().isLocalState()) {
+                            Contant.ins().setLocalState(false);
+                            setLocal("0", PubConst.LABLE_CLOSE_SHARE);
+                        }
+                        finish();
+                    }
+
+                    @Override
+                    public void dialogCancle(DialogInterface dialog) {
+                        dialog.dismiss();
+                    }
+                });
             }
         }
         return false;
@@ -788,12 +829,28 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     private void setLocal(String state, String label) {
         MyLogUtil.showLog("1234");
+        UserEvent mUser = (UserEvent) SharedUtil.getSerializeObject("user");
+        if (mUser == null) mUser = user;
         Map<String, Object> parameter = new HashMap<>();
-        parameter.put("loginname", user.getLoginname());
-        parameter.put("username", user.getUsername());
-        parameter.put("x", ptCurrent.getX());
-        parameter.put("y", ptCurrent.getY());
+        parameter.put("loginname", mUser.getLoginname());
+        parameter.put("username", mUser.getUsername());
+        parameter.put("x", String.valueOf(ptCurrent.getX()));
+        parameter.put("y", String.valueOf(ptCurrent.getY()));
         parameter.put("state", state);
         uploadpresenter.setRequest(parameter, label);
     }
+
+    public void setUser(UserEvent user) {
+        this.user = user;
+    }
+
+    public Point getPtCurrent() {
+        return ptCurrent;
+    }
+
+//    public void setQuit() {
+//        SharedUtil.setString(PubConst.LABLE_NORMAL_QUIT, "0");//0表示为非正常退出
+//    }
+
+
 }

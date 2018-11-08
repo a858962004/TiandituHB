@@ -18,12 +18,15 @@ public class MyApplication extends LitePalApplication {
     private static MyApplication mInstance = null;
     public BMapManager mBMapManager = null;
     public static Context applicationContext;
+    private static MyActivityLifecycle myActivityLifecycle;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mInstance = this;
         applicationContext = this;
+        myActivityLifecycle = new MyActivityLifecycle();
+        registerActivityLifecycleCallbacks(myActivityLifecycle);
         initEngineManager(this);
     }
 
@@ -80,5 +83,25 @@ public class MyApplication extends LitePalApplication {
             }
         }
     };
-
+//
+//    @Override
+//    public void onTerminate() {
+//        MyLogUtil.showLog("appdestory");
+//        if (Contant.ins().isLocalState()){
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    UserEvent mUser = (UserEvent) SharedUtil.getSerializeObject("user");
+//                    Map<String, Object> parameter = new HashMap<>();
+//                    parameter.put("loginname", mUser.getLoginname());
+//                    parameter.put("username", mUser.getUsername());
+//                    parameter.put("x", String.valueOf(MainActivity.getInstense().getLocal().getX()));
+//                    parameter.put("y", String.valueOf(MainActivity.getInstense().getLocal().getY()));
+//                    parameter.put("state", "0");
+//                    RequestUtil.postob(RequestUtil.UploadLocation, parameter);
+//                }
+//            }).start();
+//        }
+//        super.onTerminate();
+//    }
 }

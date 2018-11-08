@@ -37,6 +37,6 @@ public class AroundSearchPresenter implements BasePresenter, OnCallBack {
     @Override
     public void failed(String failReason) {
         view.canelLoadingDialog();
-        view.showMsg(failReason);
+        view.showMsg("连接超时");
     }
 }

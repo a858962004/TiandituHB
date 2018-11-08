@@ -9,8 +9,14 @@ import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
+import com.gangbeng.tiandituhb.base.NewBasePresenter;
+import com.gangbeng.tiandituhb.base.NewBaseView;
+import com.gangbeng.tiandituhb.constant.Contant;
+import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.presenter.GetUserPresenter;
+import com.gangbeng.tiandituhb.presenter.UploadLocationPresenter;
+import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.utils.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 
@@ -28,7 +34,7 @@ import butterknife.OnClick;
  * @date 2018-10-17
  */
 
-public class UserActivity extends BaseActivity implements BaseView {
+public class UserActivity extends BaseActivity implements BaseView, NewBaseView {
     @BindView(R.id.quit)
     Button quit;
     @BindView(R.id.tv_username)
@@ -41,6 +47,7 @@ public class UserActivity extends BaseActivity implements BaseView {
     TextView tvEmail;
 
     private BasePresenter presenter;
+    private NewBasePresenter uploadpresenter;
 
     @Override
     protected void initView() {
@@ -49,6 +56,7 @@ public class UserActivity extends BaseActivity implements BaseView {
         setToolbarRightVisible(false);
         UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
         presenter = new GetUserPresenter(this);
+        uploadpresenter=new UploadLocationPresenter(this);
         Map<String,Object>parameter=new HashMap<>();
         parameter.put("loginname",user.getLoginname());
         presenter.setRequest(parameter);
@@ -68,7 +76,18 @@ public class UserActivity extends BaseActivity implements BaseView {
                 skip(EditPasswordActivity.class, false);
                 break;
             case R.id.quit:
+                Contant.ins().setLocalState(false);
+                UserEvent mUser = (UserEvent) SharedUtil.getSerializeObject("user");
+                Map<String, Object> parameter = new HashMap<>();
+                parameter.put("loginname", mUser.getLoginname());
+                parameter.put("username", mUser.getUsername());
+                parameter.put("x", String.valueOf(MainActivity.getInstense().getPtCurrent().getX()));
+                parameter.put("y", String.valueOf(MainActivity.getInstense().getPtCurrent().getY()));
+                parameter.put("state", "0");
+                uploadpresenter.setRequest(parameter, PubConst.LABLE_CLOSE_SHARE);
                 SharedUtil.removeData("user");
+                MyLogUtil.showLog("removedata");
+                SharedUtil.setString(PubConst.LABLE_NORMAL_QUIT,"1");
                 MoreActivity.instence().setListData();
                 finish();
                 break;
@@ -88,6 +107,11 @@ public class UserActivity extends BaseActivity implements BaseView {
     @Override
     public void canelLoadingDialog() {
         dismissProcessDialog();
+    }
+
+    @Override
+    public void setData(Object data, String lable) {
+
     }
 
     @Override

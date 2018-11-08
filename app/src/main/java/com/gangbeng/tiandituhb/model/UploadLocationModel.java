@@ -6,6 +6,7 @@ import android.os.Looper;
 import com.gangbeng.tiandituhb.base.NewBaseModel;
 import com.gangbeng.tiandituhb.base.NewCallBack;
 import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.utils.RequestUtil;
 
 import org.ksoap2.serialization.SoapObject;
@@ -35,7 +36,10 @@ public class UploadLocationModel implements NewBaseModel {
                         math = RequestUtil.GetNewestLocation;
                         break;
                 }
+                MyLogUtil.showLog("request");
+
                 final SoapObject postob = RequestUtil.postob(math, parameter);
+                MyLogUtil.showLog(postob);
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(new Runnable() {
                     @Override

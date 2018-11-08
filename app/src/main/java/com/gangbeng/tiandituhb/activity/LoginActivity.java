@@ -141,6 +141,7 @@ public class LoginActivity extends BaseActivity implements BaseView {
                 SharedUtil.saveSerializeObject("user", userEvent);
                 SharedUtil.setString("memorylogin", userEvent.getLoginname());
                 MoreActivity.instence().setListData();
+                MainActivity.getInstense().setUser(userEvent);
                 finish();
             } else {
                 if (errReason.equals("nouser") || errReason.equals("wrong password")) {

@@ -31,5 +31,7 @@ public class PubConst {
     public final static String LABLE_START_SHARE="startShare";
     public final static String LABLE_CLOSE_SHARE="closeShare";
     public final static String LABLE_GET_SHARE="getShare";
+    public final static String LABLE_NORMAL_QUIT="LABLE_NORMAL_QUIT";
+    public final static String LABLE_UNNORMAL_QUIT="LABLE_UNNORMAL_QUIT";
 
 }

@@ -107,6 +107,8 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
     ProgressBar progressBar3Local;
     @BindView(R.id.progressBar1_local)
     ProgressBar progressBar1Local;
+    @BindView(R.id.tv5_local)
+    TextView tv5Local;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
@@ -120,8 +122,9 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
     private PictureMarkerSymbol markerSymbolblue;
     private PictureMarkerSymbol markerSymbolgred;
     private String chooseuser = "";
-    private Graphic chooseGraphic=null;
+    private Graphic chooseGraphic = null;
     private List<String> usernames = new ArrayList<>();
+    private boolean isLocal = false;
 
     @Override
     protected void initView() {
@@ -159,8 +162,8 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("loginname", user.getLoginname());
         parameter.put("username", user.getUsername());
-        parameter.put("x", Double.valueOf(lacation.getX()));
-        parameter.put("y", Double.valueOf(lacation.getY()));
+        parameter.put("x", String.valueOf(lacation.getX()));
+        parameter.put("y", String.valueOf(lacation.getY()));
         parameter.put("state", Integer.valueOf(state));
         uploadpresenter.setRequest(parameter, label);
     }
@@ -332,17 +335,21 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
             Graphic graphic = drawPointLayer.getGraphic(graphicIDs[i]);
             if (graphic.getAttributeValue("username").equals(username)) {
                 drawPointLayer.clearSelection();
-                drawPointLayer.setSelectedGraphics(new int[]{graphic.getUid()},true);
+                drawPointLayer.setSelectedGraphics(new int[]{graphic.getUid()}, true);
                 setBottom(graphic);
                 return;
             }
         }
-        showMsg("为查找到该用户");
+        showMsg("未查找到该用户");
     }
 
     @Override
     public void showMsg(String msg) {
         ShowToast(msg);
+        if (msg.equals("连接超时") && progressBar2Local.getVisibility() == View.VISIBLE) {
+            progressBar2Local.setVisibility(View.GONE);
+            tv3Local.setText("未查找到位置");
+        }
     }
 
     @Override
@@ -392,6 +399,8 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
                 if (result.equals("ok")) {
                     showMsg("开启成功");
                     setRightImageBtnText("关闭");
+                    Contant.ins().setLocalState(true);
+                    MoreActivity.instence().setListData();
                 } else {
                     showMsg("开启失败");
                 }
@@ -403,6 +412,9 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
                 if (result2.equals("ok")) {
                     showMsg("关闭成功");
                     setRightImageBtnText("打开");
+//                    SharedUtil.removeData(PubConst.LABLE_NORMAL_QUIT);
+                    Contant.ins().setLocalState(false);
+                    MoreActivity.instence().setListData();
                 } else {
                     showMsg("关闭失败");
                 }
@@ -436,15 +448,17 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
                         drawPointLayer.addGraphic(graphic);
                         if (chooseuser.equals(loginname)) {
                             mapSharelocal.zoomToScale(point, mapSharelocal.getScale());
+                            String string = state.equals("0") ? "已关闭" : "已开启";
+                            tv5Local.setText("开启状态： " + string);
                         }
                     }
-                    if (!chooseuser.equals("")){
+                    if (!chooseuser.equals("")) {
                         int[] graphicIDs = drawPointLayer.getGraphicIDs();
                         for (int i = 0; i < graphicIDs.length; i++) {
                             Graphic graphic = drawPointLayer.getGraphic(graphicIDs[i]);
                             if (graphic.getAttributeValue("loginname").equals(chooseuser)) {
                                 drawPointLayer.clearSelection();
-                                drawPointLayer.setSelectedGraphics(new int[]{graphic.getUid()},true);
+                                drawPointLayer.setSelectedGraphics(new int[]{graphic.getUid()}, true);
                                 break;
                             }
                         }
@@ -471,9 +485,10 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
             if (graphicIDs != null && graphicIDs.length > 0) {
                 int graphicID = graphicIDs[0];
                 Graphic graphic = drawPointLayer.getGraphic(graphicID);
-                drawPointLayer.setSelectedGraphics(new int[]{graphicID},true);
+                drawPointLayer.setSelectedGraphics(new int[]{graphicID}, true);
                 setBottom(graphic);
             } else {
+                chooseGraphic = null;
                 chooseuser = "";
                 hideBottom();
             }
@@ -494,7 +509,10 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
         mapSharelocal.zoomToScale(point, 5000);
         mapviewscaleSharelocal.refreshScaleView(5000);
         String username = String.valueOf(graphic.getAttributeValue("username"));
+        String state = String.valueOf(graphic.getAttributeValue("state"));
         tv1Local.setText(username);
+        String string = state.equals("0") ? "已关闭" : "已开启";
+        tv5Local.setText("开启状态： " + string);
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("maxitems", "20");
         parameter.put("page", "1");
@@ -507,7 +525,7 @@ public class ShareLocalActivity extends BaseActivity implements NewBaseView, Bas
         parameter.put("where", "1=1");
         presenter.setRequest(parameter);
         Map<String, Object> parameter2 = new HashMap<>();
-        chooseGraphic=graphic;
+        chooseGraphic = graphic;
         chooseuser = String.valueOf(graphic.getAttributeValue("loginname"));
         parameter2.put("loginname", chooseuser);
         userPresenter.setRequest(parameter2);

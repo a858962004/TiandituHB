@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gangbeng.tiandituhb.R;
+import com.gangbeng.tiandituhb.constant.Contant;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ public class MoreLVAdapter extends BaseAdapter {
             viewHolder.tv=convertView.findViewById(R.id.tv_name);
             viewHolder.img=convertView.findViewById(R.id.img_more);
             viewHolder.imageView=convertView.findViewById(R.id.img);
+            viewHolder.tv_other=convertView.findViewById(R.id.tv_other);
             convertView.setTag(viewHolder);
         }else {
             viewHolder= (ViewHolder) convertView.getTag();
@@ -66,6 +68,12 @@ public class MoreLVAdapter extends BaseAdapter {
         }else {
             viewHolder.imageView.setVisibility(View.GONE);
         }
+        if (String.valueOf(stringObjectMap.get("name")).equals("位置共享")){
+            String string=Contant.ins().isLocalState()?"已开启":"未开启";
+            viewHolder.tv_other.setText(string);
+        }else {
+            viewHolder.tv_other.setText("");
+        }
         return convertView;
     }
 
@@ -73,6 +81,7 @@ public class MoreLVAdapter extends BaseAdapter {
     class ViewHolder{
         TextView tv;
         TextView img;
+        TextView tv_other;
         ImageView imageView;
     }
 }

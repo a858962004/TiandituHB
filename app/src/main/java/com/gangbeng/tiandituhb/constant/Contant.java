@@ -13,6 +13,15 @@ public class Contant {
     private Gps endGps;
     private boolean localState=false;
     private boolean isnewest=true;
+    private boolean isNormalQuit;
+
+    public boolean isNormalQuit() {
+        return isNormalQuit;
+    }
+
+    public void setNormalQuit(boolean normalQuit) {
+        isNormalQuit = normalQuit;
+    }
 
     public boolean isnewest() {
         return isnewest;

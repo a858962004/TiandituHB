@@ -25,7 +25,7 @@ public class ShowDialog {
 
     public void update(final Context mContext, final String httpUrl){
         CacheUtil.clearAllCache(mContext);
-        SharedUtil.clearData();
+//        SharedUtil.clearData();
         DataCleanManager.cleanDatabases(mContext);
         double v = Math.random() * 100000;
         final String fileName = "up"+v+".apk";
@@ -104,5 +104,29 @@ public class ShowDialog {
         mContext.startActivity(intent);
     }
 
+    public static void showAttention(final Context context, String title, String stirng, final DialogCallBack callBack) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title);
+        builder.setMessage(stirng);
+        builder.setPositiveButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                callBack.dialogCancle(dialog);
+            }
+        });
+        builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                callBack.dialogSure(dialogInterface);
+            }
+        });
+        builder.show();
+    }
+
+    public interface DialogCallBack {
+        void dialogSure(DialogInterface dialog);
+
+        void dialogCancle(DialogInterface dialog);
+    }
 
 }
