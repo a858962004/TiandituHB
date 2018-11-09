@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-        <com.esri.android.map.MapView
-            android:id="@+id/mapview1_shade"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <com.esri.android.map.MapView
-            android:clickable="false"
-            android:id="@+id/mapview2_shade"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <RelativeLayout
+        android:id="@+id/rl_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <!--<com.esri.android.map.MapView-->
+        <!--android:id="@+id/mapview1_shade"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+    <!--<com.esri.android.map.MapView-->
+        <!--android:id="@+id/mapview2_shade"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+
+
+
     <com.gangbeng.tiandituhb.widget.MyDiscreteSeekBar
         android:id="@+id/seekbar_shade"
         android:layout_width="40dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:background="@null"/>
+        android:background="@null"
+        android:maxHeight="4dp"
+        android:minHeight="4dp"
+        android:thumb="@mipmap/icon_button"
+        android:thumbOffset="0dp" />
+
     <com.gangbeng.tiandituhb.widget.MapScaleView
         android:id="@+id/mapviewscale_shade"
         android:layout_width="wrap_content"
@@ -31,9 +40,9 @@
         android:id="@+id/mapzoom_shade"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/seekbar_shade"
         android:layout_above="@+id/mapviewscale_shade"
         android:layout_marginBottom="20dp"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/seekbar_shade" />
 
 </RelativeLayout>

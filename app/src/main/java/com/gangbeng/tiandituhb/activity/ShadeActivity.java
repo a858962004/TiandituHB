@@ -1,5 +1,6 @@
 package com.gangbeng.tiandituhb.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -37,24 +38,38 @@ import butterknife.ButterKnife;
  */
 
 public class ShadeActivity extends BaseActivity {
-    @BindView(R.id.mapview1_shade)
-    MapView mapview1Shade;
-    @BindView(R.id.mapview2_shade)
-    MapView mapview2Shade;
     @BindView(R.id.seekbar_shade)
     MyDiscreteSeekBar seekbarShade;
     @BindView(R.id.mapviewscale_shade)
     MapScaleView mapviewscaleShade;
     @BindView(R.id.mapzoom_shade)
     MapZoomView mapzoomShade;
+    @BindView(R.id.rl_map)
+    RelativeLayout rlMap;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_lf_text2, map_xzq2;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
+    private MapView mapview1Shade,mapview2Shade;
     private MapExtent extent;
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_shade);
+        int currentapiVersion = Build.VERSION.SDK_INT;
+        MyLogUtil.showLog(currentapiVersion);
+        mapview1Shade=new MapView(this);
+        mapview2Shade=new MapView(this);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT); //添加相应的规则
+        mapview1Shade.setLayoutParams(params);
+        mapview2Shade.setLayoutParams(params);
+        if (currentapiVersion==23){
+            rlMap.addView(mapview2Shade);
+            rlMap.addView(mapview1Shade);
+        }else {
+            rlMap.addView(mapview1Shade);
+            rlMap.addView(mapview2Shade);
+        }
+
         setToolbarTitle("地图卷帘");
         setToolbarRightVisible(false);
         setMapView();
@@ -64,9 +79,8 @@ public class ShadeActivity extends BaseActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 MyLogUtil.showLog(progress);
                 int screenHeight = DensityUtil.getScreenHeight(ShadeActivity.this);
-                int i = screenHeight * (100 - progress) / 100;
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT); //添加相应的规则
-                params.setMargins(0, 0, 0, i);//左上右下
+                int i = screenHeight * progress / 100;
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, i); //添加相应的规则
                 mapview2Shade.setLayoutParams(params);
                 setMapView2Center();
             }
@@ -84,9 +98,12 @@ public class ShadeActivity extends BaseActivity {
     }
 
     private void setMapView2Center() {
+        Point center1 = mapview1Shade.getCenter();
+        Point point2 = mapview1Shade.toScreenPoint(center1);
         Point center = mapview2Shade.getCenter();
         Point screenPoint = mapview2Shade.toScreenPoint(center);
         Point point = mapview1Shade.toMapPoint((float) screenPoint.getX(), (float) screenPoint.getY());
+        Point point1 = mapview1Shade.toScreenPoint(point);
         mapview2Shade.zoomToScale(point, mapview1Shade.getScale());
         mapviewscaleShade.refreshScaleView(mapview1Shade.getScale());
     }
@@ -113,18 +130,19 @@ public class ShadeActivity extends BaseActivity {
         map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
-        mapview1Shade.addLayer(mapServiceLayer, 0);
-        mapview1Shade.addLayer(maptextLayer, 1);
-        mapview1Shade.addLayer(map_lf, 2);
-        mapview1Shade.addLayer(map_xzq, 3);
-        mapview1Shade.addLayer(map_lf_text, 4);
-
         mapview2Shade.addLayer(mapRSServiceLayer, 0);
         mapview2Shade.addLayer(mapRStextLayer, 1);
         mapview2Shade.addLayer(map_lfimg, 2);
         mapview2Shade.addLayer(map_xzq2, 3);
         mapview2Shade.addLayer(map_lf_text2, 4);
         mapzoomShade.setMapView(mapview1Shade);
+
+        mapview1Shade.addLayer(mapServiceLayer, 0);
+        mapview1Shade.addLayer(maptextLayer, 1);
+        mapview1Shade.addLayer(map_lf, 2);
+        mapview1Shade.addLayer(map_xzq, 3);
+        mapview1Shade.addLayer(map_lf_text, 4);
+
 
         mapview1Shade.setOnZoomListener(new OnZoomListener() {
             @Override

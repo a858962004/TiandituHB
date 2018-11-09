@@ -568,6 +568,7 @@ public class CalculateMapActivity extends BaseActivity {
                     length = s + " 千米";
                 } else {
                     String string = Double.toString(Math.round(polyline1.calculateLength2D()));
+                    MyLogUtil.showLog(string);
                     String s = Util.saveTwoU(string);
                     length = s + " 米";
                 }
@@ -593,7 +594,10 @@ public class CalculateMapActivity extends BaseActivity {
         Point endPoint = null;
         for (int i = 1; i < points.size(); i++) {
             startPoint = points.get(i - 1);
+            MyLogUtil.showLog(mapCalculate.toScreenPoint(startPoint));
             endPoint = points.get(i);
+            MyLogUtil.showLog(mapCalculate.toScreenPoint(endPoint));
+            MyLogUtil.showLog(mapCalculate.getScale());
             Line line1 = new Line();
             line1.setStart(startPoint);
             line1.setEnd(endPoint);
