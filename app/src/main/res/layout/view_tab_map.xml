@@ -76,6 +76,25 @@
         <TextView style="@style/style_line_vertical"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"/>
+        <!--<LinearLayout-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"-->
+            <!--android:orientation="horizontal">-->
+
+            <!--<ImageView-->
+                <!--android:background="@mipmap/icon_daohang"-->
+                <!--style="@style/style_maptab_img" />-->
+
+            <!--<Button-->
+                <!--android:id="@+id/bt_share"-->
+                <!--style="@style/style_tab_map"-->
+                <!--android:text="@string/tab_share" />-->
+        <!--</LinearLayout>-->
+        <!--<TextView style="@style/style_line_vertical"-->
+            <!--android:layout_marginTop="5dp"-->
+            <!--android:layout_marginBottom="5dp"/>-->
+
 
         <RelativeLayout
             android:layout_width="0dp"

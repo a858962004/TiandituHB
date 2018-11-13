@@ -54,6 +54,7 @@ public class MoreLVAdapter extends BaseAdapter {
             viewHolder.img=convertView.findViewById(R.id.img_more);
             viewHolder.imageView=convertView.findViewById(R.id.img);
             viewHolder.tv_other=convertView.findViewById(R.id.tv_other);
+            viewHolder.tv_next=convertView.findViewById(R.id.tv_next);
             convertView.setTag(viewHolder);
         }else {
             viewHolder= (ViewHolder) convertView.getTag();
@@ -69,10 +70,17 @@ public class MoreLVAdapter extends BaseAdapter {
             viewHolder.imageView.setVisibility(View.GONE);
         }
         if (String.valueOf(stringObjectMap.get("name")).equals("位置共享")){
-            String string=Contant.ins().isLocalState()?"已开启":"未开启";
-            viewHolder.tv_other.setText(string);
+            viewHolder.tv_next.setVisibility(View.GONE);
+            viewHolder.tv_other.setVisibility(View.VISIBLE);
+            if (Contant.ins().isLocalState()){
+                viewHolder.tv_other.setBackground(context.getResources().getDrawable(R.mipmap.icon_startbt));
+            }else {
+                viewHolder.tv_other.setBackground(context.getResources().getDrawable(R.mipmap.icon_closebt));
+            }
+
         }else {
-            viewHolder.tv_other.setText("");
+            viewHolder.tv_next.setVisibility(View.VISIBLE);
+            viewHolder.tv_other.setVisibility(View.GONE);
         }
         return convertView;
     }
@@ -82,6 +90,8 @@ public class MoreLVAdapter extends BaseAdapter {
         TextView tv;
         TextView img;
         TextView tv_other;
+        TextView tv_next;
         ImageView imageView;
+
     }
 }

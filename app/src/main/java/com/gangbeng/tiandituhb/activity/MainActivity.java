@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -60,6 +61,7 @@ import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
 import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
+import com.gangbeng.tiandituhb.presenter.GetUserPresenter;
 import com.gangbeng.tiandituhb.presenter.UploadLocationPresenter;
 import com.gangbeng.tiandituhb.presenter.WeatherPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
@@ -68,6 +70,7 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.MapUtil;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
+import com.gangbeng.tiandituhb.utils.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 import com.gangbeng.tiandituhb.utils.ShowDialog;
 import com.gangbeng.tiandituhb.utils.Util;
@@ -78,6 +81,7 @@ import com.github.library.bubbleview.BubbleTextView;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
+import org.ksoap2.serialization.SoapObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -163,20 +167,45 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     TextView tv7Weather;
     @BindView(R.id.img_more_tab)
     ImageView imgMoreTab;
+    @BindView(R.id.location_gongxiang)
+    CardView locationGongxiang;
+    @BindView(R.id.tv1_local)
+    TextView tv1Local;
+    @BindView(R.id.tv7_local)
+    TextView tv7Local;
+    @BindView(R.id.rl1_local)
+    RelativeLayout rl1Local;
+    @BindView(R.id.tv3_local)
+    TextView tv3Local;
+    @BindView(R.id.tv4_local)
+    TextView tv4Local;
+    @BindView(R.id.rl_bottom_local)
+    RelativeLayout rlBottomLocal;
+    @BindView(R.id.progressBar2_local)
+    ProgressBar progressBar2Local;
+    @BindView(R.id.progressBar3_local)
+    ProgressBar progressBar3Local;
+    @BindView(R.id.progressBar1_local)
+    ProgressBar progressBar1Local;
+    @BindView(R.id.tv5_local)
+    TextView tv5Local;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-    private GraphicsLayer pointlayer, weatherlayer;
+    private GraphicsLayer pointlayer, weatherlayer,locallayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
     private boolean isFirstlocal = true;
-    private BasePresenter presenter, weatherpresenter;
+    private BasePresenter presenter, weatherpresenter,userPresenter;
     private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private boolean islocation = false;
     private NewBasePresenter uploadpresenter;
     private UserEvent user;
     private static MainActivity activity;
     private boolean isnormalQuit = false;
+    private PictureMarkerSymbol markerSymbolblue,markerSymbolgred;
+    private Graphic chooseGraphic = null;
+    private String chooseuser = "";
 
     public static MainActivity getInstense() {
         return activity;
@@ -190,11 +219,13 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         activity = this;
         presenter = new AroundSearchPresenter(this);
         weatherpresenter = new WeatherPresenter(this);
+        userPresenter = new GetUserPresenter(this);
         uploadpresenter = new UploadLocationPresenter(this);
         user = (UserEvent) SharedUtil.getSerializeObject("user");
         setMapView();
         locationGPS();
         setWeather();
+        getUserLocal();
     }
 
     private void setWeather() {
@@ -226,6 +257,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
+        locallayer=new GraphicsLayer();
 //        bmapsView.setMaxScale(4000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
@@ -239,11 +271,24 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         bmapsView.addLayer(map_lfimg_text, 8);
         bmapsView.addLayer(pointlayer, 9);
         bmapsView.addLayer(weatherlayer, 10);
+        bmapsView.addLayer(locallayer,11);
         weatherlayer.setVisible(false);
+        locallayer.setVisible(false);
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
         map_lfimg_text.setVisible(false);
+
+        Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei02);
+        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 90, 90);
+        markerSymbolblue = new PictureMarkerSymbol(drawable1);
+        markerSymbolblue.setOffsetY(drawable1.getIntrinsicHeight() / 2);
+//
+        Drawable drawable2 = getResources().getDrawable(R.mipmap.icon_dingwei04);
+        Drawable drawable3 = DensityUtil.zoomDrawable(drawable2, 90, 90);
+        markerSymbolgred = new PictureMarkerSymbol(drawable3);
+        markerSymbolgred.setOffsetY(drawable3.getIntrinsicHeight() / 2);
+
 
         bmapsView.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
@@ -334,25 +379,28 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         String string = SharedUtil.getString(PubConst.LABLE_NORMAL_QUIT, "");
         String quitString = Util.getQuitString();
         if (quitString.equals(PubConst.LABLE_UNNORMAL_QUIT)) {
-            Contant.ins().setLocalState(true);
-            ShowDialog.showAttention(MainActivity.this, "请注意", "系统检测到位置共享功能未正常关闭，现已开启！如需关闭，请在位置共享页面关闭！", new ShowDialog.DialogCallBack() {
-                @Override
-                public void dialogSure(DialogInterface dialog) {
-                    dialog.dismiss();
-                }
+            setLocal("0", PubConst.LABLE_CLOSE_SHARE);
 
-                @Override
-                public void dialogCancle(DialogInterface dialog) {
-                    dialog.dismiss();
-                }
-            });
+//            Contant.ins().setLocalState(true);
+//            ShowDialog.showAttention(MainActivity.this, "请注意", "系统检测到位置共享功能未正常关闭，现已开启！如需关闭，请在位置共享页面关闭！", new ShowDialog.DialogCallBack() {
+//                @Override
+//                public void dialogSure(DialogInterface dialog) {
+//                    dialog.dismiss();
+//                }
+//
+//                @Override
+//                public void dialogCancle(DialogInterface dialog) {
+//                    dialog.dismiss();
+//                }
+//            });
         }
 
     }
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
             R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview,
-            R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route, R.id.tv7_weather})
+            R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route,
+            R.id.tv7_weather, R.id.location_gongxiang,R.id.tv7_local})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.location_tuceng:
@@ -417,7 +465,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 break;
             case R.id.location_tianqi:
                 weatherlayer.clearSelection();
+                locallayer.clearSelection();
+                locallayer.setVisible(false);
                 hideBottom();
+                hidelocalBottom();
                 if (weatherlayer.isVisible()) {
                     weatherlayer.setVisible(false);
                     bmapsView.setOnSingleTapListener(mapclick);
@@ -444,7 +495,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 //                    this.bean = null;
 //                    islocation = false;
                     weatherlayer.setVisible(false);
+                    locallayer.setVisible(false);
+                    locallayer.clearSelection();
                     hideBottom();
+                    hidelocalBottom();
                     hideWeatherBottom();
                     bmapsView.setOnSingleTapListener(null);
                     imgQuanjing.setVisibility(View.VISIBLE);
@@ -528,6 +582,40 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 bundle.putString("y", String.valueOf(selectpoint.getY()));
                 skip(WeatherActivity.class, bundle, false);
                 break;
+            case R.id.location_gongxiang:
+                if (locallayer.isVisible()){
+                    locallayer.clearSelection();
+                    hidelocalBottom();
+                    locallayer.setVisible(false);
+                    bmapsView.setOnSingleTapListener(mapclick);
+                }else {
+                    weatherlayer.setVisible(false);
+                    hideBottom();
+                    hideWeatherBottom();
+                    imgQuanjing.setVisibility(View.GONE);
+                    bubbletextview.setVisibility(View.GONE);
+                    bubbletextview.setText("正在查询...");
+                    bmapsView.setOnPanListener(null);
+                    locallayer.setVisible(true);
+                    bmapsView.setOnSingleTapListener(localclick);
+                }
+                break;
+            case R.id.tv7_local:
+                progressBar1Local.setVisibility(View.VISIBLE);
+                progressBar2Local.setVisibility(View.VISIBLE);
+                getUserLocal();
+                Map<String, Object> parameter = new HashMap<>();
+                parameter.put("maxitems", "20");
+                parameter.put("page", "1");
+                Graphic polygon = MapUtil.setDistanceGraphicsLayer((Point) chooseGraphic.getGeometry(), "100");
+                Geometry geometry = polygon.getGeometry();
+                Envelope envelope = new Envelope();
+                geometry.queryEnvelope(envelope);
+                String geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
+                parameter.put("geo", geo);
+                parameter.put("where", "1=1");
+                presenter.setRequest(parameter);
+                break;
         }
     }
 
@@ -552,39 +640,119 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     @Override
     public void showMsg(String msg) {
         ShowToast(msg);
+        if (msg.equals("连接超时") && progressBar2Local.getVisibility() == View.VISIBLE) {
+            progressBar2Local.setVisibility(View.GONE);
+            tv3Local.setText("未查找到位置");
+        }
     }
 
     @Override
     public void showLoadingDialog(String title, String msg, boolean flag) {
-        showProcessDialog(title, msg, flag);
+        if (!locallayer.isVisible()){
+            showProcessDialog(title, msg, flag);
+        }
     }
 
     @Override
     public void canelLoadingDialog() {
-        dismissProcessDialog();
+        if (!locallayer.isVisible()){
+            dismissProcessDialog();
+        }
+
     }
 
     @Override
     public void setData(Object data, String lable) {
+        SoapObject soapObject = (SoapObject) data;
+        switch (lable) {
+            case PubConst.LABLE_GET_SHARE://获取所有位置回调
+                progressBar1Local.setVisibility(View.GONE);
+                if (!soapObject.toString().equals("anyType{}")) {
+                    locallayer.removeAll();
+                    List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
+                    for (SoapObject object : newestLocation) {
+                        String id = RequestUtil.getSoapObjectValue(object, "ID");
+                        String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
+                        if (loginname.equals(user.getLoginname())) continue;
+                        String username = RequestUtil.getSoapObjectValue(object, "username");
+//                        usernames.add(username);
+                        String x = RequestUtil.getSoapObjectValue(object, "x");
+                        String y = RequestUtil.getSoapObjectValue(object, "y");
+                        String state = RequestUtil.getSoapObjectValue(object, "state");
+                        String updateTime = RequestUtil.getSoapObjectValue(object, "updateTime");
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", id);
+                        map.put("loginname", loginname);
+                        map.put("username", username);
+                        map.put("x", x);
+                        map.put("y", y);
+                        map.put("state", state);
+                        map.put("updateTime", updateTime);
+                        PictureMarkerSymbol symbol = state.equals("0") ? markerSymbolgred : markerSymbolblue;
+                        Point point = new Point(Double.valueOf(x), Double.valueOf(y));
+                        final Graphic graphic = new Graphic(point, symbol, map);
+                        locallayer.addGraphic(graphic);
+                        if (chooseuser.equals(loginname)) {
+                            bmapsView.zoomToScale(point, bmapsView.getScale());
+                            String string = state.equals("0") ? "已关闭" : "已开启";
+                            tv5Local.setText("开启状态： " + string);
+                        }
+                    }
+                    if (!chooseuser.equals("")) {
+                        int[] graphicIDs = locallayer.getGraphicIDs();
+                        for (int i = 0; i < graphicIDs.length; i++) {
+                            Graphic graphic = locallayer.getGraphic(graphicIDs[i]);
+                            if (graphic.getAttributeValue("loginname").equals(chooseuser)) {
+                                locallayer.clearSelection();
+                                locallayer.setSelectedGraphics(new int[]{graphic.getUid()}, true);
+                                break;
+                            }
+                        }
+                    }
+//                    qtetSearchlocal.addTextChangedListener(textWatcher);
+                }
+                break;
+        }
 
     }
 
     @Override
     public void setData(Object data) {
         if (data instanceof NewSearchBean) {
-            NewSearchBean bean = (NewSearchBean) data;
-            NewSearchBean.ContentBean content = bean.getContent();
-            if (content != null) {
-                NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
-                List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
-                if (features1.size() > 0) {
-                    this.bean = features1.get(0);
-                    setbottom(this.bean);
+                NewSearchBean bean = (NewSearchBean) data;
+                NewSearchBean.ContentBean content = bean.getContent();
+            if (!locallayer.isVisible()){
+                if (content != null) {
+                    NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
+                    List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
+                    if (features1.size() > 0) {
+                        this.bean = features1.get(0);
+                        setbottom(this.bean);
+                    }
+                } else {
+                    this.bean = null;
                 }
-            } else {
-                this.bean = null;
+            }else {
+                progressBar2Local.setVisibility(View.GONE);
+                if (content != null) {
+                    NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
+                    List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
+                    if (features1.size() > 0) {
+                        NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean featuresBean = features1.get(0);
+                        tv3Local.setText(featuresBean.getProperties().get名称() + "附近");
+                    }
+                } else {
+                    tv3Local.setText("未查找到位置");
+                }
             }
         }
+        if (data instanceof SoapObject) {
+            progressBar3Local.setVisibility(View.GONE);
+            SoapObject object = (SoapObject) data;
+            String mobilePhone1 = RequestUtil.getSoapObjectValue(object, "MobilePhone1");
+            tv4Local.setText("电话：" + mobilePhone1);
+        }
+
         if (data instanceof WeatherBean) {
             WeatherBean bean = (WeatherBean) data;
             WeatherBean.HeWeather5Bean heWeather5Bean = bean.getHeWeather5().get(0);
@@ -827,6 +995,24 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         }
     };
 
+    OnSingleTapListener localclick=new OnSingleTapListener() {
+        @Override
+        public void onSingleTap(float v, float v1) {
+            locallayer.clearSelection();
+            int[] graphicIDs = locallayer.getGraphicIDs(v, v1, 25);
+            if (graphicIDs != null && graphicIDs.length > 0) {
+                int graphicID = graphicIDs[0];
+                Graphic graphic = locallayer.getGraphic(graphicID);
+                locallayer.setSelectedGraphics(new int[]{graphicID}, true);
+                setlocalBottom(graphic);
+            } else {
+                chooseGraphic = null;
+                chooseuser = "";
+                hidelocalBottom();
+            }
+        }
+    };
+
     private void setLocal(String state, String label) {
         MyLogUtil.showLog("1234");
         UserEvent mUser = (UserEvent) SharedUtil.getSerializeObject("user");
@@ -848,9 +1034,60 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         return ptCurrent;
     }
 
-//    public void setQuit() {
-//        SharedUtil.setString(PubConst.LABLE_NORMAL_QUIT, "0");//0表示为非正常退出
-//    }
+    public void getUserLocal() {
+        MyLogUtil.showLog("位置共享");
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("state", "");
+        uploadpresenter.setRequest(parameter, PubConst.LABLE_GET_SHARE);
+    }
+
+    private void setlocalBottom(Graphic graphic) {
+        rlBottomLocal.setVisibility(View.VISIBLE);
+        progressBar2Local.setVisibility(View.VISIBLE);
+        progressBar3Local.setVisibility(View.VISIBLE);
+        int i = DensityUtil.dip2px(this, 10);
+        int i1 = DensityUtil.dip2px(this, 20);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params.addRule(RelativeLayout.ABOVE, R.id.rl_bottom_local); //设置控件的位置
+        params.setMargins(i1, 0, 0, i);//左上右下
+        mapviewscale.setLayoutParams(params);
+        Point point = (Point) graphic.getGeometry();
+        bmapsView.zoomToScale(point, 5000);
+        mapviewscale.refreshScaleView(5000);
+        String username = String.valueOf(graphic.getAttributeValue("username"));
+        String state = String.valueOf(graphic.getAttributeValue("state"));
+        tv1Local.setText(username);
+        String string = state.equals("0") ? "已关闭" : "已开启";
+        tv5Local.setText("开启状态： " + string);
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("maxitems", "20");
+        parameter.put("page", "1");
+        Graphic polygon = MapUtil.setDistanceGraphicsLayer(point, "100");
+        Geometry geometry = polygon.getGeometry();
+        Envelope envelope = new Envelope();
+        geometry.queryEnvelope(envelope);
+        String geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
+        parameter.put("geo", geo);
+        parameter.put("where", "1=1");
+        presenter.setRequest(parameter);
+        Map<String, Object> parameter2 = new HashMap<>();
+        chooseGraphic = graphic;
+        chooseuser = String.valueOf(graphic.getAttributeValue("loginname"));
+        parameter2.put("loginname", chooseuser);
+        userPresenter.setRequest(parameter2);
+
+    }
+
+    private void hidelocalBottom() {
+        rlBottomLocal.setVisibility(View.GONE);
+        int i = DensityUtil.dip2px(this, 10);
+        int i1 = DensityUtil.dip2px(this, 20);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params.setMargins(i1, 0, 0, i);//左上右下
+        mapviewscale.setLayoutParams(params);
+    }
+
 
 
 }

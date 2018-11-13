@@ -107,6 +107,18 @@
             android:background="@mipmap/icon_quanjing" />
     </android.support.v7.widget.CardView>
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/location_gongxiang"
+        style="@style/style_cardview_map"
+        android:layout_below="@+id/location_quanjing"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="5dp">
+
+        <TextView
+            style="@style/style_cardtv_map"
+            android:background="@mipmap/icon_sharelocal" />
+    </android.support.v7.widget.CardView>
+
     <LinearLayout
         android:id="@+id/ll_center"
         android:layout_width="wrap_content"
@@ -223,6 +235,17 @@
         android:background="@null">
         <include layout="@layout/view_bottom_weather"/>
 
+    </RelativeLayout>
+    <RelativeLayout
+        android:clickable="true"
+        android:visibility="gone"
+        android:id="@+id/rl_bottom_local"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@null">
+
+        <include layout="@layout/view_bottom_local" />
     </RelativeLayout>
 
 
