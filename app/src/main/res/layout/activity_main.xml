@@ -16,8 +16,7 @@
         android:id="@+id/id_tab_map"
         layout="@layout/view_tab_map" />
 
-    <include layout="@layout/view_searchview" />
-
+    <include layout="@layout/view_searchlocal" />
     <android.support.v7.widget.CardView
         android:id="@+id/change_map"
         style="@style/style_cardview_map"

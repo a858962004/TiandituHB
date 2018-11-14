@@ -13,10 +13,13 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -41,6 +44,7 @@ import com.esri.core.geometry.Point;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.gangbeng.tiandituhb.R;
+import com.gangbeng.tiandituhb.adpter.SearchAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
@@ -84,6 +88,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.ksoap2.serialization.SoapObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,8 +108,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     Button btRoute;
     @BindView(R.id.bt_more)
     Button btSet;
-    @BindView(R.id.ll_searchview)
-    LinearLayout llSearchview;
     @BindView(R.id.change_map)
     CardView changeMap;
     @BindView(R.id.bmapsView)
@@ -189,23 +192,32 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     ProgressBar progressBar1Local;
     @BindView(R.id.tv5_local)
     TextView tv5Local;
+    @BindView(R.id.qtet_searchlocal)
+    AutoCompleteTextView qtetSearchlocal;
+    @BindView(R.id.bt_searchlocal)
+    Button btSearchlocal;
+    @BindView(R.id.cover_tv)
+    TextView coverTv;
+    @BindView(R.id.qttv_searchlocal)
+    TextView qttvSearchlocal;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-    private GraphicsLayer pointlayer, weatherlayer,locallayer;
+    private GraphicsLayer pointlayer, weatherlayer, locallayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
     private boolean isFirstlocal = true;
-    private BasePresenter presenter, weatherpresenter,userPresenter;
+    private BasePresenter presenter, weatherpresenter, userPresenter;
     private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private boolean islocation = false;
     private NewBasePresenter uploadpresenter;
     private UserEvent user;
     private static MainActivity activity;
     private boolean isnormalQuit = false;
-    private PictureMarkerSymbol markerSymbolblue,markerSymbolgred;
+    private PictureMarkerSymbol markerSymbolblue, markerSymbolgred;
     private Graphic chooseGraphic = null;
     private String chooseuser = "";
+    private List<String> usernames = new ArrayList<>();
 
     public static MainActivity getInstense() {
         return activity;
@@ -257,7 +269,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
-        locallayer=new GraphicsLayer();
+        locallayer = new GraphicsLayer();
 //        bmapsView.setMaxScale(4000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
@@ -271,7 +283,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         bmapsView.addLayer(map_lfimg_text, 8);
         bmapsView.addLayer(pointlayer, 9);
         bmapsView.addLayer(weatherlayer, 10);
-        bmapsView.addLayer(locallayer,11);
+        bmapsView.addLayer(locallayer, 11);
         weatherlayer.setVisible(false);
         locallayer.setVisible(false);
         mapRSServiceLayer.setVisible(false);
@@ -397,10 +409,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     }
 
-    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.ll_searchview, R.id.change_map,
+    @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.cover_tv, R.id.change_map,
             R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview,
             R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route,
-            R.id.tv7_weather, R.id.location_gongxiang,R.id.tv7_local})
+            R.id.tv7_weather, R.id.location_gongxiang, R.id.tv7_local, R.id.bt_searchlocal})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.location_tuceng:
@@ -425,7 +437,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 EventBus.getDefault().postSticky(extent);
                 skip(MoreActivity.class, false);
                 break;
-            case R.id.ll_searchview:
+            case R.id.cover_tv:
                 setEventBus("search");
                 skip(AroundActivity.class, false);
                 break;
@@ -583,13 +595,18 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 skip(WeatherActivity.class, bundle, false);
                 break;
             case R.id.location_gongxiang:
-                if (locallayer.isVisible()){
+                if (locallayer.isVisible()) {
+                    qttvSearchlocal.setVisibility(View.VISIBLE);
+                    qtetSearchlocal.setVisibility(View.GONE);
+                    coverTv.setVisibility(View.VISIBLE);
                     locallayer.clearSelection();
                     hidelocalBottom();
                     locallayer.setVisible(false);
                     bmapsView.setOnSingleTapListener(mapclick);
-                }else {
-                    weatherlayer.setVisible(false);
+                } else {
+                    qttvSearchlocal.setVisibility(View.GONE);
+                    qtetSearchlocal.setVisibility(View.VISIBLE);
+                    coverTv.setVisibility(View.GONE);
                     hideBottom();
                     hideWeatherBottom();
                     imgQuanjing.setVisibility(View.GONE);
@@ -615,6 +632,11 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 parameter.put("geo", geo);
                 parameter.put("where", "1=1");
                 presenter.setRequest(parameter);
+                break;
+            case R.id.bt_searchlocal:
+                jianpandelete();
+                String username = String.valueOf(qtetSearchlocal.getText());
+                searchGraphicByUsername(username);
                 break;
         }
     }
@@ -648,14 +670,14 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     @Override
     public void showLoadingDialog(String title, String msg, boolean flag) {
-        if (!locallayer.isVisible()){
+        if (!locallayer.isVisible()) {
             showProcessDialog(title, msg, flag);
         }
     }
 
     @Override
     public void canelLoadingDialog() {
-        if (!locallayer.isVisible()){
+        if (!locallayer.isVisible()) {
             dismissProcessDialog();
         }
 
@@ -675,7 +697,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                         String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
                         if (loginname.equals(user.getLoginname())) continue;
                         String username = RequestUtil.getSoapObjectValue(object, "username");
-//                        usernames.add(username);
+                        usernames.add(username);
                         String x = RequestUtil.getSoapObjectValue(object, "x");
                         String y = RequestUtil.getSoapObjectValue(object, "y");
                         String state = RequestUtil.getSoapObjectValue(object, "state");
@@ -709,7 +731,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                             }
                         }
                     }
-//                    qtetSearchlocal.addTextChangedListener(textWatcher);
+                    qtetSearchlocal.addTextChangedListener(textWatcher);
                 }
                 break;
         }
@@ -719,9 +741,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     @Override
     public void setData(Object data) {
         if (data instanceof NewSearchBean) {
-                NewSearchBean bean = (NewSearchBean) data;
-                NewSearchBean.ContentBean content = bean.getContent();
-            if (!locallayer.isVisible()){
+            NewSearchBean bean = (NewSearchBean) data;
+            NewSearchBean.ContentBean content = bean.getContent();
+            if (!locallayer.isVisible()) {
                 if (content != null) {
                     NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
                     List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
@@ -732,7 +754,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 } else {
                     this.bean = null;
                 }
-            }else {
+            } else {
                 progressBar2Local.setVisibility(View.GONE);
                 if (content != null) {
                     NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
@@ -798,6 +820,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().removeStickyEvent(SearchBean.PoisBean.class);
+    }
+
+    @OnClick(R.id.cover_tv)
+    public void onViewClicked() {
     }
 
     private static class DemoInfo {
@@ -995,7 +1021,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         }
     };
 
-    OnSingleTapListener localclick=new OnSingleTapListener() {
+    OnSingleTapListener localclick = new OnSingleTapListener() {
         @Override
         public void onSingleTap(float v, float v1) {
             locallayer.clearSelection();
@@ -1088,6 +1114,42 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         mapviewscale.setLayoutParams(params);
     }
 
+    private void searchGraphicByUsername(String username) {
+        int[] graphicIDs = locallayer.getGraphicIDs();
+        for (int i = 0; i < graphicIDs.length; i++) {
+            Graphic graphic = locallayer.getGraphic(graphicIDs[i]);
+            if (graphic.getAttributeValue("username").equals(username)) {
+                locallayer.clearSelection();
+                locallayer.setSelectedGraphics(new int[]{graphic.getUid()}, true);
+                setlocalBottom(graphic);
+                return;
+            }
+        }
+        showMsg("未查找到该用户");
+    }
+
+    TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String search = String.valueOf(qtetSearchlocal.getText());
+            List<String> array = new ArrayList<>();
+            for (String username : usernames) {
+                if (username.contains(search)) array.add(username);
+            }
+            SearchAdapter<String> adapter = new SearchAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, array, SearchAdapter.ALL);
+            qtetSearchlocal.setAdapter(adapter);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
 
 }
