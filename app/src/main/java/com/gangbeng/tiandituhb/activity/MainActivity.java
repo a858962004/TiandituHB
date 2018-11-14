@@ -476,6 +476,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 //                mapviewscale.refreshScaleView(bmapsView.getScale());
                 break;
             case R.id.location_tianqi:
+                qttvSearchlocal.setVisibility(View.VISIBLE);
+                qtetSearchlocal.setVisibility(View.GONE);
                 weatherlayer.clearSelection();
                 locallayer.clearSelection();
                 locallayer.setVisible(false);
@@ -506,6 +508,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 } else {
 //                    this.bean = null;
 //                    islocation = false;
+                    qttvSearchlocal.setVisibility(View.VISIBLE);
+                    qtetSearchlocal.setVisibility(View.GONE);
                     weatherlayer.setVisible(false);
                     locallayer.setVisible(false);
                     locallayer.clearSelection();
