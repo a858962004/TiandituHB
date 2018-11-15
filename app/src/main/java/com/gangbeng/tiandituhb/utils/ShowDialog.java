@@ -117,7 +117,6 @@ public class ShowDialog {
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                callBack.dialogSure(dialogInterface);
                 callBack.dialogCancle(dialogInterface);
             }
         });
