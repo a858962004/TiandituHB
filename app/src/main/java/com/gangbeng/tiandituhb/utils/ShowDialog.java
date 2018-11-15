@@ -108,16 +108,17 @@ public class ShowDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(title);
         builder.setMessage(stirng);
-        builder.setPositiveButton("取消", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                callBack.dialogCancle(dialog);
+                callBack.dialogSure(dialog);
             }
         });
-        builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 callBack.dialogSure(dialogInterface);
+                callBack.dialogCancle(dialogInterface);
             }
         });
         builder.show();
