@@ -1,9 +1,16 @@
 package com.gangbeng.tiandituhb.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Environment;
 import android.util.Base64;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
 
@@ -14,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,5 +175,72 @@ public class Util {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     *  从assets目录中复制整个文件夹内容
+     *  @param  context  Context 使用CopyFiles类的Activity
+     *  @param  oldPath  String  原文件路径  如：/aa
+     *  @param  newPath  String  复制后路径  如：xx:/bb/cc
+     */
+    public static void copyFilesFassets(Context context, String oldPath, String newPath) {
+        try {
+            String fileNames[] = context.getAssets().list(oldPath);//获取assets目录下的所有文件及目录名
+            if (fileNames.length > 0) {//如果是目录
+                File file = new File(newPath);
+                file.mkdirs();//如果文件夹不存在，则递归
+                for (String fileName : fileNames) {
+                    copyFilesFassets(context,oldPath + "/" + fileName,newPath+"/"+fileName);
+                }
+            } else {//如果是文件
+                InputStream is = context.getAssets().open(oldPath);
+                FileOutputStream fos = new FileOutputStream(new File(newPath));
+                byte[] buffer = new byte[1024];
+                int byteCount=0;
+                while((byteCount=is.read(buffer))!=-1) {//循环从输入流读取 buffer字节
+                    fos.write(buffer, 0, byteCount);//将读取的输入流写入到输出流
+                }
+                fos.flush();//刷新缓冲区
+                is.close();
+                fos.close();
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            //如果捕捉到错误则通知UI线程
+//            MainActivity.handler.sendEmptyMessage(COPY_FALSE);
+        }
+    }
+
+    /**
+     * @作者 Author
+     * @创建日期 2017/12/1 0001
+     * @创建时间 上午 8:39
+     * @描述 —— 将android的文字转换为底图透明的图片
+     */
+    public static Bitmap creatCodeBitmap(String contents, Context context) {
+        float scale = context.getResources().getDisplayMetrics().scaledDensity;
+
+        TextView tv = new TextView(context);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        tv.setLayoutParams(layoutParams);
+        tv.setText(contents);
+        tv.setTextSize(scale * 8);
+        tv.setGravity(Gravity.CENTER_HORIZONTAL);
+        tv.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        tv.setDrawingCacheEnabled(true);
+        tv.setTextColor(Color.BLACK);
+        tv.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        tv.layout(0, 0, tv.getMeasuredWidth(), tv.getMeasuredHeight());
+
+
+        //tv.setBackgroundColor(Color.GREEN);
+
+        tv.buildDrawingCache();
+        Bitmap bitmapCode = tv.getDrawingCache();
+        return bitmapCode;
     }
 }

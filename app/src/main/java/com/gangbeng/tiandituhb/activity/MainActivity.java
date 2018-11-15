@@ -203,7 +203,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-    private GraphicsLayer pointlayer, weatherlayer, locallayer;
+    private GraphicsLayer pointlayer, weatherlayer, locallayer, namelayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
     private boolean isFirstlocal = true;
@@ -218,6 +218,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private Graphic chooseGraphic = null;
     private String chooseuser = "";
     private List<String> usernames = new ArrayList<>();
+    private boolean laststate=false;
 
     public static MainActivity getInstense() {
         return activity;
@@ -270,6 +271,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
         locallayer = new GraphicsLayer();
+        namelayer = new GraphicsLayer();
 //        bmapsView.setMaxScale(4000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
@@ -284,8 +286,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         bmapsView.addLayer(pointlayer, 9);
         bmapsView.addLayer(weatherlayer, 10);
         bmapsView.addLayer(locallayer, 11);
+        bmapsView.addLayer(namelayer, 12);
         weatherlayer.setVisible(false);
         locallayer.setVisible(false);
+        namelayer.setVisible(false);
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
@@ -317,6 +321,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscale.refreshScaleView(bmapsView.getScale());
+                if (locallayer.isVisible()){
+                    getUserLocal();
+                }
             }
         });
 
@@ -356,7 +363,13 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 @Override
                 public void onLocationChanged(Location location) {
                     ptCurrent = new Point(location.getLongitude(), location.getLatitude());
-                    if (Contant.ins().isLocalState()) setLocal("1", PubConst.LABLE_START_SHARE);
+                    if (Contant.ins().isLocalState()) {
+                        setLocal("1", PubConst.LABLE_START_SHARE);
+                    }
+                    if (laststate && !Contant.ins().isLocalState()) {
+                        setLocal("0", PubConst.LABLE_START_SHARE);
+                    }
+                    laststate = Contant.ins().isLocalState();
                     if (isFirstlocal) {
                         bmapsView.zoomToScale(ptCurrent, 50000);
                         mapviewscale.refreshScaleView(50000);
@@ -391,10 +404,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         String string = SharedUtil.getString(PubConst.LABLE_NORMAL_QUIT, "");
         String quitString = Util.getQuitString();
         if (quitString.equals(PubConst.LABLE_UNNORMAL_QUIT)) {
-            setLocal("0", PubConst.LABLE_CLOSE_SHARE);
-
-//            Contant.ins().setLocalState(true);
-//            ShowDialog.showAttention(MainActivity.this, "请注意", "系统检测到位置共享功能未正常关闭，现已开启！如需关闭，请在位置共享页面关闭！", new ShowDialog.DialogCallBack() {
+//            setLocal("0", PubConst.LABLE_CLOSE_SHARE);
+            laststate = true;
+            Contant.ins().setLocalState(false);
+//            ShowDialog.showAttention(MainActivity.this, "请注意", "系统检测到位置共享功能未正常关闭，现已开启！如需关闭，请在更多页面关闭！", new ShowDialog.DialogCallBack() {
 //                @Override
 //                public void dialogSure(DialogInterface dialog) {
 //                    dialog.dismiss();
@@ -481,6 +494,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 weatherlayer.clearSelection();
                 locallayer.clearSelection();
                 locallayer.setVisible(false);
+                namelayer.setVisible(false);
                 hideBottom();
                 hidelocalBottom();
                 if (weatherlayer.isVisible()) {
@@ -512,6 +526,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     qtetSearchlocal.setVisibility(View.GONE);
                     weatherlayer.setVisible(false);
                     locallayer.setVisible(false);
+                    namelayer.setVisible(false);
                     locallayer.clearSelection();
                     hideBottom();
                     hidelocalBottom();
@@ -606,6 +621,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     locallayer.clearSelection();
                     hidelocalBottom();
                     locallayer.setVisible(false);
+                    namelayer.setVisible(false);
                     bmapsView.setOnSingleTapListener(mapclick);
                 } else {
                     qttvSearchlocal.setVisibility(View.GONE);
@@ -618,6 +634,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     bubbletextview.setText("正在查询...");
                     bmapsView.setOnPanListener(null);
                     locallayer.setVisible(true);
+                    namelayer.setVisible(true);
                     bmapsView.setOnSingleTapListener(localclick);
                 }
                 break;
@@ -695,6 +712,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 progressBar1Local.setVisibility(View.GONE);
                 if (!soapObject.toString().equals("anyType{}")) {
                     locallayer.removeAll();
+                    namelayer.removeAll();
                     List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
                     for (SoapObject object : newestLocation) {
                         String id = RequestUtil.getSoapObjectValue(object, "ID");
@@ -702,6 +720,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                         if (loginname.equals(user.getLoginname())) continue;
                         String username = RequestUtil.getSoapObjectValue(object, "username");
                         usernames.add(username);
+
+
                         String x = RequestUtil.getSoapObjectValue(object, "x");
                         String y = RequestUtil.getSoapObjectValue(object, "y");
                         String state = RequestUtil.getSoapObjectValue(object, "state");
@@ -718,6 +738,13 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                         Point point = new Point(Double.valueOf(x), Double.valueOf(y));
                         final Graphic graphic = new Graphic(point, symbol, map);
                         locallayer.addGraphic(graphic);
+                        // 将bitmap转换为Drawable资源
+                        Bitmap bitmap = Util.creatCodeBitmap(username, MainActivity.this);
+                        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                        Drawable drawable2 = DensityUtil.zoomDrawable(drawable, 60, 50);
+                        PictureMarkerSymbol pictureMarkerSymbol = new PictureMarkerSymbol(drawable2);
+                        pictureMarkerSymbol.setOffsetY(-20);
+                        namelayer.addGraphic(new Graphic(point, pictureMarkerSymbol));
                         if (chooseuser.equals(loginname)) {
                             bmapsView.zoomToScale(point, bmapsView.getScale());
                             String string = state.equals("0") ? "已关闭" : "已开启";
