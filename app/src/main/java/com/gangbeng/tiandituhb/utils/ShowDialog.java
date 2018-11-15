@@ -23,19 +23,19 @@ import java.io.File;
 
 public class ShowDialog {
 
-    public void update(final Context mContext, final String httpUrl){
+    public static void update(final Context mContext, final String httpUrl) {
         CacheUtil.clearAllCache(mContext);
 //        SharedUtil.clearData();
         DataCleanManager.cleanDatabases(mContext);
         double v = Math.random() * 100000;
-        final String fileName = "up"+v+".apk";
+        final String fileName = "up" + v + ".apk";
         String sdPublic = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
 
         File f = new File(sdPublic);
-        final File file = new File(sdPublic + fileName);
+        final File file = new File(sdPublic +"/"+ fileName);
 
         if (httpUrl != null) {
-            if (!TextUtils.isEmpty(httpUrl)){
+            if (!TextUtils.isEmpty(httpUrl)) {
                 if (!f.exists()) {
                     f.mkdirs();
                 }
@@ -54,7 +54,7 @@ public class ShowDialog {
                                 .setListener(new FileDownloadListener() {
                                     @Override
                                     protected void pending(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-
+                                        MyLogUtil.showLog("pending");
                                     }
 
                                     @Override
@@ -65,12 +65,12 @@ public class ShowDialog {
                                     @Override
                                     protected void completed(BaseDownloadTask task) {
                                         progressDialog.setProgress(100);
-                                        openFile(mContext,file);
+                                        openFile(mContext, file);
                                     }
 
                                     @Override
                                     protected void paused(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-
+                                        MyLogUtil.showLog("paused");
                                     }
 
                                     @Override
@@ -93,7 +93,7 @@ public class ShowDialog {
         }
     }
 
-    private void openFile(Context mContext,File file) {
+    private static void openFile(Context mContext, File file) {
         // TODO Auto-generated method stub
         Log.e("OpenFile", file.getName());
         Intent intent = new Intent();

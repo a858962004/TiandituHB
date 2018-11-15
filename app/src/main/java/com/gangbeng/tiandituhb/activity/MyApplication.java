@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.baidu.lbsapi.BMapManager;
 import com.baidu.lbsapi.MKGeneralListener;
 import com.gangbeng.tiandituhb.utils.ToastUtil;
+import com.liulishuo.filedownloader.FileDownloader;
 
 import org.litepal.LitePalApplication;
 import org.litepal.exceptions.GlobalException;
@@ -26,6 +27,7 @@ public class MyApplication extends LitePalApplication {
         mInstance = this;
         applicationContext = this;
         myActivityLifecycle = new MyActivityLifecycle();
+        FileDownloader.init(getApplicationContext());
         registerActivityLifecycleCallbacks(myActivityLifecycle);
         initEngineManager(this);
     }

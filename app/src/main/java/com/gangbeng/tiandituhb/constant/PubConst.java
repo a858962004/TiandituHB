@@ -34,4 +34,9 @@ public class PubConst {
     public final static String LABLE_NORMAL_QUIT="LABLE_NORMAL_QUIT";
     public final static String LABLE_UNNORMAL_QUIT="LABLE_UNNORMAL_QUIT";
 
+    public final static String LABLE_UPDATE="LABLE_UPDATE";
+
+    //更新接口地址
+    public final static String update="http://hb9.api.okayapi.com/?s=App.Table.Get&model_name=TiandituLFUpdate&check_code=_6F19660F12F207E04C917F3F380695F1&id=1&app_key=6F19660F12F207E04C917F3F380695F1&sign=5F65D01F75FF7EB8DD0838C246205E61";
+
 }

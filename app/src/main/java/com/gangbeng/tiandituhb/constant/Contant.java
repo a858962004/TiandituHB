@@ -14,6 +14,16 @@ public class Contant {
     private boolean localState=false;
     private boolean isnewest=true;
     private boolean isNormalQuit;
+    private String updateUrl;
+
+
+    public String getUpdateUrl() {
+        return updateUrl;
+    }
+
+    public void setUpdateUrl(String updateUrl) {
+        this.updateUrl = updateUrl;
+    }
 
     public boolean isNormalQuit() {
         return isNormalQuit;

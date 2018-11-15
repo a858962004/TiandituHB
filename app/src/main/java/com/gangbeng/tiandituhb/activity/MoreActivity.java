@@ -11,6 +11,7 @@ import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
+import com.gangbeng.tiandituhb.utils.ShowDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,11 +34,11 @@ public class MoreActivity extends BaseActivity {
     public static MoreActivity activity;
 
     String[] names = new String[]{"登录/注册", "地块核查", "添加信息点", "位置共享",
-            "收藏夹", "点距测量", "面积测量", "绘图板", "地图对比", "地图卷帘", "信息反馈"};
+            "收藏夹", "点距测量", "面积测量", "绘图板", "地图对比", "地图卷帘", "信息反馈","版本更新"};
     int[] resource = new int[]{R.mipmap.icon_user, R.mipmap.icon_dikuaihecha,
             R.mipmap.icon_tianjiaxinxi, R.mipmap.icon_weizhigongxiang, R.mipmap.icon_shoucang1,
             R.mipmap.icon_dianju, R.mipmap.icon_mianji, R.mipmap.icon_huitu, R.mipmap.icon_duibi,
-            R.mipmap.icon_juanlian, R.mipmap.icon_fankui};
+            R.mipmap.icon_juanlian, R.mipmap.icon_fankui,R.mipmap.icon_gengxin};
 
     public static MoreActivity instence() {
         return activity;
@@ -142,7 +143,11 @@ public class MoreActivity extends BaseActivity {
                     }
                     break;
                 case "版本更新":
-                    ShowToast("已是最新版本");
+                    if (!Contant.ins().isnewest()){
+                        ShowDialog.update(MoreActivity.this,Contant.ins().getUpdateUrl());
+                    }else {
+                        ShowToast("已是最新版本");
+                    }
                     break;
             }
         }

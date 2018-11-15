@@ -43,6 +43,7 @@ import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
+import com.gangbeng.tiandituhb.BuildConfig;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.SearchAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
@@ -54,6 +55,7 @@ import com.gangbeng.tiandituhb.bean.CountryBean;
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
+import com.gangbeng.tiandituhb.bean.UpdateBean;
 import com.gangbeng.tiandituhb.bean.WeatherBean;
 import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.constant.PubConst;
@@ -66,6 +68,7 @@ import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
 import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
 import com.gangbeng.tiandituhb.presenter.GetUserPresenter;
+import com.gangbeng.tiandituhb.presenter.UpdatePresenter;
 import com.gangbeng.tiandituhb.presenter.UploadLocationPresenter;
 import com.gangbeng.tiandituhb.presenter.WeatherPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
@@ -200,6 +203,12 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     TextView coverTv;
     @BindView(R.id.qttv_searchlocal)
     TextView qttvSearchlocal;
+    @BindView(R.id.ll_tianqi)
+    LinearLayout llTianqi;
+    @BindView(R.id.ll_quanjing)
+    LinearLayout llQuanjing;
+    @BindView(R.id.ll_share)
+    LinearLayout llShare;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
@@ -210,7 +219,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private BasePresenter presenter, weatherpresenter, userPresenter;
     private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private boolean islocation = false;
-    private NewBasePresenter uploadpresenter;
+    private NewBasePresenter uploadpresenter, updatepresenter;
     private UserEvent user;
     private static MainActivity activity;
     private boolean isnormalQuit = false;
@@ -218,7 +227,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private Graphic chooseGraphic = null;
     private String chooseuser = "";
     private List<String> usernames = new ArrayList<>();
-    private boolean laststate=false;
+    private boolean laststate = false;
 
     public static MainActivity getInstense() {
         return activity;
@@ -234,11 +243,13 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         weatherpresenter = new WeatherPresenter(this);
         userPresenter = new GetUserPresenter(this);
         uploadpresenter = new UploadLocationPresenter(this);
+        updatepresenter = new UpdatePresenter(this);
         user = (UserEvent) SharedUtil.getSerializeObject("user");
         setMapView();
         locationGPS();
         setWeather();
         getUserLocal();
+        updatepresenter.setRequest(null, PubConst.LABLE_UPDATE);
     }
 
     private void setWeather() {
@@ -321,7 +332,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscale.refreshScaleView(bmapsView.getScale());
-                if (locallayer.isVisible()){
+                if (locallayer.isVisible()) {
                     getUserLocal();
                 }
             }
@@ -489,6 +500,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 //                mapviewscale.refreshScaleView(bmapsView.getScale());
                 break;
             case R.id.location_tianqi:
+                llTianqi.setBackgroundColor(getResources().getColor(R.color.white));
+                llQuanjing.setBackgroundColor(getResources().getColor(R.color.white));
+                llShare.setBackgroundColor(getResources().getColor(R.color.white));
                 qttvSearchlocal.setVisibility(View.VISIBLE);
                 qtetSearchlocal.setVisibility(View.GONE);
                 weatherlayer.clearSelection();
@@ -502,6 +516,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     bmapsView.setOnSingleTapListener(mapclick);
                     hideWeatherBottom();
                 } else {
+                    llTianqi.setBackgroundColor(getResources().getColor(R.color.lightblue));
                     imgQuanjing.setVisibility(View.GONE);
                     bubbletextview.setVisibility(View.GONE);
                     bubbletextview.setText("正在查询...");
@@ -513,6 +528,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
                 break;
             case R.id.location_quanjing:
+                llTianqi.setBackgroundColor(getResources().getColor(R.color.white));
+                llQuanjing.setBackgroundColor(getResources().getColor(R.color.white));
+                llShare.setBackgroundColor(getResources().getColor(R.color.white));
                 if (imgQuanjing.getVisibility() == View.VISIBLE) {
                     imgQuanjing.setVisibility(View.GONE);
                     bubbletextview.setVisibility(View.GONE);
@@ -522,6 +540,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 } else {
 //                    this.bean = null;
 //                    islocation = false;
+                    llQuanjing.setBackgroundColor(getResources().getColor(R.color.lightblue));
                     qttvSearchlocal.setVisibility(View.VISIBLE);
                     qtetSearchlocal.setVisibility(View.GONE);
                     weatherlayer.setVisible(false);
@@ -614,6 +633,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 skip(WeatherActivity.class, bundle, false);
                 break;
             case R.id.location_gongxiang:
+                llTianqi.setBackgroundColor(getResources().getColor(R.color.white));
+                llQuanjing.setBackgroundColor(getResources().getColor(R.color.white));
+                llShare.setBackgroundColor(getResources().getColor(R.color.white));
                 if (locallayer.isVisible()) {
                     qttvSearchlocal.setVisibility(View.VISIBLE);
                     qtetSearchlocal.setVisibility(View.GONE);
@@ -624,6 +646,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     namelayer.setVisible(false);
                     bmapsView.setOnSingleTapListener(mapclick);
                 } else {
+                    llShare.setBackgroundColor(getResources().getColor(R.color.lightblue));
                     qttvSearchlocal.setVisibility(View.GONE);
                     qtetSearchlocal.setVisibility(View.VISIBLE);
                     coverTv.setVisibility(View.GONE);
@@ -635,6 +658,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     bmapsView.setOnPanListener(null);
                     locallayer.setVisible(true);
                     namelayer.setVisible(true);
+                    weatherlayer.setVisible(false);
+                    weatherlayer.clearSelection();
                     bmapsView.setOnSingleTapListener(localclick);
                 }
                 break;
@@ -706,7 +731,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     @Override
     public void setData(Object data, String lable) {
-        SoapObject soapObject = (SoapObject) data;
+        SoapObject soapObject = null;
+        if (data instanceof SoapObject) soapObject = (SoapObject) data;
         switch (lable) {
             case PubConst.LABLE_GET_SHARE://获取所有位置回调
                 progressBar1Local.setVisibility(View.GONE);
@@ -763,6 +789,18 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                         }
                     }
                     qtetSearchlocal.addTextChangedListener(textWatcher);
+                }
+                break;
+            case PubConst.LABLE_UPDATE:
+                UpdateBean bean = (UpdateBean) data;
+                String versionCode = bean.getData().getData().getVersionCode();
+                String versionName = bean.getData().getData().getVersionName();
+                String updateUrl = bean.getData().getData().getUpdateUrl();
+                MyLogUtil.showLog("服务器版本：" + versionCode + "----" + versionName);
+                if (Integer.valueOf(versionCode) > BuildConfig.VERSION_CODE) {
+                    Contant.ins().setUpdateUrl(updateUrl);
+                    Contant.ins().setIsnewest(false);
+                    imgMoreTab.setVisibility(View.VISIBLE);
                 }
                 break;
         }
