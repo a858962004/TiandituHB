@@ -228,6 +228,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private String chooseuser = "";
     private List<String> usernames = new ArrayList<>();
     private boolean laststate = false;
+    private boolean isFresh=false;
 
     public static MainActivity getInstense() {
         return activity;
@@ -666,6 +667,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             case R.id.tv7_local:
                 progressBar1Local.setVisibility(View.VISIBLE);
                 progressBar2Local.setVisibility(View.VISIBLE);
+                isFresh=true;
                 getUserLocal();
                 Map<String, Object> parameter = new HashMap<>();
                 parameter.put("maxitems", "20");
@@ -746,8 +748,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                         if (loginname.equals(user.getLoginname())) continue;
                         String username = RequestUtil.getSoapObjectValue(object, "username");
                         usernames.add(username);
-
-
                         String x = RequestUtil.getSoapObjectValue(object, "x");
                         String y = RequestUtil.getSoapObjectValue(object, "y");
                         String state = RequestUtil.getSoapObjectValue(object, "state");
@@ -772,7 +772,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                         pictureMarkerSymbol.setOffsetY(-20);
                         namelayer.addGraphic(new Graphic(point, pictureMarkerSymbol));
                         if (chooseuser.equals(loginname)) {
-                            bmapsView.zoomToScale(point, bmapsView.getScale());
+                            if (isFresh) bmapsView.zoomToScale(point, bmapsView.getScale());
+                            isFresh=false;
                             String string = state.equals("0") ? "已关闭" : "已开启";
                             tv5Local.setText("开启状态： " + string);
                         }
