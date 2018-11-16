@@ -413,7 +413,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        String string = SharedUtil.getString(PubConst.LABLE_NORMAL_QUIT, "");
         String quitString = Util.getQuitString();
         if (quitString.equals(PubConst.LABLE_UNNORMAL_QUIT)) {
 //            setLocal("0", PubConst.LABLE_CLOSE_SHARE);
@@ -745,7 +744,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     for (SoapObject object : newestLocation) {
                         String id = RequestUtil.getSoapObjectValue(object, "ID");
                         String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
-                        if (loginname.equals(user.getLoginname())) continue;
+                        if (user!=null){
+                            if (loginname.equals(user.getLoginname())) continue;
+                        }
                         String username = RequestUtil.getSoapObjectValue(object, "username");
                         usernames.add(username);
                         String x = RequestUtil.getSoapObjectValue(object, "x");
