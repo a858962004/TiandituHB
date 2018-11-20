@@ -150,6 +150,11 @@ public class MoreActivity extends BaseActivity {
                     }
                     break;
                 case "组队共享":
+                    if (user != null) {
+                        skip(GroupActivity.class,false);
+                    } else {
+                        ShowToast("此功能需登录后使用");
+                    }
 
 
                     break;

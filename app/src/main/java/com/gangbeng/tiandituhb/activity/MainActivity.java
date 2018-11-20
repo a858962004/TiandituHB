@@ -850,38 +850,40 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             WeatherBean bean = (WeatherBean) data;
             WeatherBean.HeWeather5Bean heWeather5Bean = bean.getHeWeather5().get(0);
             WeatherBean.HeWeather5Bean.AqiBean aqi = heWeather5Bean.getAqi();
-            WeatherBean.HeWeather5Bean.NowBean now = heWeather5Bean.getNow();
-            WeatherBean.HeWeather5Bean.BasicBean basic = heWeather5Bean.getBasic();
-            List<WeatherBean.HeWeather5Bean.DailyForecastBean> daily_forecast = heWeather5Bean.getDaily_forecast();
-            try {
-                String code = now.getCond().getCode();
-                MyLogUtil.showLog(code);
-                Bitmap bitmap = BitmapFactory.decodeStream(this.getAssets().open(daily_forecast.get(0).getCond().getCode_d() + ".png"));
-                View inflate = LayoutInflater.from(this).inflate(R.layout.view_weather, null);
-                ImageView view = inflate.findViewById(R.id.img_weather);
-                TextView textView = inflate.findViewById(R.id.tv_weather);
-                view.setImageBitmap(bitmap);
-                textView.setText(daily_forecast.get(0).getCond().getTxt_d());
-                Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
-                Drawable drawable = new BitmapDrawable(viewbitmap);
-                Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
-                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable1);
-                Point point = new Point(Double.valueOf(basic.getLon()), Double.valueOf(basic.getLat()));
-                Map<String, Object> parameter = new HashMap<>();
-                parameter.put("basiccity", basic.getCity());
-                parameter.put("tmpmax", daily_forecast.get(0).getTmp().getMax());//最高温度
-                parameter.put("tmpmin", daily_forecast.get(0).getTmp().getMin());//最低温度
-                parameter.put("condtext", daily_forecast.get(0).getCond().getTxt_d());//当前天气
-                parameter.put("cityqlty", aqi.getCity().getQlty());//空气质量
-                parameter.put("winddir", now.getWind().getDir());//风向
-                parameter.put("windsc", now.getWind().getSc());//风级
-                parameter.put("nowfl", now.getFl());//体感温度
-                parameter.put("nowhum", now.getHum());//湿度
-                parameter.put("nowtmp", now.getTmp());//当前气温
-                Graphic graphic = new Graphic(point, symbol, parameter);
-                weatherlayer.addGraphic(graphic);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (aqi!=null){
+                WeatherBean.HeWeather5Bean.NowBean now = heWeather5Bean.getNow();
+                WeatherBean.HeWeather5Bean.BasicBean basic = heWeather5Bean.getBasic();
+                List<WeatherBean.HeWeather5Bean.DailyForecastBean> daily_forecast = heWeather5Bean.getDaily_forecast();
+                try {
+                    String code = now.getCond().getCode();
+                    MyLogUtil.showLog(code);
+                    Bitmap bitmap = BitmapFactory.decodeStream(this.getAssets().open(daily_forecast.get(0).getCond().getCode_d() + ".png"));
+                    View inflate = LayoutInflater.from(this).inflate(R.layout.view_weather, null);
+                    ImageView view = inflate.findViewById(R.id.img_weather);
+                    TextView textView = inflate.findViewById(R.id.tv_weather);
+                    view.setImageBitmap(bitmap);
+                    textView.setText(daily_forecast.get(0).getCond().getTxt_d());
+                    Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
+                    Drawable drawable = new BitmapDrawable(viewbitmap);
+                    Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
+                    PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable1);
+                    Point point = new Point(Double.valueOf(basic.getLon()), Double.valueOf(basic.getLat()));
+                    Map<String, Object> parameter = new HashMap<>();
+                    parameter.put("basiccity", basic.getCity());
+                    parameter.put("tmpmax", daily_forecast.get(0).getTmp().getMax());//最高温度
+                    parameter.put("tmpmin", daily_forecast.get(0).getTmp().getMin());//最低温度
+                    parameter.put("condtext", daily_forecast.get(0).getCond().getTxt_d());//当前天气
+                    parameter.put("cityqlty", aqi.getCity().getQlty());//空气质量
+                    parameter.put("winddir", now.getWind().getDir());//风向
+                    parameter.put("windsc", now.getWind().getSc());//风级
+                    parameter.put("nowfl", now.getFl());//体感温度
+                    parameter.put("nowhum", now.getHum());//湿度
+                    parameter.put("nowtmp", now.getTmp());//当前气温
+                    Graphic graphic = new Graphic(point, symbol, parameter);
+                    weatherlayer.addGraphic(graphic);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
