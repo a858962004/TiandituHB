@@ -18,8 +18,8 @@ public class PubConst {
     public final static String mapurl="http://222.222.66.230:8719/newmap/rest/services/dmdz/FeatureServer/";
     public final static String searchapi=mapurl+"feature";
     public final static String aroundapi=mapurl+"feature";
-    public final static String weatherapi="https://free-api.heweather.com/v5/weather";
-    public final static String weatherKey="a0187789a4424bc89254728acd4a08ed";
+    public final static String weatherapi="https://free-api.heweather.com/s6/weather";
+    public final static String weatherKey="336d33871eea4a8bbbea6b13f7d692f2";
 
     public final static String countryString="{\"countries\":[{\"Latitude\":\"39.436466\",\"Longitude\":\"116.2999\",\"name\":\"固安\"}," +
             "{\"Latitude\":\"39.319717\",\"Longitude\":\"116.49809\",\"name\":\"永清\"},{\"Latitude\":\"39.757214\",\"Longitude\":\"117.007164\",\"name\":\"香河\"}," +

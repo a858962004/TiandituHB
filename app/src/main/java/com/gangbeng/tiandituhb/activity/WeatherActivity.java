@@ -31,17 +31,15 @@ import com.bumptech.glide.Glide;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.HourlyWeather;
 import com.gangbeng.tiandituhb.adpter.HourlyWeatherAdapter;
+import com.gangbeng.tiandituhb.bean.WeatherBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.db.SelectedCounty;
-import com.gangbeng.tiandituhb.gson.DailyForecast;
-import com.gangbeng.tiandituhb.gson.HeWeather5;
-import com.gangbeng.tiandituhb.gson.HourlyForecast;
 import com.gangbeng.tiandituhb.http.MyCallBack;
 import com.gangbeng.tiandituhb.http.MyHttp;
 import com.gangbeng.tiandituhb.http.OkHttp;
-import com.gangbeng.tiandituhb.json.WeatherJson;
 import com.gangbeng.tiandituhb.provider.BaiduLocation;
 import com.gangbeng.tiandituhb.utils.LogUtil;
+import com.google.gson.Gson;
 
 import org.litepal.crud.DataSupport;
 
@@ -65,7 +63,7 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
     private static final String TAG = "WeatherActivity";
 
     //获取和风天气的key---自己的
-    public static final String KEY = "a0187789a4424bc89254728acd4a08ed";
+    public static final String KEY = "336d33871eea4a8bbbea6b13f7d692f2";
     //获取和风天气的key---作者的
     //public static final String KEY = "bc0418b57b2d4918819d3974ac1285d9";
 
@@ -170,7 +168,7 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
 
     //天气缓存数据，用于断网时的显示，以免断网时界面很丑
     private Set<String> weatherBufferSet;
-    private List<HeWeather5> HeatherBufferList;
+    private List<WeatherBean> HeatherBufferList;
 
     //滑动切换时记录当前的页面的position，相当于下标
     private int currentPosition;
@@ -239,7 +237,7 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
 
     private void setWeatherRequest(String x,String y) {
         locationCountyWeatherId=x+","+y;
-        String weatherUrl = "https://free-api.heweather.com/v5/weather?city="+locationCountyWeatherId+"&key=" + KEY;
+        String weatherUrl = "https://free-api.heweather.com/s6/weather?location="+locationCountyWeatherId+"&key=" + KEY;
         MyHttp.sendRequestOkHttpForGet(weatherUrl, new MyCallBack() {
             @Override
             public void onFailure(IOException e) {
@@ -250,12 +248,15 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             public void onResponse(String response) throws IOException {
                 final String responseText = response;
                 if (DEBUG) LogUtil.d(TAG, "onResponse: responseText: " + responseText);
-                final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(responseText);
+                Gson gson = new Gson();
+                WeatherBean bean = gson.fromJson(responseText, WeatherBean.class);
+//                final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(responseText);
                 SharedPreferences.Editor edit = getSharedPreferences("location", MODE_PRIVATE).edit();
-                if (heWeather5 != null && "ok".equals(heWeather5.status)) {
+                if (bean.getHeWeather6().get(0) != null && "ok".equals(bean.getHeWeather6().get(0).getStatus())) {
                     //获取的地理位置信息有效，保存定位结果，等下次Oncreate的时候直接调用
+                    locationCountyWeatherId=bean.getHeWeather6().get(0).getBasic().getCid();
                     edit.putString("locationWeatherId", locationCountyWeatherId);
-                    locationCountyWeatherName = heWeather5.basic.cityName;
+                    locationCountyWeatherName = bean.getHeWeather6().get(0).getBasic().getLocation();
                     edit.apply();
 //                    Message msg = new Message();
 //                    msg.what = TOAST_LOCATION_SUCCEED;
@@ -365,8 +366,10 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             if (null != weatherBufferSet) {
                 Log.d( TAG, "initView: weatherBufferSet.size = " + weatherBufferSet.size() );
                 for (String response : weatherBufferSet) {
-                    final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(response);
-                    HeatherBufferList.add(heWeather5);
+//                    final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(response);
+                    Gson gson=new Gson();
+                    WeatherBean bean = gson.fromJson(response, WeatherBean.class);
+                    HeatherBufferList.add(bean);
                 }
                 closeProgressDialog();
                 if (null != HeatherBufferList && HeatherBufferList.size() > 0)
@@ -722,7 +725,7 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
      * 根据天气id请求城市天气信息，专为天气数据缓存使用
      */
     public void requestWeatherBufferAsync(final String weateherId) {
-        String weatherUrl = "https://free-api.heweather.com/v5/weather?city="
+        String weatherUrl = "https://free-api.heweather.com/s6/weather?location="
                 + weateherId + "&key=" + KEY;
         Log.d(TAG, "Url: " + weatherUrl);
         MyHttp.sendRequestOkHttpForGet(weatherUrl, new MyCallBack() {
@@ -891,8 +894,8 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             //判断网络状态，无网络显示上次缓存数据并提示无网络
             if (!isNetworkConnected(WeatherActivity.this)) {
                 //无网络情况
-                HeWeather5 heWeather5 = HeatherBufferList.get(position);
-                if (heWeather5 != null && "ok".equals(heWeather5.status)) {
+                WeatherBean heWeather5 = HeatherBufferList.get(position);
+                if (heWeather5 != null && "ok".equals(heWeather5.getHeWeather6().get(0).getStatus())) {
                     //显示天气数据
                     showWeatherInfo(heWeather5);
                 }
@@ -977,7 +980,7 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
      * 根据天气id请求城市天气信息,用自己封装的网络线程实现异步
      */
     public void requestWeatherAsync(final String weateherId) {
-        String weatherUrl = "https://free-api.heweather.com/v5/weather?city="
+        String weatherUrl = "https://free-api.heweather.com/s6/weather?location="
                 + weateherId + "&key=" + KEY;
         MyHttp.sendRequestOkHttpForGet(weatherUrl, new MyCallBack() {
             @Override
@@ -999,16 +1002,18 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             public void onResponse(String response) throws IOException {
                 LogUtil.d("timeTest", "WeatherActivity onResponse start");
                 final String responseText = response;
-                final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(responseText);
+//                final HeWeather5 heWeather5 = WeatherJson.getWeatherResponse(responseText);
+                Gson gson=new Gson();
+                final WeatherBean bean = gson.fromJson(responseText, WeatherBean.class);
                 LogUtil.d("timeTest", "WeatherActivity onResponse over");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         closeProgressDialog();
-                        if (heWeather5 != null && "ok".equals(heWeather5.status)) {
+                        if (bean != null && "ok".equals(bean.getHeWeather6().get(0).getStatus())) {
                             //显示天气数据
                             Log.d("timeTest", "WeatherActivity show start");
-                            showWeatherInfo(heWeather5);
+                            showWeatherInfo(bean);
                         }
                         if (swipeRefreshLayout != null) {
                             swipeRefreshLayout.setRefreshing(false);
@@ -1023,7 +1028,7 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
     /**
      * 根据获取到的天气信息，显示天气
      */
-    private void showWeatherInfo(HeWeather5 heWeather5) {
+    private void showWeatherInfo(WeatherBean bean) {
 //        //如果城市天气id等于定位城市id,把值赋给定位城市名
 //        if (locationCountyWeatherName == null && locationCountyWeatherId != null) {
 //            locationCountyWeatherName = heWeather5.basic.cityName;
@@ -1073,18 +1078,19 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             }
         });
         //title加载和显示(城市加载和显示)
-        titleText.setText(heWeather5.basic.cityName);
+        titleText.setText(bean.getHeWeather6().get(0).getBasic().getLocation());
 
         //now_weather加载和显示（当前温度，今天天气，空气质量，今天是周几，今天是的最低温和最高温）
         nowTemperatureTV = (TextView) currentView.findViewById(R.id.now_temperature);
-        nowTemperatureTV.setText(heWeather5.now.tmp + "℃");
+        nowTemperatureTV.setText(bean.getHeWeather6().get(0).getNow().getTmp() + "℃");
         nowDayWeatherQltyTV = (TextView) currentView.findViewById(R.id.now_dayweather_qlty);
-        String nowWeather = heWeather5.dailyForecastList.get(0).cond.dayWeather;
-        if (null != heWeather5.aqi){
-            nowDayWeatherQltyTV.setText(nowWeather + "|空气" + heWeather5.aqi.city.qlty);
-        } else {
-            nowDayWeatherQltyTV.setText(nowWeather + "|空气" );
-        }
+        String nowWeather = bean.getHeWeather6().get(0).getDaily_forecast().get(0).getCond_txt_d();
+        nowDayWeatherQltyTV.setText(nowWeather);
+//        if (null != heWeather5.aqi){
+//            nowDayWeatherQltyTV.setText(nowWeather + "|空气" + heWeather5.aqi.city.qlty);
+//        } else {
+//            nowDayWeatherQltyTV.setText(nowWeather + "|空气" );
+//        }
 
         nowToady = (TextView) currentView.findViewById(R.id.now_today);
         long time = System.currentTimeMillis();
@@ -1093,28 +1099,46 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
         String tempToday = format.format(date) + "  今天";
         nowToady.setText(tempToday);
         nowMinMaxTemperature = (TextView) currentView.findViewById(R.id.now_min_max_temperature);
-        nowMinMaxTemperature.setText(heWeather5.dailyForecastList.get(0).tmp.min + "º  "
-                + heWeather5.dailyForecastList.get(0).tmp.max + "º");
+        nowMinMaxTemperature.setText(bean.getHeWeather6().get(0).getDaily_forecast().get(0).getTmp_min() + "º  "
+                + bean.getHeWeather6().get(0).getDaily_forecast().get(0).getTmp_max() + "º");
 
         /**
          * 当前接下去的小时的数据，柱形图显示
          */
         //初始化hourlyWeatherList
         hourlyWeatherList.clear();
-        HourlyWeather hourlyWeather;
-        for (HourlyForecast hourlyForecast : heWeather5.hourlyForecastList) {
-            hourlyWeather = new HourlyWeather();
-            hourlyWeather.hourlyTime = hourlyForecast.date.substring(11, 13);
-            try {
-                String s = hourlyForecast.weatherRegime.code + ".png";
-                InputStream open = this.getAssets().open(hourlyForecast.weatherRegime.code + ".png");
-                hourlyWeather.hourlyImageBit = BitmapFactory.decodeStream(this.getAssets().open(hourlyForecast.weatherRegime.code + ".png"));
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        List<WeatherBean.HeWeather6Bean.HourlyBean> hourly = bean.getHeWeather6().get(0).getHourly();
+        if (hourly!=null&&hourly.size()>0){
+            HourlyWeather hourlyWeather;
+            for (WeatherBean.HeWeather6Bean.HourlyBean hourlyBean : bean.getHeWeather6().get(0).getHourly()) {
+                hourlyWeather = new HourlyWeather();
+                hourlyWeather.hourlyTime = hourlyBean.getTime().substring(11, 13);
+                try {
+                    String s = hourlyBean.getCond_code() + ".png";
+                    InputStream open = this.getAssets().open(s);
+                    hourlyWeather.hourlyImageBit = BitmapFactory.decodeStream(open);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                hourlyWeather.hourlyTemperature = hourlyBean.getTmp();
+                hourlyWeatherList.add(hourlyWeather);
             }
-            hourlyWeather.hourlyTemperature = hourlyForecast.tmp;
-            hourlyWeatherList.add(hourlyWeather);
         }
+
+//        for (HourlyForecast hourlyForecast : heWeather5.hourlyForecastList) {
+//            hourlyWeather = new HourlyWeather();
+//            hourlyWeather.hourlyTime = hourlyForecast.date.substring(11, 13);
+//            try {
+//                String s = hourlyForecast.weatherRegime.code + ".png";
+//                InputStream open = this.getAssets().open(hourlyForecast.weatherRegime.code + ".png");
+//                hourlyWeather.hourlyImageBit = BitmapFactory.decodeStream(this.getAssets().open(hourlyForecast.weatherRegime.code + ".png"));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            hourlyWeather.hourlyTemperature = hourlyForecast.tmp;
+//            hourlyWeatherList.add(hourlyWeather);
+//        }
 
         //水平滑动显示
         hourlyRecycler = (RecyclerView) currentView.findViewById(R.id.hourly_recycler);
@@ -1130,58 +1154,101 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
         dailyForecastLayout = (LinearLayout) currentView.findViewById(R.id.daily_forecast_layout);
         dailyForecastLayout.removeAllViews();
         LayoutInflater layoutInflater = getLayoutInflater();
-        for (DailyForecast dailyForecast : heWeather5.dailyForecastList) {
-            View view = layoutInflater.from(this).inflate(R.layout.daily_forecast_item, dailyForecastLayout, false);
-            dailyDate = (TextView) view.findViewById(R.id.daily_date);
-            dailyWeather = (TextView) view.findViewById(R.id.daily_weather);
-            dailyWeatherImage = (ImageView) view.findViewById(R.id.daily_weather_image);
-            dailyTemperature = (TextView) view.findViewById(R.id.daily_temperature);
-
-            dailyDate.setText(dailyForecast.date);
-            dailyWeather.setText(dailyForecast.cond.dayWeather);
-            try {
-                filename = dailyForecast.cond.code_d + ".png";
-                dailyWeatherImage.setImageBitmap(BitmapFactory.decodeStream(this.getAssets().open(filename)));
-            } catch (IOException e) {
-                e.printStackTrace();
-                LogUtil.d(TAG, "showWeatherInfo: getAssets error");
+        List<WeatherBean.HeWeather6Bean.DailyForecastBean> daily_forecast = bean.getHeWeather6().get(0).getDaily_forecast();
+        if (daily_forecast!=null&&daily_forecast.size()>0){
+            for (WeatherBean.HeWeather6Bean.DailyForecastBean dailyForecastBean : bean.getHeWeather6().get(0).getDaily_forecast()) {
+                View view = layoutInflater.from(this).inflate(R.layout.daily_forecast_item, dailyForecastLayout, false);
+                dailyDate = (TextView) view.findViewById(R.id.daily_date);
+                dailyWeather = (TextView) view.findViewById(R.id.daily_weather);
+                dailyWeatherImage = (ImageView) view.findViewById(R.id.daily_weather_image);
+                dailyTemperature = (TextView) view.findViewById(R.id.daily_temperature);
+                dailyDate.setText(dailyForecastBean.getDate());
+                dailyWeather.setText(dailyForecastBean.getCond_txt_d());
+                try {
+                    filename = dailyForecastBean.getCond_code_d() + ".png";
+                    dailyWeatherImage.setImageBitmap(BitmapFactory.decodeStream(this.getAssets().open(filename)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    LogUtil.d(TAG, "showWeatherInfo: getAssets error");
+                }
+                dailyTemperature.setText(dailyForecastBean.getTmp_min() + "º  " + dailyForecastBean.getTmp_max() + "º");
+                dailyForecastLayout.addView(view);
             }
-            dailyTemperature.setText(dailyForecast.tmp.min + "º  " + dailyForecast.tmp.max + "º");
-            dailyForecastLayout.addView(view);
+
         }
+//        for (DailyForecast dailyForecast : heWeather5.dailyForecastList) {
+//            View view = layoutInflater.from(this).inflate(R.layout.daily_forecast_item, dailyForecastLayout, false);
+//            dailyDate = (TextView) view.findViewById(R.id.daily_date);
+//            dailyWeather = (TextView) view.findViewById(R.id.daily_weather);
+//            dailyWeatherImage = (ImageView) view.findViewById(R.id.daily_weather_image);
+//            dailyTemperature = (TextView) view.findViewById(R.id.daily_temperature);
+//
+//            dailyDate.setText(dailyForecast.date);
+//            dailyWeather.setText(dailyForecast.cond.dayWeather);
+//            try {
+//                filename = dailyForecast.cond.code_d + ".png";
+//                dailyWeatherImage.setImageBitmap(BitmapFactory.decodeStream(this.getAssets().open(filename)));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                LogUtil.d(TAG, "showWeatherInfo: getAssets error");
+//            }
+//            dailyTemperature.setText(dailyForecast.tmp.min + "º  " + dailyForecast.tmp.max + "º");
+//            dailyForecastLayout.addView(view);
+//        }
 
         //生活指数
         //体感温度
-        weatherSendibleTemperatureTv = (TextView) currentView.findViewById(R.id.weather_sendible_temperature_tv);
-        weatherSendibleTemperatureTv.setText("体感温度" + heWeather5.now.fl + "");
-        //湿度
-        weatherHumitidyTv = (TextView) currentView.findViewById(R.id.weather_humitidy_tv);
-        weatherHumitidyTv.setText("湿度" + heWeather5.now.hum + "%");
-        //能见度
-        weatherVisibilityTv = (TextView) viewList.get(currentPosition).findViewById(R.id.weather_visibility_tv);
-        weatherVisibilityTv.setText("能见度" + heWeather5.now.vis + "千米");
-        //风向等级
-        weatherRiskLevelTv = (TextView) currentView.findViewById(R.id.weather_risk_level_tv);
-        weatherRiskLevelTv.setText(heWeather5.now.wind.dir + heWeather5.now.wind.sc + "级");
-        //降水量
-        weatherPrecipitationTv = (TextView) currentView.findViewById(R.id.weather_precipitation_tv);
-        weatherPrecipitationTv.setText("降水量" + heWeather5.now.mypcpn + "mm");
-        //气压
-        weatherPressureTv = (TextView) currentView.findViewById(R.id.weather_pressure_tv);
-        weatherPressureTv.setText("气压" + heWeather5.now.pres + "百帕");
-
+        WeatherBean.HeWeather6Bean.NowBean now = bean.getHeWeather6().get(0).getNow();
+        if (now!=null){
+            weatherSendibleTemperatureTv = (TextView) currentView.findViewById(R.id.weather_sendible_temperature_tv);
+            weatherSendibleTemperatureTv.setText("体感温度" + now.getFl() + "");
+            //湿度
+            weatherHumitidyTv = (TextView) currentView.findViewById(R.id.weather_humitidy_tv);
+            weatherHumitidyTv.setText("湿度" + now.getHum() + "%");
+            //能见度
+            weatherVisibilityTv = (TextView) viewList.get(currentPosition).findViewById(R.id.weather_visibility_tv);
+            weatherVisibilityTv.setText("能见度" + now.getVis() + "千米");
+            //风向等级
+            weatherRiskLevelTv = (TextView) currentView.findViewById(R.id.weather_risk_level_tv);
+            weatherRiskLevelTv.setText(now.getWind_dir() + now.getWind_sc() + "级");
+            //降水量
+            weatherPrecipitationTv = (TextView) currentView.findViewById(R.id.weather_precipitation_tv);
+            weatherPrecipitationTv.setText("降水量" + now.getPcpn() + "mm");
+            //气压
+            weatherPressureTv = (TextView) currentView.findViewById(R.id.weather_pressure_tv);
+            weatherPressureTv.setText("气压" + now.getPres() + "百帕");
+        }
         //生活建议
         suggestionComfort = (TextView) currentView.findViewById(R.id.suggesstion_comfort);
         suggestionCarwash = (TextView) currentView.findViewById(R.id.suggesstion_carWash);
         suggestionSport = (TextView) currentView.findViewById(R.id.suggesstion_sport);
         suggestionDressingIndex = (TextView) currentView.findViewById(R.id.suggesstion_hot);
-
-        if (heWeather5.suggestion != null) {
-            suggestionComfort.setText("舒适度：" + heWeather5.suggestion.comfort.txt);
-            suggestionCarwash.setText("洗车指数：" + heWeather5.suggestion.carWash.txt);
-            suggestionSport.setText("运动指数：" + heWeather5.suggestion.sport.txt);
-            suggestionDressingIndex.setText("穿衣指数：" + heWeather5.suggestion.hot.txt);
+        List<WeatherBean.HeWeather6Bean.LifestyleBean> lifestyle = bean.getHeWeather6().get(0).getLifestyle();
+if (lifestyle!=null&&lifestyle.size()>0){
+    for (WeatherBean.HeWeather6Bean.LifestyleBean lifestyleBean : lifestyle) {
+        switch (lifestyleBean.getType()){
+            case "comf":
+                suggestionComfort.setText("舒适度：" + lifestyleBean.getBrf()+"  "+lifestyleBean.getTxt());
+                break;
+            case "cw":
+                suggestionCarwash.setText("洗车指数：" + lifestyleBean.getBrf()+"  "+lifestyleBean.getTxt());
+                break;
+            case "sport":
+                suggestionSport.setText("运动指数：" + lifestyleBean.getBrf()+"  "+lifestyleBean.getTxt());
+                break;
+            case "drsg":
+                suggestionDressingIndex.setText("穿衣指数：" + lifestyleBean.getBrf()+"  "+lifestyleBean.getTxt());
+                break;
         }
+
+    }
+}
+//        if (heWeather5.suggestion != null) {
+//            suggestionComfort.setText("舒适度：" + heWeather5.suggestion.comfort.txt);
+//            suggestionCarwash.setText("洗车指数：" + heWeather5.suggestion.carWash.txt);
+//            suggestionSport.setText("运动指数：" + heWeather5.suggestion.sport.txt);
+//            suggestionDressingIndex.setText("穿衣指数：" + heWeather5.suggestion.hot.txt);
+//        }
         
         if (null == locationCountyWeatherId && attentionTimes < 3) {
             ++attentionTimes;

@@ -23,7 +23,7 @@ public class WeatherModel implements BaseModel {
         String city = String.valueOf(parameter.get("city"));
         OkHttpUtils.get()
                 .url(PubConst.weatherapi)
-                .addParams("city",city)
+                .addParams("location",city)
                 .addParams("key",PubConst.weatherKey)
                 .build()
                 .execute(new StringCallback() {

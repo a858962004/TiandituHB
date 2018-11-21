@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.text.Editable;
@@ -90,7 +91,7 @@ import com.google.gson.Gson;
 import org.greenrobot.eventbus.EventBus;
 import org.ksoap2.serialization.SoapObject;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -228,7 +229,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private String chooseuser = "";
     private List<String> usernames = new ArrayList<>();
     private boolean laststate = false;
-    private boolean isFresh=false;
+    private boolean isFresh = false;
 
     public static MainActivity getInstense() {
         return activity;
@@ -254,18 +255,67 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     }
 
     private void setWeather() {
+        String spath = Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF" + File.separator + "WeatherCash";
+        File file = new File(spath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         Gson gson = new Gson();
         String countryString = PubConst.countryString;
         CountryBean countryBean = gson.fromJson(countryString, CountryBean.class);
         List<CountryBean.CountriesBean> countries = countryBean.getCountries();
         for (CountryBean.CountriesBean country : countries) {
-            Map<String, Object> parameter = new HashMap<>();
-            MyLogUtil.showLog(country.getLatitude() + "," + country.getLongitude());
-            parameter.put("city", country.getLatitude() + "," + country.getLongitude());
-            weatherpresenter.setRequest(parameter);
+            String weatherCash = Util.getWeatherCash(country.getName());
+            if (weatherCash.equals("")) {
+                Map<String, Object> parameter = new HashMap<>();
+                MyLogUtil.showLog(country.getLatitude() + "," + country.getLongitude());
+                parameter.put("city", country.getLatitude() + "," + country.getLongitude());
+                weatherpresenter.setRequest(parameter);
+//                showMsg("天气请求");
+            } else {
+                WeatherBean bean = gson.fromJson(weatherCash, WeatherBean.class);
+                setWeatherGraphics(bean);
+            }
+
         }
 
 
+    }
+
+    private void setWeatherGraphics(WeatherBean bean) {
+        WeatherBean.HeWeather6Bean heWeather6Bean = bean.getHeWeather6().get(0);
+        WeatherBean.HeWeather6Bean.BasicBean basic = heWeather6Bean.getBasic();
+        List<WeatherBean.HeWeather6Bean.DailyForecastBean> daily_forecast = heWeather6Bean.getDaily_forecast();
+        if (daily_forecast != null) {
+            try {
+                Bitmap bitmap = BitmapFactory.decodeStream(this.getAssets().open(daily_forecast.get(0).getCond_code_d() + ".png"));
+                View inflate = LayoutInflater.from(this).inflate(R.layout.view_weather, null);
+                ImageView view = inflate.findViewById(R.id.img_weather);
+                TextView textView = inflate.findViewById(R.id.tv_weather);
+                view.setImageBitmap(bitmap);
+                textView.setText(daily_forecast.get(0).getCond_txt_d());
+                Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
+                Drawable drawable = new BitmapDrawable(viewbitmap);
+                Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable1);
+                Point point = new Point(Double.valueOf(basic.getLon()), Double.valueOf(basic.getLat()));
+                Map<String, Object> parameter = new HashMap<>();
+                parameter.put("basiccity", basic.getLocation());
+                parameter.put("tmpmax", daily_forecast.get(0).getTmp_max());//最高温度
+                parameter.put("tmpmin", daily_forecast.get(0).getTmp_min());//最低温度
+                parameter.put("condtext", daily_forecast.get(0).getCond_txt_d());//当前天气
+                parameter.put("uv_index", daily_forecast.get(0).getUv_index());//紫外线强度指数
+                parameter.put("winddir", daily_forecast.get(0).getWind_dir());//风向
+                parameter.put("windsc", daily_forecast.get(0).getWind_sc());//风级
+                parameter.put("pop", daily_forecast.get(0).getPop());//降水概率
+                parameter.put("hum", daily_forecast.get(0).getHum());//湿度
+                parameter.put("vis", daily_forecast.get(0).getVis());//能见度
+                Graphic graphic = new Graphic(point, symbol, parameter);
+                weatherlayer.addGraphic(graphic);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setMapView() {
@@ -666,7 +716,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             case R.id.tv7_local:
                 progressBar1Local.setVisibility(View.VISIBLE);
                 progressBar2Local.setVisibility(View.VISIBLE);
-                isFresh=true;
+                isFresh = true;
                 getUserLocal();
                 Map<String, Object> parameter = new HashMap<>();
                 parameter.put("maxitems", "20");
@@ -744,7 +794,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     for (SoapObject object : newestLocation) {
                         String id = RequestUtil.getSoapObjectValue(object, "ID");
                         String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
-                        if (user!=null){
+                        if (user != null) {
                             if (loginname.equals(user.getLoginname())) continue;
                         }
                         String username = RequestUtil.getSoapObjectValue(object, "username");
@@ -774,7 +824,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                         namelayer.addGraphic(new Graphic(point, pictureMarkerSymbol));
                         if (chooseuser.equals(loginname)) {
                             if (isFresh) bmapsView.zoomToScale(point, bmapsView.getScale());
-                            isFresh=false;
+                            isFresh = false;
                             String string = state.equals("0") ? "已关闭" : "已开启";
                             tv5Local.setText("开启状态： " + string);
                         }
@@ -848,45 +898,13 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
         if (data instanceof WeatherBean) {
             WeatherBean bean = (WeatherBean) data;
-            WeatherBean.HeWeather5Bean heWeather5Bean = bean.getHeWeather5().get(0);
-            WeatherBean.HeWeather5Bean.AqiBean aqi = heWeather5Bean.getAqi();
-            if (aqi!=null){
-                WeatherBean.HeWeather5Bean.NowBean now = heWeather5Bean.getNow();
-                WeatherBean.HeWeather5Bean.BasicBean basic = heWeather5Bean.getBasic();
-                List<WeatherBean.HeWeather5Bean.DailyForecastBean> daily_forecast = heWeather5Bean.getDaily_forecast();
-                try {
-                    String code = now.getCond().getCode();
-                    MyLogUtil.showLog(code);
-                    Bitmap bitmap = BitmapFactory.decodeStream(this.getAssets().open(daily_forecast.get(0).getCond().getCode_d() + ".png"));
-                    View inflate = LayoutInflater.from(this).inflate(R.layout.view_weather, null);
-                    ImageView view = inflate.findViewById(R.id.img_weather);
-                    TextView textView = inflate.findViewById(R.id.tv_weather);
-                    view.setImageBitmap(bitmap);
-                    textView.setText(daily_forecast.get(0).getCond().getTxt_d());
-                    Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
-                    Drawable drawable = new BitmapDrawable(viewbitmap);
-                    Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
-                    PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable1);
-                    Point point = new Point(Double.valueOf(basic.getLon()), Double.valueOf(basic.getLat()));
-                    Map<String, Object> parameter = new HashMap<>();
-                    parameter.put("basiccity", basic.getCity());
-                    parameter.put("tmpmax", daily_forecast.get(0).getTmp().getMax());//最高温度
-                    parameter.put("tmpmin", daily_forecast.get(0).getTmp().getMin());//最低温度
-                    parameter.put("condtext", daily_forecast.get(0).getCond().getTxt_d());//当前天气
-                    parameter.put("cityqlty", aqi.getCity().getQlty());//空气质量
-                    parameter.put("winddir", now.getWind().getDir());//风向
-                    parameter.put("windsc", now.getWind().getSc());//风级
-                    parameter.put("nowfl", now.getFl());//体感温度
-                    parameter.put("nowhum", now.getHum());//湿度
-                    parameter.put("nowtmp", now.getTmp());//当前气温
-                    Graphic graphic = new Graphic(point, symbol, parameter);
-                    weatherlayer.addGraphic(graphic);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            Gson gson = new Gson();
+            String string = gson.toJson(bean);
+            if (bean.getHeWeather6().get(0).getBasic() != null) {
+                Util.setWeatherCash(bean.getHeWeather6().get(0).getBasic().getLocation(), string);//缓存天气数据
             }
+            setWeatherGraphics(bean);
         }
-
     }
 
     @Override
@@ -911,6 +929,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             this.desc = desc;
             this.demoClass = demoClass;
         }
+
     }
 
     private void setbottom(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
@@ -962,22 +981,35 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         params2.addRule(RelativeLayout.ABOVE, R.id.rl_weather_bottom); //设置控件的位置
         params2.setMargins(0, 0, i, i1);//左上右下
         mapzoom.setLayoutParams(params2);
+
+//        parameter.put("basiccity", basic.getLocation());
+//        parameter.put("tmpmax", daily_forecast.get(0).getTmp_max());//最高温度
+//        parameter.put("tmpmin", daily_forecast.get(0).getTmp_min());//最低温度
+//        parameter.put("condtext", daily_forecast.get(0).getCond_txt_d());//当前天气
+//        parameter.put("uv_index", daily_forecast.get(0).getUv_index());//紫外线强度指数
+//        parameter.put("winddir", daily_forecast.get(0).getWind_dir());//风向
+//        parameter.put("windsc", daily_forecast.get(0).getWind_sc());//风级
+//        parameter.put("pop", daily_forecast.get(0).getPop());//降水概率
+//        parameter.put("hum", daily_forecast.get(0).getHum());//湿度
+//        parameter.put("vis", daily_forecast.get(0).getVis());//能见度
+
+
         String basiccity = String.valueOf(graphic.getAttributeValue("basiccity"));//城市名称
         String tmpmax = String.valueOf(graphic.getAttributeValue("tmpmax"));//最高温度
         String tmpmin = String.valueOf(graphic.getAttributeValue("tmpmin"));//最低温度
         String condtext = String.valueOf(graphic.getAttributeValue("condtext"));//当前天气
-        String cityqlty = String.valueOf(graphic.getAttributeValue("cityqlty"));//空气质量
+        String uv_index = String.valueOf(graphic.getAttributeValue("uv_index"));//紫外线强度
         String winddir = String.valueOf(graphic.getAttributeValue("winddir"));//风向
         String windsc = String.valueOf(graphic.getAttributeValue("windsc"));//风级
-        String nowfl = String.valueOf(graphic.getAttributeValue("nowfl"));//体感温度
-        String nowhum = String.valueOf(graphic.getAttributeValue("nowhum"));//湿度
-        String nowtmp = String.valueOf(graphic.getAttributeValue("nowtmp"));//当前气温
+        String pop = String.valueOf(graphic.getAttributeValue("pop"));//降水概率
+//        String hum = String.valueOf(graphic.getAttributeValue("hum"));//湿度
+        String vis = String.valueOf(graphic.getAttributeValue("vis"));//能见度
         tv1Weather.setText(basiccity);
         tv2Weather.setText(condtext + "  " + tmpmin + "～" + tmpmax + "℃");
-        tv3Weather.setText("空气质量：" + cityqlty);
+        tv3Weather.setText("紫外线强度：" + uv_index + "级");
         tv4Weather.setText(winddir + " " + windsc + "级");
-        tv5Weather.setText("体感温度：" + nowfl + "℃");
-        tv6Weather.setText("湿度：" + nowhum + "%");
+        tv5Weather.setText("能见度：" + vis + "公里");
+        tv6Weather.setText("降水概率：" + pop + "%");
     }
 
     private void hideWeatherBottom() {

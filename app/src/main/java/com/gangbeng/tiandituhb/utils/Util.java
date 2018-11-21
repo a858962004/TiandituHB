@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -153,8 +154,8 @@ public class Util {
     public static String getQuitString() {
         StringBuilder sb = new StringBuilder("");
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            String filename = Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF"+File.separator+"quit.txt"; //打开文件输入流
-            File file =new File(filename);
+            String filename = Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF" + File.separator + "quit.txt"; //打开文件输入流
+            File file = new File(filename);
             if (!file.exists()) {
                 return "";
             }
@@ -177,11 +178,80 @@ public class Util {
         return sb.toString();
     }
 
+    public static void setWeatherCash(String location, String string) {
+        Calendar calendar = Calendar.getInstance(); //获取系统的日期
+        // 年
+        int year = calendar.get(Calendar.YEAR);
+        // 月
+        int month = calendar.get(Calendar.MONTH) + 1;
+        // 日
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        //创建文件
+        File sdCard = new File(Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF"
+                + File.separator + "WeatherCash" + File.separator + year + "-" + month + "-" + day);//获取外部设备的目录
+        File file = new File(sdCard, location + ".txt");//文件位置
+        File parentFile = sdCard.getParentFile();
+        if (!sdCard.exists()) {
+            if (parentFile.exists()) {
+                parentFile.delete();
+            }
+            sdCard.mkdirs();
+
+        }
+        try {
+            FileOutputStream outputStream = new FileOutputStream(file);//打开文件输出流
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));//写入到缓存流
+            writer.write(string);//从从缓存流写入
+            writer.close();//关闭流
+            MyLogUtil.showLog("写入成功");
+        } catch (Exception exception) {
+            MyLogUtil.showLog("写入失败");
+        }
+    }
+
+
+    public static String getWeatherCash(String name) {
+        Calendar calendar = Calendar.getInstance(); //获取系统的日期
+        // 年
+        int year = calendar.get(Calendar.YEAR);
+        // 月
+        int month = calendar.get(Calendar.MONTH) + 1;
+        // 日
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        StringBuilder sb = new StringBuilder("");
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            String filename = Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF"
+                    + File.separator + "WeatherCash" + File.separator + year + "-" + month + "-" + day + File.separator + name + ".txt"; //打开文件输入流
+            File file = new File(filename);
+            if (!file.exists()) {
+                return "";
+            }
+            FileInputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(filename);
+                byte[] buffer = new byte[1024];
+                int len = inputStream.read(buffer); //读取文件内容
+                while (len > 0) {
+                    sb.append(new String(buffer, 0, len)); //继续将数据放到buffer中
+                    len = inputStream.read(buffer);
+                } //关闭输入流
+                inputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
+    }
+
+
     /**
-     *  从assets目录中复制整个文件夹内容
-     *  @param  context  Context 使用CopyFiles类的Activity
-     *  @param  oldPath  String  原文件路径  如：/aa
-     *  @param  newPath  String  复制后路径  如：xx:/bb/cc
+     * 从assets目录中复制整个文件夹内容
+     *
+     * @param context Context 使用CopyFiles类的Activity
+     * @param oldPath String  原文件路径  如：/aa
+     * @param newPath String  复制后路径  如：xx:/bb/cc
      */
     public static void copyFilesFassets(Context context, String oldPath, String newPath) {
         try {
@@ -190,14 +260,14 @@ public class Util {
                 File file = new File(newPath);
                 file.mkdirs();//如果文件夹不存在，则递归
                 for (String fileName : fileNames) {
-                    copyFilesFassets(context,oldPath + "/" + fileName,newPath+"/"+fileName);
+                    copyFilesFassets(context, oldPath + "/" + fileName, newPath + "/" + fileName);
                 }
             } else {//如果是文件
                 InputStream is = context.getAssets().open(oldPath);
                 FileOutputStream fos = new FileOutputStream(new File(newPath));
                 byte[] buffer = new byte[1024];
-                int byteCount=0;
-                while((byteCount=is.read(buffer))!=-1) {//循环从输入流读取 buffer字节
+                int byteCount = 0;
+                while ((byteCount = is.read(buffer)) != -1) {//循环从输入流读取 buffer字节
                     fos.write(buffer, 0, byteCount);//将读取的输入流写入到输出流
                 }
                 fos.flush();//刷新缓冲区
