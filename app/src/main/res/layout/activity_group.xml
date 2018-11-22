@@ -62,7 +62,7 @@
     <TextView
         android:id="@+id/tv_commend"
         android:background="@drawable/background_kouling"
-        android:padding="10dp"
+        android:padding="5dp"
         android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"

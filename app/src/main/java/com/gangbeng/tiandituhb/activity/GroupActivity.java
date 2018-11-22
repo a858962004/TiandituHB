@@ -134,8 +134,8 @@ public class GroupActivity extends BaseActivity {
         mapGroup.addLayer(mapRStextLayer, 3);
 
         mapGroup.addLayer(map_lf, 4);
-        mapGroup.addLayer(map_lf_text, 5);
-        mapGroup.addLayer(map_lfimg, 6);
+        mapGroup.addLayer(map_lfimg, 5);
+        mapGroup.addLayer(map_lf_text, 6);
         mapGroup.addLayer(map_xzq, 7);
 
 //        mapGroup.addLayer(drawLayer, 8);
@@ -220,7 +220,7 @@ public class GroupActivity extends BaseActivity {
                     map_lfimg.setVisible(false);
 //                    map_lfimg_text.setVisible(false);
                     map_lf.setVisible(true);
-                    map_lf_text.setVisible(true);
+//                    map_lf_text.setVisible(true);
                     mapRSServiceLayer.setVisible(false);
                     mapRStextLayer.setVisible(false);
                     mapServiceLayer.setVisible(true);
@@ -229,7 +229,7 @@ public class GroupActivity extends BaseActivity {
                     map_lfimg.setVisible(true);
 //                    map_lfimg_text.setVisible(true);
                     map_lf.setVisible(false);
-                    map_lf_text.setVisible(false);
+//                    map_lf_text.setVisible(false);
                     mapRSServiceLayer.setVisible(true);
                     mapRStextLayer.setVisible(true);
                     mapServiceLayer.setVisible(false);
