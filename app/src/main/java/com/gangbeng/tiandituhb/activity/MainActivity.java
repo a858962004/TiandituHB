@@ -124,8 +124,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     CardView locationQuanjing;
     @BindView(R.id.img_quanjing)
     ImageView imgQuanjing;
-    @BindView(R.id.bt_sure)
-    CardView btSure;
     @BindView(R.id.location_tianqi)
     CardView locationTianqi;
     @BindView(R.id.img_quanjing2)
