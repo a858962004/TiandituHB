@@ -1,4 +1,4 @@
-package com.gangbeng.tiandituhb.utils;
+package com.gangbeng.tiandituhb.http;
 
 import android.util.Log;
 
@@ -50,6 +50,14 @@ public class RequestUtil {
     public static final String UploadLocation="UploadLocation";//上传位置共享信息
     public static final String GetNewestLocation="GetNewestLocation";//获取共享位置信息
     public static final String GetHistoryLocationByLoginname="GetHistoryLocationByLoginname";//获取历史共享信息
+
+    public static final String CreateShareGroup="CreateShareGroup";//新建共享组
+    public static final String AddtoShareGroup="AddtoShareGroup";//加入共享组
+    public static final String DeleteShareGroup="DeleteShareGroup";//解散当前共享组
+    public static final String ExitShareGroup="ExitShareGroup";//退出当前共享组
+    public static final String GetShareGroup="GetShareGroup";//获取用户所在组信息
+    public static final String GetGroupShareLocation="GetGroupShareLocation";//获取当前组成员位置
+
 
     public static String post(String methodName, Map<String,String> param){
 

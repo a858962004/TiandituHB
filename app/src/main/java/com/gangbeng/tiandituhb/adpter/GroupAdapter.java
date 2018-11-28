@@ -72,7 +72,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHol
             });
         } else if (position == 1 && hasdelet) {
             holder.imageView.setImageResource(R.mipmap.icon_jian);
-            holder.textView.setText("删除");
+            holder.textView.setText("移除");
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

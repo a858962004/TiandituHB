@@ -8,23 +8,33 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.ClipboardManager;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnZoomListener;
 import com.esri.core.geometry.Point;
+import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.GroupAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.base.NewBasePresenter;
+import com.gangbeng.tiandituhb.base.NewBaseView;
+import com.gangbeng.tiandituhb.constant.Contant;
+import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
+import com.gangbeng.tiandituhb.http.RequestUtil;
+import com.gangbeng.tiandituhb.presenter.ShareGroupPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
@@ -34,6 +44,9 @@ import com.gangbeng.tiandituhb.utils.ShowDialog;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
 
+import org.ksoap2.serialization.SoapObject;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +61,7 @@ import butterknife.OnClick;
  * @date 2018-11-20
  */
 
-public class GroupActivity extends BaseActivity {
+public class GroupActivity extends BaseActivity implements NewBaseView {
     @BindView(R.id.map_group)
     MapView mapGroup;
     @BindView(R.id.change_group)
@@ -65,46 +78,119 @@ public class GroupActivity extends BaseActivity {
     RecyclerView recyclerGroup;
     @BindView(R.id.tv_commend)
     TextView tvCommend;
+    @BindView(R.id.bottom_group)
+    RelativeLayout bottomGroup;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-    private GraphicsLayer drawPointLayer;
+    private GraphicsLayer drawPointLayer,popupLayer;
     private LocationDisplayManager ldm;
     private Point lacation;
-    private PictureMarkerSymbol markerSymbolblue, markerSymbolgred;
+    private PictureMarkerSymbol markerSymbolblue, markerSymbolyellow;
     private boolean isFirstlocal = true;
     private GroupAdapter adapter;
-    private String commend = "123456";
+    private String mcommend = "";
+    private String createloginname;
+    private NewBasePresenter presenter;
+    private UserEvent user;
+    private AlertDialog mdialog;
+    private List<Map<String,String>>data=new ArrayList<>();
+    private List<Map<String,String>>mdata=new ArrayList<>();
+    private static GroupActivity activity;
+    private boolean first=true;
+    private Map<String, String> choosedata;
+
+    public static GroupActivity getInstence(){
+        return activity;
+    }
+
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_group);
         setToolbarTitle("我的组队");
         setToolbarRightVisible(false);
+        activity=this;
         setMapview();
         locationGPS();
-        setListView();
-        tvCommend.setText("队伍口令 "+commend);
+        presenter = new ShareGroupPresenter(this);
+        user = (UserEvent) SharedUtil.getSerializeObject("user");
+        Map<String,Object>parameter=new HashMap<>();
+        parameter.put("loginname",user.getLoginname());
+        presenter.setRequest(parameter,PubConst.LABLE_GETSHAREGROUP);
     }
 
     private void setListView() {
         UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
-        List<Map<String, String>> data = new ArrayList<>();
-        Map<String, String> map = new HashMap<>();
-        map.put("name", user.getUsername());
-        map.put("leader", "0");
-        data.add(map);
-        for (int i = 0; i < 5; i++) {
-            Map<String, String> map2 = new HashMap<>();
-            map2.put("name", "成员" + i);
-            map2.put("leader", "1");
-            data.add(map2);
+        List<Map<String, String>> listdata = new ArrayList<>();
+        if (createloginname.equals(user.getLoginname())){
+            for (Map<String, String> map : data) {
+                String loginname = map.get("loginname");
+                String username = map.get("username");
+                String x = map.get("x");
+                String y = map.get("y");
+                if (loginname.equals(createloginname)){
+                    Map<String, String> m = new HashMap<>();
+                    m.put("name", "我");
+                    m.put("leader", "0");
+                    m.put("x",x);
+                    m.put("y",y);
+                    listdata.add(m);
+                }
+            }
+            for (Map<String, String> map : data) {
+                String loginname = map.get("loginname");
+                String username = map.get("username");
+                String x = map.get("x");
+                String y = map.get("y");
+                if (loginname.equals(createloginname))continue;
+                Map<String, String> map2 = new HashMap<>();
+                map2.put("name", username);
+                map2.put("leader", "1");
+                map2.put("x",x);
+                map2.put("y",y);
+                listdata.add(map2);
+            }
+        }else {
+            for (Map<String, String> map : data) {
+                String loginname = map.get("loginname");
+                String username = map.get("username");
+                String x = map.get("x");
+                String y = map.get("y");
+                if (loginname.equals(user.getLoginname())){
+                    Map<String, String> m = new HashMap<>();
+                    m.put("name", "我");
+                    m.put("leader", "1");
+                    m.put("x",x);
+                    m.put("y",y);
+                    listdata.add(m);
+                }
+            }
+            for (Map<String, String> map : data) {
+                String loginname = map.get("loginname");
+                String username = map.get("username");
+                String leader="1";
+                String x = map.get("x");
+                String y = map.get("y");
+                if (loginname.equals(user.getLoginname()))continue;
+                if (loginname.equals(createloginname)){
+                    leader="0";
+                }
+                Map<String, String> m = new HashMap<>();
+                m.put("name", username);
+                m.put("leader", leader);
+                m.put("x",x);
+                m.put("y",y);
+                listdata.add(m);
+            }
         }
-        adapter = new GroupAdapter(this, data, callback, false);
+        mdata=listdata;
+        adapter = new GroupAdapter(this, listdata, adaptercallback, false);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerGroup.setLayoutManager(linearLayoutManager);
         recyclerGroup.setAdapter(adapter);
+
     }
 
     @Override
@@ -126,7 +212,7 @@ public class GroupActivity extends BaseActivity {
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         drawPointLayer = new GraphicsLayer();
-//        drawLayer = new GraphicsLayer();
+        popupLayer = new GraphicsLayer();
 
         mapGroup.addLayer(mapServiceLayer, 0);
         mapGroup.addLayer(maptextLayer, 1);
@@ -137,28 +223,21 @@ public class GroupActivity extends BaseActivity {
         mapGroup.addLayer(map_lfimg, 5);
         mapGroup.addLayer(map_lf_text, 6);
         mapGroup.addLayer(map_xzq, 7);
-
-//        mapGroup.addLayer(drawLayer, 8);
         mapGroup.addLayer(drawPointLayer, 8);
+        mapGroup.addLayer(popupLayer,9);
 
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
-//        mapGroup.setOnSingleTapListener(onSingleTapListener);
-
-//        fillSymbol = new SimpleFillSymbol(Color.RED);
-//        fillSymbol.setAlpha(90);
-//        lineSymbol = new SimpleLineSymbol(Color.RED, 2, SimpleLineSymbol.STYLE.SOLID);
-//
         Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei02);
         Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 90, 90);
         markerSymbolblue = new PictureMarkerSymbol(drawable1);
         markerSymbolblue.setOffsetY(drawable1.getIntrinsicHeight() / 2);
 //
-        Drawable drawable2 = getResources().getDrawable(R.mipmap.icon_dingwei04);
+        Drawable drawable2 = getResources().getDrawable(R.mipmap.icon_dingwei07);
         Drawable drawable3 = DensityUtil.zoomDrawable(drawable2, 90, 90);
-        markerSymbolgred = new PictureMarkerSymbol(drawable3);
-        markerSymbolgred.setOffsetY(drawable3.getIntrinsicHeight() / 2);
+        markerSymbolyellow = new PictureMarkerSymbol(drawable3);
+        markerSymbolyellow.setOffsetY(drawable3.getIntrinsicHeight() / 2);
 
         mapGroup.setOnZoomListener(new OnZoomListener() {
             @Override
@@ -169,6 +248,9 @@ public class GroupActivity extends BaseActivity {
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscaleGroup.refreshScaleView(mapGroup.getScale());
+                Map<String,Object>parameter=new HashMap<>();
+                parameter.put("loginname",user.getLoginname());
+                presenter.setRequest(parameter,PubConst.LABLE_ZOOMGETGROUP);
             }
         });
         mapzoomGroup.setMapView(mapGroup);
@@ -212,24 +294,20 @@ public class GroupActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.change_group, R.id.location_group})
+    @OnClick({R.id.change_group, R.id.location_group,R.id.tv_set})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.change_group:
                 if (map_lfimg.isVisible()) {
                     map_lfimg.setVisible(false);
-//                    map_lfimg_text.setVisible(false);
                     map_lf.setVisible(true);
-//                    map_lf_text.setVisible(true);
                     mapRSServiceLayer.setVisible(false);
                     mapRStextLayer.setVisible(false);
                     mapServiceLayer.setVisible(true);
                     maptextLayer.setVisible(true);
                 } else {
                     map_lfimg.setVisible(true);
-//                    map_lfimg_text.setVisible(true);
                     map_lf.setVisible(false);
-//                    map_lf_text.setVisible(false);
                     mapRSServiceLayer.setVisible(true);
                     mapRStextLayer.setVisible(true);
                     mapServiceLayer.setVisible(false);
@@ -239,17 +317,24 @@ public class GroupActivity extends BaseActivity {
             case R.id.location_group:
                 mapGroup.zoomToScale(lacation, 50000);
                 break;
+            case R.id.tv_set:
+                Bundle bundle = new Bundle();
+                bundle.putString("commend",mcommend);
+                bundle.putSerializable("data", (Serializable) mdata);
+                skip(GroupSetActivity.class,bundle,false);
+                break;
         }
     }
 
-    GroupAdapter.GroupClick callback = new GroupAdapter.GroupClick() {
+
+    GroupAdapter.GroupClick adaptercallback = new GroupAdapter.GroupClick() {
         @Override
         public void addCallBack() {
             // 从API11开始android推荐使用android.content.ClipboardManager
             // 为了兼容低版本我们这里使用旧版的android.text.ClipboardManager，虽然提示deprecated，但不影响使用。
             ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             // 将文本内容放到系统剪贴板里。
-            cm.setText(commend);
+            cm.setText(mcommend);
             ShowDialog.showAttention(GroupActivity.this, "组队口令已复制", "队伍口令已复制到剪切板中，可粘贴发送给好友！", new ShowDialog.DialogCallBack() {
                 @Override
                 public void dialogSure(DialogInterface dialog) {
@@ -270,7 +355,254 @@ public class GroupActivity extends BaseActivity {
 
         @Override
         public void clickCallBack(int position, Map<String, String> data) {
-
+            choosedata=data;
+            setCallout(data);
         }
     };
+
+    private void setCallout(Map<String, String> data) {
+        String x = data.get("x");
+        String y = data.get("y");
+        String name = data.get("name");
+        if (first) mapGroup.zoomToScale(new Point(Double.valueOf(x),Double.valueOf(y)),mapGroup.getScale());
+        first=false;
+        TextView textView = new TextView(GroupActivity.this);
+        textView.setText(name);
+        Callout callout = mapGroup.getCallout();
+        callout.setStyle(R.xml.calloutstyle);
+        Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei02);
+        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 90, 90);
+        callout.setOffset(0, drawable1.getIntrinsicHeight()*2+15);
+        callout.show(new Point(Double.valueOf(x),Double.valueOf(y)), textView);
+    }
+
+    ShowDialog.CreateDialogCallBack callBack = new ShowDialog.CreateDialogCallBack() {
+
+        @Override
+        public void addGroup(AlertDialog dialog, String commend) {
+            Map<String, Object> parameter = new HashMap<>();
+            parameter.put("loginname", user.getLoginname());
+            parameter.put("groupid", commend);
+            presenter.setRequest(parameter, PubConst.LABLE_ADDGROUP);
+            mdialog=dialog;
+            mcommend=commend;
+        }
+
+        @Override
+        public void createGroup(AlertDialog dialog) {
+            Map<String, Object> parameter = new HashMap<>();
+            parameter.put("loginname", user.getLoginname());
+            presenter.setRequest(parameter, PubConst.LABLE_CREATEGROUP);
+            mdialog=dialog;
+        }
+    };
+
+    @Override
+    public void showMsg(String msg) {
+        ShowToast(msg);
+    }
+
+    @Override
+    public void showLoadingDialog(String lable, String title, String msg, boolean flag) {
+        switch (lable) {
+            case PubConst.LABLE_ADDGROUP:
+            case PubConst.LABLE_CREATEGROUP:
+            case PubConst.LABLE_GETGROUPLOCATION:
+                showProcessDialog(title, msg, flag);
+                break;
+        }
+    }
+
+    @Override
+    public void canelLoadingDialog(String lable) {
+        switch (lable) {
+            case PubConst.LABLE_ADDGROUP:
+            case PubConst.LABLE_CREATEGROUP:
+            case PubConst.LABLE_GETGROUPLOCATION:
+                dismissProcessDialog();
+                break;
+        }
+    }
+
+    @Override
+    public void setData(Object data, String lable) {
+        SoapObject soapObject = (SoapObject) data;
+        switch (lable) {
+            case PubConst.LABLE_CREATEGROUP:
+                String result = RequestUtil.getSoapObjectValue(soapObject, "result");
+                String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+                String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
+                if (result.equals("ok")) {
+                    showMsg("创建成功");
+                    mdialog.dismiss();
+                    tvCommend.setText("队伍口令 " + okString);
+                    tvCommend.setVisibility(View.VISIBLE);
+                    bottomGroup.setVisibility(View.VISIBLE);
+                    Map<String, Object> parameter = new HashMap<>();
+                    parameter.put("loginname", user.getLoginname());
+                    parameter.put("username", user.getUsername());
+                    parameter.put("x", String.valueOf(lacation.getX()));
+                    parameter.put("y", String.valueOf(lacation.getY()));
+                    parameter.put("state", "1");
+                    presenter.setRequest(parameter,PubConst.LABLE_START_SHARE);
+                    Contant.ins().setLocalState(true);
+                } else {
+                    showMsg("创建失败");
+                }
+                break;
+            case PubConst.LABLE_ADDGROUP:
+                String result2 = RequestUtil.getSoapObjectValue(soapObject, "result");
+                String errReason2 = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+                String okString2 = RequestUtil.getSoapObjectValue(soapObject, "okString");
+                if (result2.equals("ok")) {
+                    showMsg("加入成功");
+                    mdialog.dismiss();
+                    tvCommend.setText("队伍口令 " + mcommend);
+                    tvCommend.setVisibility(View.VISIBLE);
+                    Map<String, Object> parameter = new HashMap<>();
+                    parameter.put("loginname", user.getLoginname());
+                    parameter.put("username", user.getUsername());
+                    parameter.put("x", String.valueOf(lacation.getX()));
+                    parameter.put("y", String.valueOf(lacation.getY()));
+                    parameter.put("state", "1");
+                    presenter.setRequest(parameter,PubConst.LABLE_START_SHARE);
+                    Contant.ins().setLocalState(true);
+                } else {
+                    showMsg(okString2);
+                }
+                break;
+            case PubConst.LABLE_GETSHAREGROUP:
+                String result5 = RequestUtil.getSoapObjectValue(soapObject, "result");
+                String errReason5 = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+                String okString5 = RequestUtil.getSoapObjectValue(soapObject, "okString");
+                if (result5.equals("ok")) {
+                    mcommend=okString5.substring(0,okString5.lastIndexOf(";"));
+                    createloginname=okString5.substring(okString5.lastIndexOf(";")+1,okString5.length());
+                    tvCommend.setText("队伍口令 " + mcommend);
+                    tvCommend.setVisibility(View.VISIBLE);
+                    Map<String,Object>parameter=new HashMap<>();
+                    parameter.put("loginname",user.getLoginname());
+                    presenter.setRequest(parameter,PubConst.LABLE_GETGROUPLOCATION);
+                } else {
+                    ShowDialog.showCreateGroup(GroupActivity.this, callBack);
+                }
+                break;
+            case PubConst.LABLE_GETGROUPLOCATION:
+                    if (!soapObject.toString().equals("anyType{}")) {
+                        drawPointLayer.removeAll();
+                        List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
+                        for (SoapObject object : newestLocation) {
+                            String id = RequestUtil.getSoapObjectValue(object, "ID");
+                            String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
+                            String username = RequestUtil.getSoapObjectValue(object, "username");
+                            String x = RequestUtil.getSoapObjectValue(object, "x");
+                            String y = RequestUtil.getSoapObjectValue(object, "y");
+                            Map<String,String>map=new HashMap<>();
+                            map.put("loginname",loginname);
+                            map.put("username",username);
+                            map.put("x", x);
+                            map.put("y", y);
+                            this.data.add(map);
+                            String state = RequestUtil.getSoapObjectValue(object, "state");
+                            String updateTime = RequestUtil.getSoapObjectValue(object, "updateTime");
+                            Map<String, Object> parameter = new HashMap<>();
+                            parameter.put("id", id);
+                            parameter.put("loginname", loginname);
+                            parameter.put("username", username);
+                            parameter.put("x", x);
+                            parameter.put("y", y);
+                            parameter.put("state", state);
+                            parameter.put("updateTime", updateTime);
+                            PictureMarkerSymbol symbol = loginname.equals(createloginname) ? markerSymbolyellow : markerSymbolblue;
+                            Point point = new Point(Double.valueOf(x), Double.valueOf(y));
+                            final Graphic graphic = new Graphic(point, symbol, parameter);
+                            drawPointLayer.addGraphic(graphic);
+                        }
+                        bottomGroup.setVisibility(View.VISIBLE);
+                        recyclerGroup.setVisibility(View.VISIBLE);
+                        setListView();
+                        setCallout(mdata.get(0));
+                    }
+                break;
+            case PubConst.LABLE_START_SHARE:
+                String result6 = RequestUtil.getSoapObjectValue(soapObject, "result");
+                String errReason6 = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+                String okString6 = RequestUtil.getSoapObjectValue(soapObject, "okString");
+                if (result6.equals("ok")) {
+                    Map<String,Object>parameter=new HashMap<>();
+                    parameter.put("loginname",user.getLoginname());
+                    presenter.setRequest(parameter,PubConst.LABLE_GETSHAREGROUP);
+                } else {
+                    showMsg(okString6);
+                }
+                break;
+            case PubConst.LABLE_ZOOMGETGROUP:
+                if (!soapObject.toString().equals("anyType{}")) {
+                    drawPointLayer.removeAll();
+                    this.data.clear();
+                    List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
+                    for (SoapObject object : newestLocation) {
+                        String id = RequestUtil.getSoapObjectValue(object, "ID");
+                        String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
+                        String username = RequestUtil.getSoapObjectValue(object, "username");
+                        String x = RequestUtil.getSoapObjectValue(object, "x");
+                        String y = RequestUtil.getSoapObjectValue(object, "y");
+                        Map<String,String>map=new HashMap<>();
+                        map.put("loginname",loginname);
+                        map.put("username",username);
+                        map.put("x", x);
+                        map.put("y", y);
+                        this.data.add(map);
+                        String state = RequestUtil.getSoapObjectValue(object, "state");
+                        String updateTime = RequestUtil.getSoapObjectValue(object, "updateTime");
+                        Map<String, Object> parameter = new HashMap<>();
+                        parameter.put("id", id);
+                        parameter.put("loginname", loginname);
+                        parameter.put("username", username);
+                        parameter.put("x", x);
+                        parameter.put("y", y);
+                        parameter.put("state", state);
+                        parameter.put("updateTime", updateTime);
+                        PictureMarkerSymbol symbol = loginname.equals(createloginname) ? markerSymbolyellow : markerSymbolblue;
+                        Point point = new Point(Double.valueOf(x), Double.valueOf(y));
+                        final Graphic graphic = new Graphic(point, symbol, parameter);
+                        drawPointLayer.addGraphic(graphic);
+                    }
+                    bottomGroup.setVisibility(View.VISIBLE);
+                    recyclerGroup.setVisibility(View.VISIBLE);
+                    setListView();
+                    if (choosedata!=null){
+                        boolean haschoosedata=false;
+                        for (Map<String, String> map : this.data) {
+                            String loginname = map.get("loginname");
+                            if (choosedata.get("loginname").equals(loginname)){
+                                haschoosedata=true;
+                                setCallout(map);
+                            }
+                        }
+                        if (!haschoosedata){
+                            choosedata=null;
+                            adapter.setSelectItem(-1);
+                        }
+                    }
+                }else {
+                    ShowDialog.showAttention(GroupActivity.this, "请注意", "对不起，您已被队长移除该组队！", new ShowDialog.DialogCallBack() {
+                        @Override
+                        public void dialogSure(DialogInterface dialog) {
+                            finish();
+                            dialog.dismiss();
+                        }
+
+                        @Override
+                        public void dialogCancle(DialogInterface dialog) {
+                            finish();
+                            dialog.dismiss();
+                        }
+                    });
+                }
+
+                break;
+        }
+
+    }
 }

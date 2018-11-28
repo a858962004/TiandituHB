@@ -1,5 +1,6 @@
 package com.gangbeng.tiandituhb.utils;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,9 +8,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.gangbeng.tiandituhb.R;
 import com.liulishuo.filedownloader.BaseDownloadTask;
 import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloader;
@@ -123,10 +130,68 @@ public class ShowDialog {
         builder.show();
     }
 
+    public static void showCreateGroup(final Context context, final CreateDialogCallBack callBack){
+        AlertDialog.Builder alertDialog=new AlertDialog.Builder(context);
+        alertDialog.setTitle("组队");
+        View view=View.inflate(context, R.layout.dialog_sharegroup,null);
+        Button createBT=view.findViewById(R.id.bt_creategroup);
+        final EditText addED=view.findViewById(R.id.ed_addgroup);
+        final Button addBT=view.findViewById(R.id.bt_addgroup);
+        alertDialog.setView(view);
+        final AlertDialog dialog = alertDialog.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                MyLogUtil.showLog("cancel");
+                Activity activity = (Activity) context;
+                activity.finish();
+            }
+        });
+        addED.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length()>5)addBT.setBackground(context.getResources().getDrawable(R.drawable.login_btn));
+                else addBT.setBackgroundColor(context.getResources().getColor(R.color.grey));
+            }
+        });
+        addBT.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String commend = String.valueOf(addED.getText());
+                if (commend.length()>5){
+                    callBack.addGroup(dialog,commend);
+                }
+            }
+        });
+        createBT.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callBack.createGroup(dialog);
+            }
+        });
+    }
+
     public interface DialogCallBack {
         void dialogSure(DialogInterface dialog);
 
         void dialogCancle(DialogInterface dialog);
+    }
+
+    public interface CreateDialogCallBack{
+        void addGroup(AlertDialog dialog,String commend);
+        void createGroup(AlertDialog dialog);
     }
 
 }

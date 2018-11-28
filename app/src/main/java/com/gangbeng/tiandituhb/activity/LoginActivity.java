@@ -16,7 +16,7 @@ import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.presenter.LoginPrenter;
 import com.gangbeng.tiandituhb.utils.CodeUtils;
-import com.gangbeng.tiandituhb.utils.RequestUtil;
+import com.gangbeng.tiandituhb.http.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 
 import org.ksoap2.serialization.SoapObject;
@@ -142,6 +142,7 @@ public class LoginActivity extends BaseActivity implements BaseView {
                 SharedUtil.setString("memorylogin", userEvent.getLoginname());
                 MoreActivity.instence().setListData();
                 MainActivity.getInstense().setUser(userEvent);
+                MainActivity.getInstense().getGroup();
                 finish();
             } else {
                 if (errReason.equals("nouser") || errReason.equals("wrong password")) {

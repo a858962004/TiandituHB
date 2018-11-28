@@ -5,7 +5,7 @@ import android.os.Looper;
 
 import com.gangbeng.tiandituhb.base.BaseModel;
 import com.gangbeng.tiandituhb.base.OnCallBack;
-import com.gangbeng.tiandituhb.utils.RequestUtil;
+import com.gangbeng.tiandituhb.http.RequestUtil;
 
 import org.ksoap2.serialization.SoapObject;
 

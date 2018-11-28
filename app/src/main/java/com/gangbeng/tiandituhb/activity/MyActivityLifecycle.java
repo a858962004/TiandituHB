@@ -5,11 +5,6 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.gangbeng.tiandituhb.constant.Contant;
-import com.gangbeng.tiandituhb.constant.PubConst;
-import com.gangbeng.tiandituhb.utils.MyLogUtil;
-import com.gangbeng.tiandituhb.utils.Util;
-
 /**
  * @author zhanghao
  * @date 2018-11-08
@@ -47,18 +42,17 @@ public class MyActivityLifecycle implements Application.ActivityLifecycleCallbac
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        if (activity.getClass()==MainActivity.class){
-            if (Contant.ins().isLocalState()) {
-                Contant.ins().setLocalState(false);
-                MyLogUtil.showLog(Contant.ins().isLocalState());
-                if (!Contant.ins().isNormalQuit()) {
-                    Util.setUnnormalQuit(PubConst.LABLE_UNNORMAL_QUIT);
-                }
-            }else {
-                Util.setUnnormalQuit(PubConst.LABLE_NORMAL_QUIT);
-            }
-        }
-
+//        if (activity.getClass()==MainActivity.class){
+//            if (Contant.ins().isLocalState()) {
+//                Contant.ins().setLocalState(false);
+//                MyLogUtil.showLog(Contant.ins().isLocalState());
+//                if (!Contant.ins().isNormalQuit()) {
+//                    Util.setUnnormalQuit(PubConst.LABLE_UNNORMAL_QUIT);
+//                }
+//            }else {
+//                Util.setUnnormalQuit(PubConst.LABLE_NORMAL_QUIT);
+//            }
+//        }
     }
 
     @Override

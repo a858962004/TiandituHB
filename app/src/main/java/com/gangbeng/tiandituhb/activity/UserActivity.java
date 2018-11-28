@@ -14,10 +14,9 @@ import com.gangbeng.tiandituhb.base.NewBaseView;
 import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
+import com.gangbeng.tiandituhb.http.RequestUtil;
 import com.gangbeng.tiandituhb.presenter.GetUserPresenter;
 import com.gangbeng.tiandituhb.presenter.UploadLocationPresenter;
-import com.gangbeng.tiandituhb.utils.MyLogUtil;
-import com.gangbeng.tiandituhb.utils.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 
 import org.ksoap2.serialization.SoapObject;
@@ -86,8 +85,7 @@ public class UserActivity extends BaseActivity implements BaseView, NewBaseView 
                 parameter.put("state", "0");
                 uploadpresenter.setRequest(parameter, PubConst.LABLE_CLOSE_SHARE);
                 SharedUtil.removeData("user");
-                MyLogUtil.showLog("removedata");
-                SharedUtil.setString(PubConst.LABLE_NORMAL_QUIT,"1");
+                Contant.ins().setLocalState(false);
                 MoreActivity.instence().setListData();
                 finish();
                 break;
@@ -97,6 +95,16 @@ public class UserActivity extends BaseActivity implements BaseView, NewBaseView 
     @Override
     public void showMsg(String msg) {
         ShowToast(msg);
+    }
+
+    @Override
+    public void showLoadingDialog(String lable, String title, String msg, boolean flag) {
+        showProcessDialog(title, msg, flag);
+    }
+
+    @Override
+    public void canelLoadingDialog(String lable) {
+        dismissProcessDialog();
     }
 
     @Override

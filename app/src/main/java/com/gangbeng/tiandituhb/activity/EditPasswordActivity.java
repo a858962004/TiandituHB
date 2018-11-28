@@ -11,7 +11,7 @@ import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.presenter.EditPasswordPresenter;
-import com.gangbeng.tiandituhb.utils.RequestUtil;
+import com.gangbeng.tiandituhb.http.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 
 import org.ksoap2.serialization.SoapObject;

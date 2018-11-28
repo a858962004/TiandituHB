@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/bt_creategroup"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/ll_user_info"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/login_btn"
+        android:text="创建队伍"
+        android:textColor="@android:color/white" />
+    <EditText
+        android:layout_below="@+id/bt_creategroup"
+        android:id="@+id/ed_addgroup"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/background_searchview"
+        android:inputType="number"
+        android:padding="10dp"
+        android:hint="输入组队口令"/>
+    <Button
+        android:id="@+id/bt_addgroup"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/ed_addgroup"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/grey"
+        android:text="加入队伍"
+        android:textColor="@android:color/white" />
+</RelativeLayout>

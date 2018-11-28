@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gangbeng.tiandituhb.R;
-import com.gangbeng.tiandituhb.utils.RequestUtil;
+import com.gangbeng.tiandituhb.http.RequestUtil;
 
 import org.ksoap2.serialization.SoapObject;
 

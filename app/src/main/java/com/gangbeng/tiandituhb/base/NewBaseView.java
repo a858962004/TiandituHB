@@ -19,12 +19,12 @@ public interface NewBaseView {
      * @param msg 显示的内容
      * @param flag 是否可以取消
      */
-    void showLoadingDialog(String title, String msg, boolean flag);
+    void showLoadingDialog(String lable,String title, String msg, boolean flag);
 
     /**
      * 取消进度条
      */
-    void canelLoadingDialog();
+    void canelLoadingDialog(String lable);
 
     /**
      * 获得数据

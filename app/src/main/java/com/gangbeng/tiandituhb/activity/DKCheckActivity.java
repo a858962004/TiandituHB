@@ -23,7 +23,7 @@ import com.gangbeng.tiandituhb.presenter.DeletePicPresenter;
 import com.gangbeng.tiandituhb.presenter.EditDKPresenter;
 import com.gangbeng.tiandituhb.presenter.UploadPhotoPresenter;
 import com.gangbeng.tiandituhb.utils.ContentUriUtil;
-import com.gangbeng.tiandituhb.utils.RequestUtil;
+import com.gangbeng.tiandituhb.http.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 import com.gangbeng.tiandituhb.utils.Upphoto;
 import com.gangbeng.tiandituhb.utils.Util;

@@ -105,6 +105,7 @@
         <activity android:name=".activity.DKDitailActivity" />
         <activity android:name=".activity.ShadeActivity" />
         <activity android:name=".activity.GroupActivity" />
+        <activity android:name=".activity.GroupSetActivity" />
 
         <receiver android:name=".provider.WidgetProvider">
             <intent-filter>

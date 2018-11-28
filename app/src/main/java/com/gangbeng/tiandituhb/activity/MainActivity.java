@@ -14,18 +14,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,7 +42,6 @@ import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.gangbeng.tiandituhb.BuildConfig;
 import com.gangbeng.tiandituhb.R;
-import com.gangbeng.tiandituhb.adpter.SearchAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
@@ -67,8 +62,9 @@ import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
+import com.gangbeng.tiandituhb.http.RequestUtil;
 import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
-import com.gangbeng.tiandituhb.presenter.GetUserPresenter;
+import com.gangbeng.tiandituhb.presenter.ShareGroupPresenter;
 import com.gangbeng.tiandituhb.presenter.UpdatePresenter;
 import com.gangbeng.tiandituhb.presenter.UploadLocationPresenter;
 import com.gangbeng.tiandituhb.presenter.WeatherPresenter;
@@ -78,7 +74,6 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
 import com.gangbeng.tiandituhb.utils.MapUtil;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
-import com.gangbeng.tiandituhb.utils.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 import com.gangbeng.tiandituhb.utils.ShowDialog;
 import com.gangbeng.tiandituhb.utils.Util;
@@ -172,32 +167,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     TextView tv7Weather;
     @BindView(R.id.img_more_tab)
     ImageView imgMoreTab;
-    @BindView(R.id.location_gongxiang)
-    CardView locationGongxiang;
-    @BindView(R.id.tv1_local)
-    TextView tv1Local;
-    @BindView(R.id.tv7_local)
-    TextView tv7Local;
-    @BindView(R.id.rl1_local)
-    RelativeLayout rl1Local;
-    @BindView(R.id.tv3_local)
-    TextView tv3Local;
-    @BindView(R.id.tv4_local)
-    TextView tv4Local;
-    @BindView(R.id.rl_bottom_local)
-    RelativeLayout rlBottomLocal;
-    @BindView(R.id.progressBar2_local)
-    ProgressBar progressBar2Local;
-    @BindView(R.id.progressBar3_local)
-    ProgressBar progressBar3Local;
-    @BindView(R.id.progressBar1_local)
-    ProgressBar progressBar1Local;
-    @BindView(R.id.tv5_local)
-    TextView tv5Local;
-    @BindView(R.id.qtet_searchlocal)
-    AutoCompleteTextView qtetSearchlocal;
-    @BindView(R.id.bt_searchlocal)
-    Button btSearchlocal;
     @BindView(R.id.cover_tv)
     TextView coverTv;
     @BindView(R.id.qttv_searchlocal)
@@ -206,27 +175,21 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     LinearLayout llTianqi;
     @BindView(R.id.ll_quanjing)
     LinearLayout llQuanjing;
-    @BindView(R.id.ll_share)
-    LinearLayout llShare;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-    private GraphicsLayer pointlayer, weatherlayer, locallayer, namelayer;
+    private GraphicsLayer pointlayer, weatherlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
     private boolean isFirstlocal = true;
-    private BasePresenter presenter, weatherpresenter, userPresenter;
+    private BasePresenter presenter, weatherpresenter;
     private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private boolean islocation = false;
-    private NewBasePresenter uploadpresenter, updatepresenter;
+    private NewBasePresenter uploadpresenter, updatepresenter,grouppresenter;
     private UserEvent user;
     private static MainActivity activity;
-    private boolean isnormalQuit = false;
-    private PictureMarkerSymbol markerSymbolblue, markerSymbolgred;
-    private Graphic chooseGraphic = null;
     private String chooseuser = "";
     private List<String> usernames = new ArrayList<>();
-    private boolean laststate = false;
     private boolean isFresh = false;
 
     public static MainActivity getInstense() {
@@ -241,15 +204,23 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         activity = this;
         presenter = new AroundSearchPresenter(this);
         weatherpresenter = new WeatherPresenter(this);
-        userPresenter = new GetUserPresenter(this);
         uploadpresenter = new UploadLocationPresenter(this);
         updatepresenter = new UpdatePresenter(this);
-        user = (UserEvent) SharedUtil.getSerializeObject("user");
+        grouppresenter=new ShareGroupPresenter(this);
+        getGroup();
         setMapView();
         locationGPS();
         setWeather();
-        getUserLocal();
         updatepresenter.setRequest(null, PubConst.LABLE_UPDATE);
+    }
+
+    public void getGroup() {
+        user = (UserEvent) SharedUtil.getSerializeObject("user");
+        if (user!=null){
+            Map<String,Object> parameter=new HashMap<>();
+            parameter.put("loginname",user.getLoginname());
+            grouppresenter.setRequest(parameter, PubConst.LABLE_GETSHAREGROUP);
+        }
     }
 
     private void setWeather() {
@@ -274,10 +245,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 WeatherBean bean = gson.fromJson(weatherCash, WeatherBean.class);
                 setWeatherGraphics(bean);
             }
-
         }
-
-
     }
 
     private void setWeatherGraphics(WeatherBean bean) {
@@ -330,8 +298,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
-        locallayer = new GraphicsLayer();
-        namelayer = new GraphicsLayer();
 //        bmapsView.setMaxScale(4000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
@@ -345,27 +311,11 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         bmapsView.addLayer(map_lfimg_text, 8);
         bmapsView.addLayer(pointlayer, 9);
         bmapsView.addLayer(weatherlayer, 10);
-        bmapsView.addLayer(locallayer, 11);
-        bmapsView.addLayer(namelayer, 12);
         weatherlayer.setVisible(false);
-        locallayer.setVisible(false);
-        namelayer.setVisible(false);
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
         map_lfimg.setVisible(false);
         map_lfimg_text.setVisible(false);
-
-        Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei02);
-        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 90, 90);
-        markerSymbolblue = new PictureMarkerSymbol(drawable1);
-        markerSymbolblue.setOffsetY(drawable1.getIntrinsicHeight() / 2);
-//
-        Drawable drawable2 = getResources().getDrawable(R.mipmap.icon_dingwei04);
-        Drawable drawable3 = DensityUtil.zoomDrawable(drawable2, 90, 90);
-        markerSymbolgred = new PictureMarkerSymbol(drawable3);
-        markerSymbolgred.setOffsetY(drawable3.getIntrinsicHeight() / 2);
-
-
         bmapsView.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
@@ -381,9 +331,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscale.refreshScaleView(bmapsView.getScale());
-                if (locallayer.isVisible()) {
-                    getUserLocal();
-                }
             }
         });
 
@@ -426,10 +373,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     if (Contant.ins().isLocalState()) {
                         setLocal("1", PubConst.LABLE_START_SHARE);
                     }
-                    if (laststate && !Contant.ins().isLocalState()) {
-                        setLocal("0", PubConst.LABLE_START_SHARE);
-                    }
-                    laststate = Contant.ins().isLocalState();
                     if (isFirstlocal) {
                         bmapsView.zoomToScale(ptCurrent, 50000);
                         mapviewscale.refreshScaleView(50000);
@@ -461,30 +404,12 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        String quitString = Util.getQuitString();
-        if (quitString.equals(PubConst.LABLE_UNNORMAL_QUIT)) {
-//            setLocal("0", PubConst.LABLE_CLOSE_SHARE);
-            laststate = true;
-            Contant.ins().setLocalState(false);
-//            ShowDialog.showAttention(MainActivity.this, "请注意", "系统检测到位置共享功能未正常关闭，现已开启！如需关闭，请在更多页面关闭！", new ShowDialog.DialogCallBack() {
-//                @Override
-//                public void dialogSure(DialogInterface dialog) {
-//                    dialog.dismiss();
-//                }
-//
-//                @Override
-//                public void dialogCancle(DialogInterface dialog) {
-//                    dialog.dismiss();
-//                }
-//            });
-        }
-
     }
 
     @OnClick({R.id.bt_around, R.id.bt_route, R.id.bt_more, R.id.cover_tv, R.id.change_map,
             R.id.bt_navi, R.id.location_map, R.id.location_quanjing, R.id.bubbletextview,
             R.id.location_tianqi, R.id.location_tuceng, R.id.ll_around, R.id.ll_route,
-            R.id.tv7_weather, R.id.location_gongxiang, R.id.tv7_local, R.id.bt_searchlocal})
+            R.id.tv7_weather})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.location_tuceng:
@@ -540,25 +465,23 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 break;
             case R.id.location_map:
                 this.bean = null;
-                islocation = true;
-                hideBottom();
-                setPointRequest(ptCurrent, "100");
                 bmapsView.zoomToScale(ptCurrent, 50000);
                 RefreshOnThread();
-//                mapviewscale.refreshScaleView(bmapsView.getScale());
+                if (!weatherlayer.isVisible()&&imgQuanjing.getVisibility() == View.GONE){
+                    islocation = true;
+                    hideBottom();
+                    hideWeatherBottom();
+                    setPointRequest(ptCurrent, "100");
+                }
+
+
                 break;
             case R.id.location_tianqi:
                 llTianqi.setBackgroundColor(getResources().getColor(R.color.white));
                 llQuanjing.setBackgroundColor(getResources().getColor(R.color.white));
-                llShare.setBackgroundColor(getResources().getColor(R.color.white));
                 qttvSearchlocal.setVisibility(View.VISIBLE);
-                qtetSearchlocal.setVisibility(View.GONE);
                 weatherlayer.clearSelection();
-                locallayer.clearSelection();
-                locallayer.setVisible(false);
-                namelayer.setVisible(false);
                 hideBottom();
-                hidelocalBottom();
                 if (weatherlayer.isVisible()) {
                     weatherlayer.setVisible(false);
                     bmapsView.setOnSingleTapListener(mapclick);
@@ -578,7 +501,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             case R.id.location_quanjing:
                 llTianqi.setBackgroundColor(getResources().getColor(R.color.white));
                 llQuanjing.setBackgroundColor(getResources().getColor(R.color.white));
-                llShare.setBackgroundColor(getResources().getColor(R.color.white));
                 if (imgQuanjing.getVisibility() == View.VISIBLE) {
                     imgQuanjing.setVisibility(View.GONE);
                     bubbletextview.setVisibility(View.GONE);
@@ -586,17 +508,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     bmapsView.setOnPanListener(null);
                     bmapsView.setOnSingleTapListener(mapclick);
                 } else {
-//                    this.bean = null;
-//                    islocation = false;
                     llQuanjing.setBackgroundColor(getResources().getColor(R.color.lightblue));
                     qttvSearchlocal.setVisibility(View.VISIBLE);
-                    qtetSearchlocal.setVisibility(View.GONE);
                     weatherlayer.setVisible(false);
-                    locallayer.setVisible(false);
-                    namelayer.setVisible(false);
-                    locallayer.clearSelection();
                     hideBottom();
-                    hidelocalBottom();
                     hideWeatherBottom();
                     bmapsView.setOnSingleTapListener(null);
                     imgQuanjing.setVisibility(View.VISIBLE);
@@ -680,59 +595,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 bundle.putString("y", String.valueOf(selectpoint.getY()));
                 skip(WeatherActivity.class, bundle, false);
                 break;
-            case R.id.location_gongxiang:
-                llTianqi.setBackgroundColor(getResources().getColor(R.color.white));
-                llQuanjing.setBackgroundColor(getResources().getColor(R.color.white));
-                llShare.setBackgroundColor(getResources().getColor(R.color.white));
-                if (locallayer.isVisible()) {
-                    qttvSearchlocal.setVisibility(View.VISIBLE);
-                    qtetSearchlocal.setVisibility(View.GONE);
-                    coverTv.setVisibility(View.VISIBLE);
-                    locallayer.clearSelection();
-                    hidelocalBottom();
-                    locallayer.setVisible(false);
-                    namelayer.setVisible(false);
-                    bmapsView.setOnSingleTapListener(mapclick);
-                } else {
-                    llShare.setBackgroundColor(getResources().getColor(R.color.lightblue));
-                    qttvSearchlocal.setVisibility(View.GONE);
-                    qtetSearchlocal.setVisibility(View.VISIBLE);
-                    coverTv.setVisibility(View.GONE);
-                    hideBottom();
-                    hideWeatherBottom();
-                    imgQuanjing.setVisibility(View.GONE);
-                    bubbletextview.setVisibility(View.GONE);
-                    bubbletextview.setText("正在查询...");
-                    bmapsView.setOnPanListener(null);
-                    locallayer.setVisible(true);
-                    namelayer.setVisible(true);
-                    weatherlayer.setVisible(false);
-                    weatherlayer.clearSelection();
-                    bmapsView.setOnSingleTapListener(localclick);
-                }
-                break;
-            case R.id.tv7_local:
-                progressBar1Local.setVisibility(View.VISIBLE);
-                progressBar2Local.setVisibility(View.VISIBLE);
-                isFresh = true;
-                getUserLocal();
-                Map<String, Object> parameter = new HashMap<>();
-                parameter.put("maxitems", "20");
-                parameter.put("page", "1");
-                Graphic polygon = MapUtil.setDistanceGraphicsLayer((Point) chooseGraphic.getGeometry(), "100");
-                Geometry geometry = polygon.getGeometry();
-                Envelope envelope = new Envelope();
-                geometry.queryEnvelope(envelope);
-                String geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
-                parameter.put("geo", geo);
-                parameter.put("where", "1=1");
-                presenter.setRequest(parameter);
-                break;
-            case R.id.bt_searchlocal:
-                jianpandelete();
-                String username = String.valueOf(qtetSearchlocal.getText());
-                searchGraphicByUsername(username);
-                break;
         }
     }
 
@@ -757,24 +619,26 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     @Override
     public void showMsg(String msg) {
         ShowToast(msg);
-        if (msg.equals("连接超时") && progressBar2Local.getVisibility() == View.VISIBLE) {
-            progressBar2Local.setVisibility(View.GONE);
-            tv3Local.setText("未查找到位置");
-        }
+    }
+
+    @Override
+    public void showLoadingDialog(String lable, String title, String msg, boolean flag) {
+            showProcessDialog(title, msg, flag);
+    }
+
+    @Override
+    public void canelLoadingDialog(String lable) {
+            dismissProcessDialog();
     }
 
     @Override
     public void showLoadingDialog(String title, String msg, boolean flag) {
-        if (!locallayer.isVisible()) {
             showProcessDialog(title, msg, flag);
-        }
     }
 
     @Override
     public void canelLoadingDialog() {
-        if (!locallayer.isVisible()) {
             dismissProcessDialog();
-        }
 
     }
 
@@ -783,64 +647,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         SoapObject soapObject = null;
         if (data instanceof SoapObject) soapObject = (SoapObject) data;
         switch (lable) {
-            case PubConst.LABLE_GET_SHARE://获取所有位置回调
-                progressBar1Local.setVisibility(View.GONE);
-                if (!soapObject.toString().equals("anyType{}")) {
-                    locallayer.removeAll();
-                    namelayer.removeAll();
-                    List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
-                    for (SoapObject object : newestLocation) {
-                        String id = RequestUtil.getSoapObjectValue(object, "ID");
-                        String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
-                        if (user != null) {
-                            if (loginname.equals(user.getLoginname())) continue;
-                        }
-                        String username = RequestUtil.getSoapObjectValue(object, "username");
-                        usernames.add(username);
-                        String x = RequestUtil.getSoapObjectValue(object, "x");
-                        String y = RequestUtil.getSoapObjectValue(object, "y");
-                        String state = RequestUtil.getSoapObjectValue(object, "state");
-                        String updateTime = RequestUtil.getSoapObjectValue(object, "updateTime");
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", id);
-                        map.put("loginname", loginname);
-                        map.put("username", username);
-                        map.put("x", x);
-                        map.put("y", y);
-                        map.put("state", state);
-                        map.put("updateTime", updateTime);
-                        PictureMarkerSymbol symbol = state.equals("0") ? markerSymbolgred : markerSymbolblue;
-                        Point point = new Point(Double.valueOf(x), Double.valueOf(y));
-                        final Graphic graphic = new Graphic(point, symbol, map);
-                        locallayer.addGraphic(graphic);
-                        // 将bitmap转换为Drawable资源
-                        Bitmap bitmap = Util.creatCodeBitmap(username, MainActivity.this);
-                        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-                        Drawable drawable2 = DensityUtil.zoomDrawable(drawable, 60, 50);
-                        PictureMarkerSymbol pictureMarkerSymbol = new PictureMarkerSymbol(drawable2);
-                        pictureMarkerSymbol.setOffsetY(-20);
-                        namelayer.addGraphic(new Graphic(point, pictureMarkerSymbol));
-                        if (chooseuser.equals(loginname)) {
-                            if (isFresh) bmapsView.zoomToScale(point, bmapsView.getScale());
-                            isFresh = false;
-                            String string = state.equals("0") ? "已关闭" : "已开启";
-                            tv5Local.setText("开启状态： " + string);
-                        }
-                    }
-                    if (!chooseuser.equals("")) {
-                        int[] graphicIDs = locallayer.getGraphicIDs();
-                        for (int i = 0; i < graphicIDs.length; i++) {
-                            Graphic graphic = locallayer.getGraphic(graphicIDs[i]);
-                            if (graphic.getAttributeValue("loginname").equals(chooseuser)) {
-                                locallayer.clearSelection();
-                                locallayer.setSelectedGraphics(new int[]{graphic.getUid()}, true);
-                                break;
-                            }
-                        }
-                    }
-                    qtetSearchlocal.addTextChangedListener(textWatcher);
-                }
-                break;
             case PubConst.LABLE_UPDATE:
                 UpdateBean bean = (UpdateBean) data;
                 String versionCode = bean.getData().getData().getVersionCode();
@@ -853,6 +659,14 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     imgMoreTab.setVisibility(View.VISIBLE);
                 }
                 break;
+            case PubConst.LABLE_GETSHAREGROUP:
+                String result5 = RequestUtil.getSoapObjectValue(soapObject, "result");
+                if (result5.equals("ok")) {
+                    Contant.ins().setLocalState(true);
+                } else {
+                    Contant.ins().setLocalState(false);
+                }
+                break;
         }
 
     }
@@ -862,38 +676,17 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         if (data instanceof NewSearchBean) {
             NewSearchBean bean = (NewSearchBean) data;
             NewSearchBean.ContentBean content = bean.getContent();
-            if (!locallayer.isVisible()) {
-                if (content != null) {
-                    NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
-                    List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
-                    if (features1.size() > 0) {
-                        this.bean = features1.get(0);
-                        setbottom(this.bean);
-                    }
-                } else {
-                    this.bean = null;
+            if (content != null) {
+                NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
+                List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
+                if (features1.size() > 0) {
+                    this.bean = features1.get(0);
+                    setbottom(this.bean);
                 }
             } else {
-                progressBar2Local.setVisibility(View.GONE);
-                if (content != null) {
-                    NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
-                    List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
-                    if (features1.size() > 0) {
-                        NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean featuresBean = features1.get(0);
-                        tv3Local.setText(featuresBean.getProperties().get名称() + "附近");
-                    }
-                } else {
-                    tv3Local.setText("未查找到位置");
-                }
+                this.bean = null;
             }
         }
-        if (data instanceof SoapObject) {
-            progressBar3Local.setVisibility(View.GONE);
-            SoapObject object = (SoapObject) data;
-            String mobilePhone1 = RequestUtil.getSoapObjectValue(object, "MobilePhone1");
-            tv4Local.setText("电话：" + mobilePhone1);
-        }
-
         if (data instanceof WeatherBean) {
             WeatherBean bean = (WeatherBean) data;
             Gson gson = new Gson();
@@ -979,19 +772,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         params2.addRule(RelativeLayout.ABOVE, R.id.rl_weather_bottom); //设置控件的位置
         params2.setMargins(0, 0, i, i1);//左上右下
         mapzoom.setLayoutParams(params2);
-
-//        parameter.put("basiccity", basic.getLocation());
-//        parameter.put("tmpmax", daily_forecast.get(0).getTmp_max());//最高温度
-//        parameter.put("tmpmin", daily_forecast.get(0).getTmp_min());//最低温度
-//        parameter.put("condtext", daily_forecast.get(0).getCond_txt_d());//当前天气
-//        parameter.put("uv_index", daily_forecast.get(0).getUv_index());//紫外线强度指数
-//        parameter.put("winddir", daily_forecast.get(0).getWind_dir());//风向
-//        parameter.put("windsc", daily_forecast.get(0).getWind_sc());//风级
-//        parameter.put("pop", daily_forecast.get(0).getPop());//降水概率
-//        parameter.put("hum", daily_forecast.get(0).getHum());//湿度
-//        parameter.put("vis", daily_forecast.get(0).getVis());//能见度
-
-
         String basiccity = String.valueOf(graphic.getAttributeValue("basiccity"));//城市名称
         String tmpmax = String.valueOf(graphic.getAttributeValue("tmpmax"));//最高温度
         String tmpmin = String.valueOf(graphic.getAttributeValue("tmpmin"));//最低温度
@@ -1080,12 +860,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 ShowDialog.showAttention(MainActivity.this, "请注意", "是否退出程序", new ShowDialog.DialogCallBack() {
                     @Override
                     public void dialogSure(DialogInterface dialog) {
-                        Contant.ins().setNormalQuit(true);
-                        boolean localState = Contant.ins().isLocalState();
-                        if (Contant.ins().isLocalState()) {
-                            Contant.ins().setLocalState(false);
-                            setLocal("0", PubConst.LABLE_CLOSE_SHARE);
-                        }
                         finish();
                     }
 
@@ -1124,23 +898,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         }
     };
 
-    OnSingleTapListener localclick = new OnSingleTapListener() {
-        @Override
-        public void onSingleTap(float v, float v1) {
-            locallayer.clearSelection();
-            int[] graphicIDs = locallayer.getGraphicIDs(v, v1, 25);
-            if (graphicIDs != null && graphicIDs.length > 0) {
-                int graphicID = graphicIDs[0];
-                Graphic graphic = locallayer.getGraphic(graphicID);
-                locallayer.setSelectedGraphics(new int[]{graphicID}, true);
-                setlocalBottom(graphic);
-            } else {
-                chooseGraphic = null;
-                chooseuser = "";
-                hidelocalBottom();
-            }
-        }
-    };
 
     private void setLocal(String state, String label) {
         MyLogUtil.showLog("1234");
@@ -1162,97 +919,5 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     public Point getPtCurrent() {
         return ptCurrent;
     }
-
-    public void getUserLocal() {
-        MyLogUtil.showLog("位置共享");
-        Map<String, Object> parameter = new HashMap<>();
-        parameter.put("state", "");
-        uploadpresenter.setRequest(parameter, PubConst.LABLE_GET_SHARE);
-    }
-
-    private void setlocalBottom(Graphic graphic) {
-        rlBottomLocal.setVisibility(View.VISIBLE);
-        progressBar2Local.setVisibility(View.VISIBLE);
-        progressBar3Local.setVisibility(View.VISIBLE);
-        int i = DensityUtil.dip2px(this, 10);
-        int i1 = DensityUtil.dip2px(this, 20);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
-        params.addRule(RelativeLayout.ABOVE, R.id.rl_bottom_local); //设置控件的位置
-        params.setMargins(i1, 0, 0, i);//左上右下
-        mapviewscale.setLayoutParams(params);
-        Point point = (Point) graphic.getGeometry();
-        bmapsView.zoomToScale(point, 5000);
-        mapviewscale.refreshScaleView(5000);
-        String username = String.valueOf(graphic.getAttributeValue("username"));
-        String state = String.valueOf(graphic.getAttributeValue("state"));
-        tv1Local.setText(username);
-        String string = state.equals("0") ? "已关闭" : "已开启";
-        tv5Local.setText("开启状态： " + string);
-        Map<String, Object> parameter = new HashMap<>();
-        parameter.put("maxitems", "20");
-        parameter.put("page", "1");
-        Graphic polygon = MapUtil.setDistanceGraphicsLayer(point, "100");
-        Geometry geometry = polygon.getGeometry();
-        Envelope envelope = new Envelope();
-        geometry.queryEnvelope(envelope);
-        String geo = envelope.getXMin() + "," + envelope.getYMin() + "," + envelope.getXMax() + "," + envelope.getYMax();
-        parameter.put("geo", geo);
-        parameter.put("where", "1=1");
-        presenter.setRequest(parameter);
-        Map<String, Object> parameter2 = new HashMap<>();
-        chooseGraphic = graphic;
-        chooseuser = String.valueOf(graphic.getAttributeValue("loginname"));
-        parameter2.put("loginname", chooseuser);
-        userPresenter.setRequest(parameter2);
-
-    }
-
-    private void hidelocalBottom() {
-        rlBottomLocal.setVisibility(View.GONE);
-        int i = DensityUtil.dip2px(this, 10);
-        int i1 = DensityUtil.dip2px(this, 20);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
-        params.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
-        params.setMargins(i1, 0, 0, i);//左上右下
-        mapviewscale.setLayoutParams(params);
-    }
-
-    private void searchGraphicByUsername(String username) {
-        int[] graphicIDs = locallayer.getGraphicIDs();
-        for (int i = 0; i < graphicIDs.length; i++) {
-            Graphic graphic = locallayer.getGraphic(graphicIDs[i]);
-            if (graphic.getAttributeValue("username").equals(username)) {
-                locallayer.clearSelection();
-                locallayer.setSelectedGraphics(new int[]{graphic.getUid()}, true);
-                setlocalBottom(graphic);
-                return;
-            }
-        }
-        showMsg("未查找到该用户");
-    }
-
-    TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            String search = String.valueOf(qtetSearchlocal.getText());
-            List<String> array = new ArrayList<>();
-            for (String username : usernames) {
-                if (username.contains(search)) array.add(username);
-            }
-            SearchAdapter<String> adapter = new SearchAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, array, SearchAdapter.ALL);
-            qtetSearchlocal.setAdapter(adapter);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
-
 
 }
