@@ -46,7 +46,6 @@ import com.gangbeng.tiandituhb.widget.MapZoomView;
 
 import org.ksoap2.serialization.SoapObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -248,12 +247,16 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscaleGroup.refreshScaleView(mapGroup.getScale());
-                Map<String,Object>parameter=new HashMap<>();
-                parameter.put("loginname",user.getLoginname());
-                presenter.setRequest(parameter,PubConst.LABLE_ZOOMGETGROUP);
+                refreshGroupLocation();
             }
         });
         mapzoomGroup.setMapView(mapGroup);
+    }
+
+    public void refreshGroupLocation() {
+        Map<String,Object> parameter=new HashMap<>();
+        parameter.put("loginname",user.getLoginname());
+        presenter.setRequest(parameter, PubConst.LABLE_ZOOMGETGROUP);
     }
 
 
@@ -320,7 +323,8 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
             case R.id.tv_set:
                 Bundle bundle = new Bundle();
                 bundle.putString("commend",mcommend);
-                bundle.putSerializable("data", (Serializable) mdata);
+//                bundle.putSerializable("data", (Serializable) mdata);
+                bundle.putString("createloginname",createloginname);
                 skip(GroupSetActivity.class,bundle,false);
                 break;
         }
@@ -468,7 +472,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                     presenter.setRequest(parameter,PubConst.LABLE_START_SHARE);
                     Contant.ins().setLocalState(true);
                 } else {
-                    showMsg(okString2);
+                    showMsg("未找到该组队");
                 }
                 break;
             case PubConst.LABLE_GETSHAREGROUP:
@@ -575,7 +579,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                         boolean haschoosedata=false;
                         for (Map<String, String> map : this.data) {
                             String loginname = map.get("loginname");
-                            if (choosedata.get("loginname").equals(loginname)){
+                            if (choosedata.get("name").equals(loginname)){
                                 haschoosedata=true;
                                 setCallout(map);
                             }
@@ -586,7 +590,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                         }
                     }
                 }else {
-                    ShowDialog.showAttention(GroupActivity.this, "请注意", "对不起，您已被队长移除该组队！", new ShowDialog.DialogCallBack() {
+                    ShowDialog.showAttention(GroupActivity.this, "请注意", "对不起，您已被队长移出该组队！", new ShowDialog.DialogCallBack() {
                         @Override
                         public void dialogSure(DialogInterface dialog) {
                             finish();

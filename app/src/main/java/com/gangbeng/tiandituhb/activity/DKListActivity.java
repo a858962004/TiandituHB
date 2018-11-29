@@ -1,5 +1,6 @@
 package com.gangbeng.tiandituhb.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.gangbeng.tiandituhb.presenter.GetDKPresenter;
 import com.gangbeng.tiandituhb.presenter.SubmitDKPresenter;
 import com.gangbeng.tiandituhb.http.RequestUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
+import com.gangbeng.tiandituhb.utils.ShowDialog;
 
 import org.ksoap2.serialization.SoapObject;
 
@@ -57,6 +59,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
     private String infostate;
     private String activitystring;
     private List<String>deletedata=new ArrayList<>();
+    private DialogInterface mdialog;
 
     public static DKListActivity getInstence() {
         return activity;
@@ -109,10 +112,6 @@ public class DKListActivity extends BaseActivity implements BaseView {
                     bundle.putSerializable("data", dkhcInfo);
                     skip(DKDitailActivity.class, bundle, false);
                 }
-//                else {
-//                    DKLVAdapter.ViewHolder tag = (DKLVAdapter.ViewHolder) view.getTag();
-//                    tag.checkBox.setChecked(!tag.checkBox.isChecked());
-//                }
             }
         });
     }
@@ -147,6 +146,8 @@ public class DKListActivity extends BaseActivity implements BaseView {
             listDk.setAdapter(adapter);
             int size = adapter.getAllCheck() ? dkhcInfo.size() : 0;
             setToolbarTitle("已选中" + size + "项");
+            if (size>0)setRightImageBtnText("取消");
+            if (size==0)setRightImageBtnText("全选");
         }
     }
 
@@ -196,6 +197,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
                 String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
                 String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
                 if (result.equals("ok")) {
+                    mdialog.dismiss();
                     showMsg("提交成功");
                     setToolbarTitle(activitystring);
                     setRightImageBtnText("添加");
@@ -211,25 +213,27 @@ public class DKListActivity extends BaseActivity implements BaseView {
                 String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
                 deletedata.add(deletedata.size()+"");
                 if (deletedata.size()==adapter.getCheckData().size()){
+                    mdialog.dismiss();
                     deletePresenter = null;
                     setToolbarTitle(activitystring);
                     setRightImageBtnText("添加");
                     setToolbarLeftIcon(R.mipmap.icon_arrow_left);
                     llTijiao.setVisibility(View.GONE);
                     setNetWork(infostate);
-
                 }
             }else {
                 if (soapObject.toString().equals("anyType{}")) {
                     tvNodata.setVisibility(View.VISIBLE);
+                    listDk.setVisibility(View.GONE);
+                    adapter=null;
                 } else {
                     tvNodata.setVisibility(View.GONE);
+                    listDk.setVisibility(View.VISIBLE);
                     dkhcInfo = RequestUtil.getObjectValue(soapObject, "DKHCInfo");
                     adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, infostate,0, false, null);
                     listDk.setAdapter(adapter);
                 }
             }
-
         }
     }
 
@@ -237,34 +241,58 @@ public class DKListActivity extends BaseActivity implements BaseView {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_delete:
-                deletePresenter=new DeleteDKPresenter(this);
-                List<SoapObject> deletedata = adapter.getCheckData();
+                final List<SoapObject> deletedata = adapter.getCheckData();
                 if (deletedata.size()>0){
-                    for (SoapObject deletedatum : deletedata) {
-                        String dkid = RequestUtil.getSoapObjectValue(deletedatum, "ID");
-                        Map<String,Object> parameter=new HashMap<>();
-                        parameter.put("loginname",user.getLoginname());
-                        parameter.put("dkid",dkid);
-                        deletePresenter.setRequest(parameter);
-                    }
+                    ShowDialog.showAttention(DKListActivity.this, "请注意", "是否删除？", new ShowDialog.DialogCallBack() {
+                        @Override
+                        public void dialogSure(DialogInterface dialog) {
+                            mdialog=dialog;
+                            deletePresenter=new DeleteDKPresenter(DKListActivity.this);
+                            for (SoapObject deletedatum : deletedata) {
+                                String dkid = RequestUtil.getSoapObjectValue(deletedatum, "ID");
+                                Map<String,Object> parameter=new HashMap<>();
+                                parameter.put("loginname",user.getLoginname());
+                                parameter.put("dkid",dkid);
+                                deletePresenter.setRequest(parameter);
+                            }
+                        }
+
+                        @Override
+                        public void dialogCancle(DialogInterface dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+
                 }
 
                 break;
             case R.id.tv_upload:
-                submitPresenter = new SubmitDKPresenter(DKListActivity.this);
-                List<SoapObject> checkData = adapter.getCheckData();
-                String idlist = "";
+                final List<SoapObject> checkData = adapter.getCheckData();
+                final String[] idlist = {""};
                 if (checkData.size()>0){
-                    for (int i = 0; i < checkData.size(); i++) {
-                        if (i == 0) {
-                            idlist = RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
-                        } else {
-                            idlist += "," + RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
+                    ShowDialog.showAttention(DKListActivity.this, "请注意", "是否提交？", new ShowDialog.DialogCallBack() {
+                        @Override
+                        public void dialogSure(DialogInterface dialog) {
+                            mdialog=dialog;
+                            submitPresenter = new SubmitDKPresenter(DKListActivity.this);
+                            for (int i = 0; i < checkData.size(); i++) {
+                                if (i == 0) {
+                                    idlist[0] = RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
+                                } else {
+                                    idlist[0] += "," + RequestUtil.getSoapObjectValue(checkData.get(i), "ID");
+                                }
+                            }
+                            Map<String, Object> parameter = new HashMap<>();
+                            parameter.put("idlist", idlist[0]);
+                            submitPresenter.setRequest(parameter);
                         }
-                    }
-                    Map<String, Object> parameter = new HashMap<>();
-                    parameter.put("dkid", idlist);
-                    submitPresenter.setRequest(parameter);
+
+                        @Override
+                        public void dialogCancle(DialogInterface dialog) {
+                            dialog.dismiss();
+                        }
+                    });
+
                 }
                 break;
         }

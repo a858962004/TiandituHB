@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,12 +28,12 @@ import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.DKHCInfo;
 import com.gangbeng.tiandituhb.constant.PubConst;
+import com.gangbeng.tiandituhb.http.RequestUtil;
 import com.gangbeng.tiandituhb.presenter.GetPhotoPresenter;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
-import com.gangbeng.tiandituhb.http.RequestUtil;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -84,14 +85,15 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
     TextView tvWt;
     @BindView(R.id.rl4)
     RelativeLayout rl4;
-
+    @BindView(R.id.ll_pic)
+    LinearLayout llPic;
     private static DKDitailActivity activity;
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private GraphicsLayer drawPointLayer, drawLayer;
     private DKHCInfo dkhcInfo;
     private List<String> uris = new ArrayList<>();
-    private List<String> ids=new ArrayList<>();
+    private List<String> ids = new ArrayList<>();
     private AddPhotoAdapter askGridAdpter;
     private GoogleApiClient client;
     private PictureMarkerSymbol markerSymbolred;
@@ -128,11 +130,11 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
         edSz.setText(dkhcInfo.getAddress());
         edWt.setText(dkhcInfo.getResult());
         uris.add("0");
-        askGridAdpter = new AddPhotoAdapter(this, uris,false, click);
+        askGridAdpter = new AddPhotoAdapter(this, uris, false, click);
         gridFeed.setAdapter(askGridAdpter);
         presenter = new GetPhotoPresenter(this);
-        Map<String,Object>parameter=new HashMap<>();
-        parameter.put("dkid",dkhcInfo.getID());
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("dkid", dkhcInfo.getID());
         presenter.setRequest(parameter);
         setMapView();
     }
@@ -242,7 +244,11 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
     @Override
     protected void setRightClickListen() {
         Bundle bundle = new Bundle();
-        bundle.putStringArrayList("photo", (ArrayList<String>) uris);
+        List<String>picurl=new ArrayList<>();
+        for (String uri : uris) {
+            if (!uri.equals("0"))picurl.add(uri);
+        }
+        bundle.putStringArrayList("photo", (ArrayList<String>) picurl);
         bundle.putSerializable("data", dkhcInfo);
         bundle.putStringArrayList("ids", (ArrayList<String>) ids);
         if (activitystring.equals("地块核查")) skip(DKCheckActivity.class, bundle, false);
@@ -267,16 +273,21 @@ public class DKDitailActivity extends BaseActivity implements BaseView {
     @Override
     public void setData(Object data) {
         if (data instanceof SoapObject) {
-            SoapObject soapObject=(SoapObject)data;
-            List<SoapObject> objectValue = RequestUtil.getObjectValue(soapObject, "FileData");
-            uris.clear();
-            for (SoapObject object : objectValue) {
-                String fileurl = RequestUtil.getSoapObjectValue(object, "fileurl");
-                String id = RequestUtil.getSoapObjectValue(object, "picid");
-                uris.add(fileurl);
-                ids.add(id);
+            if (!data.toString().equals("anyType{}")) {
+                llPic.setVisibility(View.VISIBLE);
+                SoapObject soapObject = (SoapObject) data;
+                List<SoapObject> objectValue = RequestUtil.getObjectValue(soapObject, "FileData");
+                uris.clear();
+                for (SoapObject object : objectValue) {
+                    String fileurl = RequestUtil.getSoapObjectValue(object, "fileurl");
+                    String id = RequestUtil.getSoapObjectValue(object, "picid");
+                    uris.add(fileurl);
+                    ids.add(id);
+                }
+                askGridAdpter.setData(uris);
+            } else {
+                llPic.setVisibility(View.GONE);
             }
-            askGridAdpter.setData(uris);
         }
     }
 

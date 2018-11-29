@@ -361,6 +361,7 @@ public class PointBackActivity extends BaseActivity implements BaseView {
         data = (DKHCInfo) bundle.getSerializable("data");
         ArrayList<String> photo = bundle.getStringArrayList("photo");
          ids = bundle.getStringArrayList("ids");
+
         if (photo.size() > 0) {
             uris.clear();
             for (String string : photo) {

@@ -115,6 +115,7 @@
             </RelativeLayout>
 
             <LinearLayout
+                android:id="@+id/ll_pic"
                 style="@style/style_register_linear"
                 android:orientation="horizontal">
 

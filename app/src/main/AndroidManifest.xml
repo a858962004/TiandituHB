@@ -106,6 +106,7 @@
         <activity android:name=".activity.ShadeActivity" />
         <activity android:name=".activity.GroupActivity" />
         <activity android:name=".activity.GroupSetActivity" />
+        <activity android:name=".activity.GroupRemoveActivity" />
 
         <receiver android:name=".provider.WidgetProvider">
             <intent-filter>

@@ -175,6 +175,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     LinearLayout llTianqi;
     @BindView(R.id.ll_quanjing)
     LinearLayout llQuanjing;
+    @BindView(R.id.img_hefeng)
+    ImageView imgHefeng;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
@@ -185,7 +187,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private BasePresenter presenter, weatherpresenter;
     private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
     private boolean islocation = false;
-    private NewBasePresenter uploadpresenter, updatepresenter,grouppresenter;
+    private NewBasePresenter uploadpresenter, updatepresenter, grouppresenter;
     private UserEvent user;
     private static MainActivity activity;
     private String chooseuser = "";
@@ -206,7 +208,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         weatherpresenter = new WeatherPresenter(this);
         uploadpresenter = new UploadLocationPresenter(this);
         updatepresenter = new UpdatePresenter(this);
-        grouppresenter=new ShareGroupPresenter(this);
+        grouppresenter = new ShareGroupPresenter(this);
         getGroup();
         setMapView();
         locationGPS();
@@ -216,9 +218,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     public void getGroup() {
         user = (UserEvent) SharedUtil.getSerializeObject("user");
-        if (user!=null){
-            Map<String,Object> parameter=new HashMap<>();
-            parameter.put("loginname",user.getLoginname());
+        if (user != null) {
+            Map<String, Object> parameter = new HashMap<>();
+            parameter.put("loginname", user.getLoginname());
             grouppresenter.setRequest(parameter, PubConst.LABLE_GETSHAREGROUP);
         }
     }
@@ -467,7 +469,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 this.bean = null;
                 bmapsView.zoomToScale(ptCurrent, 50000);
                 RefreshOnThread();
-                if (!weatherlayer.isVisible()&&imgQuanjing.getVisibility() == View.GONE){
+                if (!weatherlayer.isVisible() && imgQuanjing.getVisibility() == View.GONE) {
                     islocation = true;
                     hideBottom();
                     hideWeatherBottom();
@@ -483,10 +485,12 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 weatherlayer.clearSelection();
                 hideBottom();
                 if (weatherlayer.isVisible()) {
+                    imgHefeng.setVisibility(View.GONE);
                     weatherlayer.setVisible(false);
                     bmapsView.setOnSingleTapListener(mapclick);
                     hideWeatherBottom();
                 } else {
+                    imgHefeng.setVisibility(View.VISIBLE);
                     llTianqi.setBackgroundColor(getResources().getColor(R.color.lightblue));
                     imgQuanjing.setVisibility(View.GONE);
                     bubbletextview.setVisibility(View.GONE);
@@ -623,22 +627,22 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     @Override
     public void showLoadingDialog(String lable, String title, String msg, boolean flag) {
-            showProcessDialog(title, msg, flag);
+        showProcessDialog(title, msg, flag);
     }
 
     @Override
     public void canelLoadingDialog(String lable) {
-            dismissProcessDialog();
+        dismissProcessDialog();
     }
 
     @Override
     public void showLoadingDialog(String title, String msg, boolean flag) {
-            showProcessDialog(title, msg, flag);
+        showProcessDialog(title, msg, flag);
     }
 
     @Override
     public void canelLoadingDialog() {
-            dismissProcessDialog();
+        dismissProcessDialog();
 
     }
 
@@ -767,9 +771,14 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         params.addRule(RelativeLayout.ABOVE, R.id.rl_weather_bottom); //设置控件的位置
         params.setMargins(i1, 0, 0, i);//左上右下
         mapviewscale.setLayoutParams(params);
+        RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params3.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params3.addRule(RelativeLayout.ABOVE, R.id.rl_weather_bottom); //设置控件的位置
+        params3.setMargins(0, 0, i1, i);//左上右下
+        imgHefeng.setLayoutParams(params3);
         RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
         params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params2.addRule(RelativeLayout.ABOVE, R.id.rl_weather_bottom); //设置控件的位置
+        params2.addRule(RelativeLayout.ABOVE, R.id.img_hefeng); //设置控件的位置
         params2.setMargins(0, 0, i, i1);//左上右下
         mapzoom.setLayoutParams(params2);
         String basiccity = String.valueOf(graphic.getAttributeValue("basiccity"));//城市名称
@@ -803,6 +812,11 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         params2.addRule(RelativeLayout.ABOVE, R.id.mapviewscale); //设置控件的位置
         params2.setMargins(0, 0, i, i1);//左上右下
         mapzoom.setLayoutParams(params2);
+        RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //添加相应的规则
+        params3.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params3.addRule(RelativeLayout.ABOVE, R.id.id_tab_map); //设置控件的位置
+        params3.setMargins(0, 0, i1, i);//左上右下
+        imgHefeng.setLayoutParams(params3);
     }
 
     private void hideBottom() {

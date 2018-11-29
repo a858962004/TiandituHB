@@ -213,6 +213,17 @@
         <include layout="@layout/view_bottom_weather"/>
 
     </RelativeLayout>
+    <ImageView
+        android:visibility="gone"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@+id/id_tab_map"
+        android:id="@+id/img_hefeng"
+        android:src="@mipmap/icon_hefeng"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <RelativeLayout
         android:clickable="true"
         android:visibility="gone"
@@ -224,6 +235,7 @@
 
         <include layout="@layout/view_bottom_local" />
     </RelativeLayout>
+
 
 
 </RelativeLayout>

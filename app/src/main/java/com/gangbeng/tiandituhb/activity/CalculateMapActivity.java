@@ -101,6 +101,8 @@ public class CalculateMapActivity extends BaseActivity {
     ImageView imgDingweizhen2;
     @BindView(R.id.btv_calculate)
     BubbleTextView btvCalculate;
+    @BindView(R.id.ll_bottombt)
+    LinearLayout llBottombt;
 
     private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
@@ -113,7 +115,7 @@ public class CalculateMapActivity extends BaseActivity {
     private Point ptCurrent;
     private Point ptPrevious = null;//上一个点
     private Point ptStart = null;//起点
-    private PictureMarkerSymbol markerSymbolblue,markerSymbolred;
+    private PictureMarkerSymbol markerSymbolblue, markerSymbolred;
     private SimpleFillSymbol fillSymbol;
     private SimpleLineSymbol lineSymbol;
     private Polyline polyline;
@@ -222,10 +224,10 @@ public class CalculateMapActivity extends BaseActivity {
                         } else {
                             Envelope envelope = new Envelope();
                             polygon.queryEnvelope(envelope);
-                            envelope.setXMin(envelope.getXMin()-0.001);
-                            envelope.setYMin(envelope.getYMin()-0.001);
-                            envelope.setXMax(envelope.getXMax()+0.001);
-                            envelope.setYMax(envelope.getYMax()+0.001);
+                            envelope.setXMin(envelope.getXMin() - 0.001);
+                            envelope.setYMin(envelope.getYMin() - 0.001);
+                            envelope.setXMax(envelope.getXMax() + 0.001);
+                            envelope.setYMax(envelope.getYMax() + 0.001);
                             mapCalculate.setExtent(envelope);
 //                            mapCalculate.zoomToScale(envelope.getCenter(), 70000);
                         }
@@ -267,14 +269,14 @@ public class CalculateMapActivity extends BaseActivity {
     }
 
     private void addOldPoint() {
-        List<Point>pointList=new ArrayList<>();
+        List<Point> pointList = new ArrayList<>();
         for (Point point : points) {
             Point point1 = new Point();
             point1.setX(point.getX());
             point1.setY(point.getY());
             pointList.add(point1);
         }
-        if (oldPoints.size()==20){
+        if (oldPoints.size() == 20) {
             oldPoints.remove(0);
         }
         oldPoints.add(pointList);
@@ -314,8 +316,7 @@ public class CalculateMapActivity extends BaseActivity {
     @Override
     protected void setRightClickListen() {
         if (changePoint != null) {
-            btnclear.setVisibility(View.VISIBLE);
-            btnchexiao.setVisibility(View.VISIBLE);
+            llBottombt.setVisibility(View.VISIBLE);
             setToolbarTitle("地块核查");
             setRightImageBtnText("完成");
             imgDingweizhen.setVisibility(View.GONE);
@@ -324,9 +325,18 @@ public class CalculateMapActivity extends BaseActivity {
             mapCalculate.setOnSingleTapListener(onSingleTapListener);
             mapCalculate.setOnPanListener(null);
         } else if (points.size() > 0) {
-            if (activity.equals("地块核查")) DKCheckActivity.getInstence().setPoint(points);
-            if (activity.equals("添加信息点")) PointBackActivity.getInstence().setPoint(points);
-            finish();
+            if (activity.equals("添加信息点")) {
+                PointBackActivity.getInstence().setPoint(points);
+                finish();
+            }
+            if (activity.equals("地块核查")) {
+                if (points.size() > 2) {
+                    DKCheckActivity.getInstence().setPoint(points);
+                    finish();
+                } else {
+                    ShowToast("请绘制面状要素");
+                }
+            }
         }
     }
 
@@ -360,13 +370,13 @@ public class CalculateMapActivity extends BaseActivity {
                 addOldPoint();
                 break;
             case R.id.btnchexiao:
-                if (oldPoints.size()>1){
+                if (oldPoints.size() > 1) {
                     this.points.clear();
-                    oldPoints.remove(oldPoints.size()-1);
+                    oldPoints.remove(oldPoints.size() - 1);
                     List<Point> points = oldPoints.get(oldPoints.size() - 1);
-                    List<Point> addpoints=new ArrayList<>();
+                    List<Point> addpoints = new ArrayList<>();
                     for (Point point : points) {
-                        addpoints.add(new Point(point.getX(),point.getY()));
+                        addpoints.add(new Point(point.getX(), point.getY()));
                     }
                     this.points.addAll(addpoints);
                     reDrawLayer();
@@ -404,8 +414,7 @@ public class CalculateMapActivity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        btnclear.setVisibility(View.VISIBLE);
-                        btnchexiao.setVisibility(View.VISIBLE);
+                        llBottombt.setVisibility(View.VISIBLE);
                         setToolbarTitle("地块核查");
                         setRightImageBtnText("完成");
                         reDrawLayer();
@@ -427,9 +436,9 @@ public class CalculateMapActivity extends BaseActivity {
             int[] graphicIDs = drawPointLayer.getGraphicIDs(v, v1, 25);
             if (graphicIDs != null && graphicIDs.length > 0) {
                 setCallout(graphicIDs);
-            } else if (callout!=null&&callout.isShowing()){
+            } else if (callout != null && callout.isShowing()) {
                 callout.hide();
-            }else {
+            } else {
                 ptCurrent = mapCalculate.toMapPoint(new Point(v, v1));
                 if (activity.equals("添加信息点")) {
                     ptStart = null;
@@ -495,8 +504,7 @@ public class CalculateMapActivity extends BaseActivity {
         changeTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btnclear.setVisibility(View.GONE);
-                btnchexiao.setVisibility(View.GONE);
+                llBottombt.setVisibility(View.GONE);
                 setToolbarTitle("点位置修改");
                 setRightImageBtnText("取消");
                 changePoint = geometry;
@@ -557,7 +565,7 @@ public class CalculateMapActivity extends BaseActivity {
         if (activity.equals("点距测量")) {
             String length = "0.0 米";
             //绘制当前线段
-            if (points.size()>1){
+            if (points.size() > 1) {
                 getlength(drawLayer);
                 // 计算当前线段的长度
                 Polyline polyline1 = (Polyline) GeometryEngine.project(polyline, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));

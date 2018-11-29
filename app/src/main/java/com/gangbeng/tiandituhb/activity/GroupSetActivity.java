@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.ClipboardManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -24,6 +25,8 @@ import com.gangbeng.tiandituhb.utils.ShowDialog;
 
 import org.ksoap2.serialization.SoapObject;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,27 +51,100 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
     private UserEvent user;
     private boolean isCreator = false;
     private NewBasePresenter presenter;
-    private List<Map<String, String>> data;
+    private List<Map<String, String>> data=new ArrayList<>();
+    List<Map<String,String>> mdata=new ArrayList<>();
+    private String createloginname;
+    private static GroupSetActivity activity;
+
+    public static GroupSetActivity getInstence(){
+        return activity;
+    }
 
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_groupset);
         setToolbarTitle("我的队伍");
         setToolbarRightVisible(false);
+        activity=this;
         presenter = new ShareGroupPresenter(this);
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         mcommend = bundleExtra.getString("commend");
-        data = (List<Map<String, String>>) bundleExtra.getSerializable("data");
-        setview();
+        createloginname = bundleExtra.getString("createloginname");
+        user = (UserEvent) SharedUtil.getSerializeObject("user");
+        refreshGroup();
+    }
+
+    public void refreshGroup() {
+        Map<String,Object> parameter=new HashMap<>();
+        parameter.put("loginname",user.getLoginname());
+        presenter.setRequest(parameter, PubConst.LABLE_GETGROUPLOCATION);
     }
 
     private void setview() {
-        user = (UserEvent) SharedUtil.getSerializeObject("user");
-        for (Map<String, String> map : data) {
-            String leader = map.get("leader");
-            String name = map.get("name");
-            if (leader.equals("0") && name.equals(user.getUsername())) {
-                isCreator = true;
+        if (createloginname.equals(user.getLoginname())){
+            isCreator = true;
+            for (Map<String, String> map : data) {
+                String loginname = map.get("loginname");
+                String username = map.get("username");
+                String x = map.get("x");
+                String y = map.get("y");
+                if (loginname.equals(createloginname)){
+                    Map<String, String> m = new HashMap<>();
+                    m.put("loginname",loginname);
+                    m.put("name", "我");
+                    m.put("leader", "0");
+                    m.put("x",x);
+                    m.put("y",y);
+                    mdata.add(m);
+                }
+            }
+            for (Map<String, String> map : data) {
+                String loginname = map.get("loginname");
+                String username = map.get("username");
+                String x = map.get("x");
+                String y = map.get("y");
+                if (loginname.equals(createloginname))continue;
+                Map<String, String> map2 = new HashMap<>();
+                map2.put("loginname",loginname);
+                map2.put("name", username);
+                map2.put("leader", "1");
+                map2.put("x",x);
+                map2.put("y",y);
+                mdata.add(map2);
+            }
+        }else {
+            for (Map<String, String> map : data) {
+                String loginname = map.get("loginname");
+                String username = map.get("username");
+                String x = map.get("x");
+                String y = map.get("y");
+                if (loginname.equals(user.getLoginname())){
+                    Map<String, String> m = new HashMap<>();
+                    m.put("loginname",loginname);
+                    m.put("name", "我");
+                    m.put("leader", "1");
+                    m.put("x",x);
+                    m.put("y",y);
+                    mdata.add(m);
+                }
+            }
+            for (Map<String, String> map : data) {
+                String loginname = map.get("loginname");
+                String username = map.get("username");
+                String leader="1";
+                String x = map.get("x");
+                String y = map.get("y");
+                if (loginname.equals(user.getLoginname()))continue;
+                if (loginname.equals(createloginname)){
+                    leader="0";
+                }
+                Map<String, String> m = new HashMap<>();
+                m.put("loginname",loginname);
+                m.put("name", username);
+                m.put("leader", leader);
+                m.put("x",x);
+                m.put("y",y);
+                mdata.add(m);
             }
         }
         if (isCreator) {
@@ -76,7 +152,7 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
         } else {
             btExitgroup.setText("退出队伍");
         }
-        adapter = new GroupAdapter(this, data, adaptercallback, isCreator);
+        adapter = new GroupAdapter(this, mdata, adaptercallback, isCreator);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerGroup.setLayoutManager(linearLayoutManager);
@@ -114,8 +190,17 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
         @Override
         public void removeCallBack() {
             if (data.size() > 1) {
-
-
+                List<Map<String,String>>removedata=new ArrayList<>();
+                for (int i = 0; i < mdata.size(); i++) {
+                    if (i!=0){
+                        removedata.add(mdata.get(i));
+                    }
+                }
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("removedata", (Serializable) removedata);
+                skip(GroupRemoveActivity.class,bundle,false);
+            }else {
+                showMsg("没有可移除对象");
             }
         }
 
@@ -146,6 +231,7 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
                     }
                 });
                 break;
+
         }
 
     }
@@ -168,24 +254,71 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
     @Override
     public void setData(Object data, String lable) {
         SoapObject soapObject = (SoapObject) data;
-        String result = RequestUtil.getSoapObjectValue(soapObject, "result");
-        String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
-        String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
-        if (result.equals("ok")) {
-            Contant.ins().setLocalState(false);
-            GroupActivity.getInstence().finish();
-            finish();
-        } else {
-            showMsg(errReason);
-        }
+
         switch (lable) {
             case PubConst.LABLE_EXITGROUP:
                 showMsg("退出成功！");
+                String result = RequestUtil.getSoapObjectValue(soapObject, "result");
+                String errReason = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+                String okString = RequestUtil.getSoapObjectValue(soapObject, "okString");
+                if (result.equals("ok")) {
+                    Contant.ins().setLocalState(false);
+                    GroupActivity.getInstence().finish();
+                    finish();
+                } else {
+                    showMsg(errReason);
+                }
                 break;
             case PubConst.LABLE_DELETEGROUP:
                 showMsg("解散成功");
+                String result2 = RequestUtil.getSoapObjectValue(soapObject, "result");
+                String errReason2 = RequestUtil.getSoapObjectValue(soapObject, "errReason");
+                String okString2 = RequestUtil.getSoapObjectValue(soapObject, "okString");
+                if (result2.equals("ok")) {
+                    Contant.ins().setLocalState(false);
+                    GroupActivity.getInstence().finish();
+                    finish();
+                } else {
+                    showMsg(errReason2);
+                }
+                break;
+            case PubConst.LABLE_GETGROUPLOCATION:
+                if (!soapObject.toString().equals("anyType{}")) {
+                    this.data.clear();
+                    mdata.clear();
+                    List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
+                    for (SoapObject object : newestLocation) {
+                        String id = RequestUtil.getSoapObjectValue(object, "ID");
+                        String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
+                        String username = RequestUtil.getSoapObjectValue(object, "username");
+                        String x = RequestUtil.getSoapObjectValue(object, "x");
+                        String y = RequestUtil.getSoapObjectValue(object, "y");
+                        Map<String,String>map=new HashMap<>();
+                        map.put("loginname",loginname);
+                        map.put("username",username);
+                        map.put("x", x);
+                        map.put("y", y);
+                        this.data.add(map);
+                    }
+                    setview();
+                }
                 break;
         }
-
     }
+
+    @Override
+    protected void setLeftClickListen() {
+        super.setLeftClickListen();
+        GroupActivity.getInstence().refreshGroupLocation();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {//当返回按键被按下
+            GroupActivity.getInstence().refreshGroupLocation();
+        }
+        return false;
+    }
+
+
 }
