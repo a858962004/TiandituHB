@@ -86,7 +86,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHol
             } else {
                 holder.imageView.setImageResource(R.mipmap.icon_chengyuan);
             }
-            holder.textView.setText(data.get(position).get("name"));
+            holder.textView.setText(data.get(position).get("username"));
 
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -91,7 +91,7 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
                 if (loginname.equals(createloginname)){
                     Map<String, String> m = new HashMap<>();
                     m.put("loginname",loginname);
-                    m.put("name", "我");
+                    m.put("username", "我");
                     m.put("leader", "0");
                     m.put("x",x);
                     m.put("y",y);
@@ -106,7 +106,7 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
                 if (loginname.equals(createloginname))continue;
                 Map<String, String> map2 = new HashMap<>();
                 map2.put("loginname",loginname);
-                map2.put("name", username);
+                map2.put("username", username);
                 map2.put("leader", "1");
                 map2.put("x",x);
                 map2.put("y",y);
@@ -121,7 +121,7 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
                 if (loginname.equals(user.getLoginname())){
                     Map<String, String> m = new HashMap<>();
                     m.put("loginname",loginname);
-                    m.put("name", "我");
+                    m.put("username", "我");
                     m.put("leader", "1");
                     m.put("x",x);
                     m.put("y",y);
@@ -140,7 +140,7 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
                 }
                 Map<String, String> m = new HashMap<>();
                 m.put("loginname",loginname);
-                m.put("name", username);
+                m.put("username", username);
                 m.put("leader", leader);
                 m.put("x",x);
                 m.put("y",y);
@@ -316,6 +316,7 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {//当返回按键被按下
             GroupActivity.getInstence().refreshGroupLocation();
+            finish();
         }
         return false;
     }

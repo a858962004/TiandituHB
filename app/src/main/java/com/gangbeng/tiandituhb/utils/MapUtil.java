@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 
 import com.esri.android.map.MapView;
+import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Line;
 import com.esri.core.geometry.LinearUnit;
@@ -62,6 +63,21 @@ public class MapUtil {
             polygon.addSegment(line1, false);
         }
         return polygon;
+    }
+
+    public static Envelope getbestEnvelope(Envelope envelope){
+        Envelope bestEnvelope = new Envelope();
+        double xMax = envelope.getXMax();
+        double xMin = envelope.getXMin();
+        double yMax = envelope.getYMax();
+        double yMin = envelope.getYMin();
+        double xdifference=Math.abs(xMax-xMin);
+        double ydifference=Math.abs(yMax-yMin);
+        double maxlenth=xdifference>ydifference?xdifference:ydifference;
+
+
+
+        return bestEnvelope;
     }
 
     /**

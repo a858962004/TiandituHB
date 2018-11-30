@@ -3,6 +3,8 @@ package com.gangbeng.tiandituhb.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,16 +15,18 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.ClipboardManager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnZoomListener;
+import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polygon;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.gangbeng.tiandituhb.R;
@@ -39,10 +43,12 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
+import com.gangbeng.tiandituhb.utils.MapUtil;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 import com.gangbeng.tiandituhb.utils.ShowDialog;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
+import com.github.library.bubbleview.BubbleTextView;
 
 import org.ksoap2.serialization.SoapObject;
 
@@ -130,7 +136,8 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                 String y = map.get("y");
                 if (loginname.equals(createloginname)){
                     Map<String, String> m = new HashMap<>();
-                    m.put("name", "我");
+                    m.put("loginname",loginname);
+                    m.put("username", "我");
                     m.put("leader", "0");
                     m.put("x",x);
                     m.put("y",y);
@@ -144,7 +151,8 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                 String y = map.get("y");
                 if (loginname.equals(createloginname))continue;
                 Map<String, String> map2 = new HashMap<>();
-                map2.put("name", username);
+                map2.put("loginname",loginname);
+                map2.put("username", username);
                 map2.put("leader", "1");
                 map2.put("x",x);
                 map2.put("y",y);
@@ -158,7 +166,8 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                 String y = map.get("y");
                 if (loginname.equals(user.getLoginname())){
                     Map<String, String> m = new HashMap<>();
-                    m.put("name", "我");
+                    m.put("loginname",loginname);
+                    m.put("username", "我");
                     m.put("leader", "1");
                     m.put("x",x);
                     m.put("y",y);
@@ -176,7 +185,8 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                     leader="0";
                 }
                 Map<String, String> m = new HashMap<>();
-                m.put("name", username);
+                m.put("loginname",loginname);
+                m.put("username", username);
                 m.put("leader", leader);
                 m.put("x",x);
                 m.put("y",y);
@@ -360,25 +370,12 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
         @Override
         public void clickCallBack(int position, Map<String, String> data) {
             choosedata=data;
-            setCallout(data);
+            setChoosePopup(data);
+            String x = data.get("x");
+            String y = data.get("y");
+            mapGroup.zoomToScale(new Point(Double.valueOf(x),Double.valueOf(y)),mapGroup.getScale());
         }
     };
-
-    private void setCallout(Map<String, String> data) {
-        String x = data.get("x");
-        String y = data.get("y");
-        String name = data.get("name");
-        if (first) mapGroup.zoomToScale(new Point(Double.valueOf(x),Double.valueOf(y)),mapGroup.getScale());
-        first=false;
-        TextView textView = new TextView(GroupActivity.this);
-        textView.setText(name);
-        Callout callout = mapGroup.getCallout();
-        callout.setStyle(R.xml.calloutstyle);
-        Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei02);
-        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 90, 90);
-        callout.setOffset(0, drawable1.getIntrinsicHeight()*2+15);
-        callout.show(new Point(Double.valueOf(x),Double.valueOf(y)), textView);
-    }
 
     ShowDialog.CreateDialogCallBack callBack = new ShowDialog.CreateDialogCallBack() {
 
@@ -494,6 +491,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
             case PubConst.LABLE_GETGROUPLOCATION:
                     if (!soapObject.toString().equals("anyType{}")) {
                         drawPointLayer.removeAll();
+                        List<Point>points=new ArrayList<>();
                         List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
                         for (SoapObject object : newestLocation) {
                             String id = RequestUtil.getSoapObjectValue(object, "ID");
@@ -501,6 +499,8 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                             String username = RequestUtil.getSoapObjectValue(object, "username");
                             String x = RequestUtil.getSoapObjectValue(object, "x");
                             String y = RequestUtil.getSoapObjectValue(object, "y");
+                            Point point = new Point(Double.valueOf(x), Double.valueOf(y));
+                            points.add(point);
                             Map<String,String>map=new HashMap<>();
                             map.put("loginname",loginname);
                             map.put("username",username);
@@ -509,23 +509,25 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                             this.data.add(map);
                             String state = RequestUtil.getSoapObjectValue(object, "state");
                             String updateTime = RequestUtil.getSoapObjectValue(object, "updateTime");
-                            Map<String, Object> parameter = new HashMap<>();
-                            parameter.put("id", id);
-                            parameter.put("loginname", loginname);
-                            parameter.put("username", username);
-                            parameter.put("x", x);
-                            parameter.put("y", y);
-                            parameter.put("state", state);
-                            parameter.put("updateTime", updateTime);
-                            PictureMarkerSymbol symbol = loginname.equals(createloginname) ? markerSymbolyellow : markerSymbolblue;
-                            Point point = new Point(Double.valueOf(x), Double.valueOf(y));
-                            final Graphic graphic = new Graphic(point, symbol, parameter);
-                            drawPointLayer.addGraphic(graphic);
+                            addDrawPoint(loginname, id, username, x, y, state, updateTime);
                         }
                         bottomGroup.setVisibility(View.VISIBLE);
                         recyclerGroup.setVisibility(View.VISIBLE);
                         setListView();
-                        setCallout(mdata.get(0));
+                        setPopup();
+                        if (points.size()>1){
+                            Polygon polygon = MapUtil.getPolygon(points);
+                            Envelope envelope=new Envelope();
+                            polygon.queryEnvelope(envelope);
+                            mapGroup.setExtent(envelope);
+                            try {
+                                Thread.sleep(300);
+                                mapGroup.zoomout();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+//                        setCallout(mdata.get(0));
                     }
                 break;
             case PubConst.LABLE_START_SHARE:
@@ -559,29 +561,21 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                         this.data.add(map);
                         String state = RequestUtil.getSoapObjectValue(object, "state");
                         String updateTime = RequestUtil.getSoapObjectValue(object, "updateTime");
-                        Map<String, Object> parameter = new HashMap<>();
-                        parameter.put("id", id);
-                        parameter.put("loginname", loginname);
-                        parameter.put("username", username);
-                        parameter.put("x", x);
-                        parameter.put("y", y);
-                        parameter.put("state", state);
-                        parameter.put("updateTime", updateTime);
-                        PictureMarkerSymbol symbol = loginname.equals(createloginname) ? markerSymbolyellow : markerSymbolblue;
-                        Point point = new Point(Double.valueOf(x), Double.valueOf(y));
-                        final Graphic graphic = new Graphic(point, symbol, parameter);
-                        drawPointLayer.addGraphic(graphic);
+                        addDrawPoint(loginname, id, username, x, y, state, updateTime);
                     }
                     bottomGroup.setVisibility(View.VISIBLE);
                     recyclerGroup.setVisibility(View.VISIBLE);
                     setListView();
+                    setPopup();
                     if (choosedata!=null){
                         boolean haschoosedata=false;
-                        for (Map<String, String> map : this.data) {
+                        for (int i = 0; i < this.mdata.size(); i++) {
+                            Map<String, String> map = this.mdata.get(i);
                             String loginname = map.get("loginname");
-                            if (choosedata.get("name").equals(loginname)){
+                            if (choosedata.get("loginname").equals(loginname)){
                                 haschoosedata=true;
-                                setCallout(map);
+                                adapter.setSelectItem(i+1);
+                                setChoosePopup(map);
                             }
                         }
                         if (!haschoosedata){
@@ -608,5 +602,94 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                 break;
         }
 
+    }
+
+    private void setPopup() {
+        popupLayer.removeAll();
+        for (Map<String, String> map : mdata) {
+            String username = map.get("username");
+            String loginname = map.get("loginname");
+            String x = map.get("x");
+            String y = map.get("y");
+            addPopupGraphic(loginname, username, x, y);
+        }
+    }
+    private void setChoosePopup(Map<String,String>data){
+        String chooseloginname = data.get("loginname");
+        int[] popupLayerGraphicIDs = popupLayer.getGraphicIDs();
+        int[] drawPointLayerGraphicIDs = drawPointLayer.getGraphicIDs();
+        for (int popupLayerGraphicID : popupLayerGraphicIDs) {
+            Graphic graphic = popupLayer.getGraphic(popupLayerGraphicID);
+            String loginname = String.valueOf(graphic.getAttributeValue("loginname"));
+            String username = String.valueOf(graphic.getAttributeValue("username"));
+            String x = String.valueOf(graphic.getAttributeValue("x"));
+            String y = String.valueOf(graphic.getAttributeValue("y"));
+            if (chooseloginname.equals(loginname)){
+                popupLayer.removeGraphic(popupLayerGraphicID);
+                addPopupGraphic(loginname, username, x, y);
+                break;
+            }
+        }
+        for (int drawPointLayerGraphicID : drawPointLayerGraphicIDs) {
+            Graphic graphic = drawPointLayer.getGraphic(drawPointLayerGraphicID);
+            String loginname = String.valueOf(graphic.getAttributeValue("loginname"));
+            String id = String.valueOf(graphic.getAttributeValue("id"));
+            String username = String.valueOf(graphic.getAttributeValue("username"));
+            String x = String.valueOf(graphic.getAttributeValue("x"));
+            String y = String.valueOf(graphic.getAttributeValue("y"));
+            String state = String.valueOf(graphic.getAttributeValue("state"));
+            String updateTime = String.valueOf(graphic.getAttributeValue("updateTime"));
+            if (chooseloginname.equals(loginname)){
+                drawPointLayer.removeGraphic(drawPointLayerGraphicID);
+                addDrawPoint(loginname, id, username, x, y, state, updateTime);
+                break;
+            }
+        }
+
+        int[] drawPointLayerGraphicIDs1 = drawPointLayer.getGraphicIDs();
+        drawPointLayer.clearSelection();
+        for (int drawPointLayerGraphicID : drawPointLayerGraphicIDs1) {
+            Graphic graphic1 = drawPointLayer.getGraphic(drawPointLayerGraphicID);
+            String loginname1 = String.valueOf(graphic1.getAttributeValue("loginname"));
+            if (loginname1.equals(data.get("loginname"))){
+                drawPointLayer.setSelectedGraphics(new int[]{drawPointLayerGraphicID},true);
+            }
+        }
+
+    }
+
+    private void addDrawPoint(String loginname, String id, String username, String x, String y, String state, String updateTime) {
+        Map<String, Object> parameter = new HashMap<>();
+        parameter.put("id", id);
+        parameter.put("loginname", loginname);
+        parameter.put("username", username);
+        parameter.put("x", x);
+        parameter.put("y", y);
+        parameter.put("state", state);
+        parameter.put("updateTime", updateTime);
+        PictureMarkerSymbol symbol = loginname.equals(createloginname) ? markerSymbolyellow : markerSymbolblue;
+        Point point = new Point(Double.valueOf(x), Double.valueOf(y));
+        final Graphic graphic = new Graphic(point, symbol, parameter);
+        drawPointLayer.addGraphic(graphic);
+
+    }
+
+    private void addPopupGraphic(String loginname, String username, String x, String y) {
+        View inflate = LayoutInflater.from(this).inflate(R.layout.view_popup, null);
+        BubbleTextView textView=inflate.findViewById(R.id.popup_text);
+        textView.setText(username);
+        Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
+        Drawable drawable = new BitmapDrawable(viewbitmap);
+        PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 90, 90);
+        symbol.setOffsetY(drawable1.getIntrinsicHeight()*3/2);
+        Point point = new Point(Double.valueOf(x), Double.valueOf(y));
+        Map<String,Object> parameter=new HashMap<>();
+        parameter.put("loginname", loginname);
+        parameter.put("username", username);
+        parameter.put("x", x);
+        parameter.put("y", y);
+        Graphic graphic = new Graphic(point, symbol,parameter);
+        popupLayer.addGraphic(graphic);
     }
 }

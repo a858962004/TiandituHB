@@ -68,8 +68,8 @@ public class GroupRemoveActivity extends BaseActivity implements NewBaseView {
         public void removeCallBack(int position, Map<String, String> data) {
             removeposition = position;
             final String removeloginname = data.get("loginname");
-            String name = data.get("name");
-            ShowDialog.showAttention(GroupRemoveActivity.this, "请注意", "是否移除" + name, new ShowDialog.DialogCallBack() {
+            String name = data.get("username");
+            ShowDialog.showAttention(GroupRemoveActivity.this, "请注意", "是否移除" + name+"?", new ShowDialog.DialogCallBack() {
                 @Override
                 public void dialogSure(DialogInterface dialog) {
                     mdialog = dialog;

@@ -64,7 +64,7 @@ public class RemoveGroupAdpter extends BaseAdapter {
         }
 
         viewholder.img.setImageResource(R.mipmap.icon_chengyuan);
-        viewholder.nameTV.setText(data.get(position).get("name"));
+        viewholder.nameTV.setText(data.get(position).get("username"));
         viewholder.removeTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
