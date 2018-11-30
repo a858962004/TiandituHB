@@ -87,7 +87,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.ksoap2.serialization.SoapObject;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,9 +189,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private NewBasePresenter uploadpresenter, updatepresenter, grouppresenter;
     private UserEvent user;
     private static MainActivity activity;
-    private String chooseuser = "";
-    private List<String> usernames = new ArrayList<>();
-    private boolean isFresh = false;
 
     public static MainActivity getInstense() {
         return activity;
