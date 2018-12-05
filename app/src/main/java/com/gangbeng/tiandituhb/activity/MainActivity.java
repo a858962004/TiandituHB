@@ -501,6 +501,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             case R.id.location_quanjing:
                 llTianqi.setBackgroundColor(getResources().getColor(R.color.white));
                 llQuanjing.setBackgroundColor(getResources().getColor(R.color.white));
+                imgHefeng.setVisibility(View.GONE);
                 if (imgQuanjing.getVisibility() == View.VISIBLE) {
                     imgQuanjing.setVisibility(View.GONE);
                     bubbletextview.setVisibility(View.GONE);

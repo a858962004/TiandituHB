@@ -324,6 +324,12 @@ public class CalculateMapActivity extends BaseActivity {
             imgDingweizhen.setVisibility(View.GONE);
             btvCalculate.setVisibility(View.GONE);
             changePoint = null;
+            int[] drawPointLayerGraphicIDs = drawPointLayer.getGraphicIDs();
+            int maxID=-1;
+            for (int drawPointLayerGraphicID : drawPointLayerGraphicIDs) {
+                if (drawPointLayerGraphicID>maxID) maxID=drawPointLayerGraphicID;
+            }
+            drawPointLayer.removeGraphics(new int[]{maxID});
             mapCalculate.setOnSingleTapListener(onSingleTapListener);
             mapCalculate.setOnPanListener(null);
         } else if (points.size() > 0) {
@@ -358,6 +364,9 @@ public class CalculateMapActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btnclear:
+                if (callout.isShowing()){
+                    callout.hide();
+                }
                 if (activity.equals("点距测量")) {
                     textTvjieguo.setText("0.0米");
                 } else {
@@ -372,6 +381,9 @@ public class CalculateMapActivity extends BaseActivity {
                 addOldPoint();
                 break;
             case R.id.btnchexiao:
+                if (callout.isShowing()){
+                    callout.hide();
+                }
                 if (oldPoints.size() > 1) {
                     this.points.clear();
                     oldPoints.remove(oldPoints.size() - 1);
