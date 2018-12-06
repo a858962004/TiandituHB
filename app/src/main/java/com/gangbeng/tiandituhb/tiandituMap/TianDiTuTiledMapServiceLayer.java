@@ -73,7 +73,7 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
         this.buildTileInfo();
         this.setFullExtent(new Envelope(-180, -90, 180, 90));
 //        this.setDefaultSpatialReference(SpatialReference.create(4490));   //CGCS2000
-        this.setDefaultSpatialReference(SpatialReference.create(4326));
+        this.setDefaultSpatialReference(SpatialReference.create(4490));
         this.setInitialExtent(new Envelope(90.52, 33.76, 113.59, 42.88));
         super.initLayer();
     }

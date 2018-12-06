@@ -217,7 +217,25 @@ public class MapActivity extends BaseActivity implements BaseView {
         picSymbol.setOffsetY(drawable1.getIntrinsicHeight() / 2);
         Graphic g = new Graphic(point, picSymbol);
         pointlayer.addGraphic(g);
-        tvName.setText(bean.getProperties().get名称());
+        String name="";
+        if (!bean.getProperties().get兴趣点().equals("")){
+            name=bean.getProperties().get兴趣点();
+        }else {
+            if (!bean.getProperties().get名称().equals("")){
+                name=bean.getProperties().get名称();
+            }else {
+                if (!bean.getProperties().get简称().equals("")){
+                    name=bean.getProperties().get简称();
+                }else {
+                    if (!bean.getProperties().get描述().equals("")){
+                        name=bean.getProperties().get描述();
+                    }else {
+                        name=bean.getProperties().get备注();
+                    }
+                }
+            }
+        }
+        tvName.setText(name);
         tvName.setMaxLines(3);
         tvAddress.setText(bean.getProperties().get地址());
         tvAddress.setMaxLines(3);
@@ -245,7 +263,7 @@ public class MapActivity extends BaseActivity implements BaseView {
         Point point = new Point();
         point.setX(coordinates.get(0));
         point.setY(coordinates.get(1));
-        idMap.zoomToScale(point, 5000);
+        idMap.zoomToScale(point, 500);
         return point;
     }
 
@@ -307,6 +325,7 @@ public class MapActivity extends BaseActivity implements BaseView {
             }
         });
         mapzoom.setMapView(idMap);
+        mapviewscale.refreshScaleView(500);
     }
 
     private void locationGPS() {
@@ -407,7 +426,7 @@ public class MapActivity extends BaseActivity implements BaseView {
                 }
                 break;
             case R.id.location_map:
-                idMap.zoomToScale(ptCurrent, 50000);
+                idMap.zoomToScale(ptCurrent, 500);
                 break;
         }
     }

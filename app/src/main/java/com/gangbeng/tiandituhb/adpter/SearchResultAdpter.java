@@ -90,7 +90,25 @@ public class SearchResultAdpter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.nameTV.setText(data.get(position).getProperties().get名称());
+        String name="";
+        if (!data.get(position).getProperties().get兴趣点().equals("")){
+            name=data.get(position).getProperties().get兴趣点();
+        }else {
+            if (!data.get(position).getProperties().get名称().equals("")){
+                name=data.get(position).getProperties().get名称();
+            }else {
+                if (!data.get(position).getProperties().get简称().equals("")){
+                    name=data.get(position).getProperties().get简称();
+                }else {
+                    if (!data.get(position).getProperties().get描述().equals("")){
+                        name=data.get(position).getProperties().get描述();
+                    }else {
+                        name=data.get(position).getProperties().get备注();
+                    }
+                }
+            }
+        }
+        holder.nameTV.setText(name);
         holder.addressTV.setText(data.get(position).getProperties().get地址());
         if (Util.isCollect(data.get(position))){
             holder.collectIMG.setVisibility(View.GONE);

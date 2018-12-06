@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -177,7 +178,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     @BindView(R.id.img_hefeng)
     ImageView imgHefeng;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_xzq;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text,map_cj,map_tdlyxz, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private GraphicsLayer pointlayer, weatherlayer;
     private LocationDisplayManager ldm;
@@ -210,6 +211,20 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         locationGPS();
         setWeather();
         updatepresenter.setRequest(null, PubConst.LABLE_UPDATE);
+        cbLyxz.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) map_tdlyxz.setVisible(true);
+                else map_tdlyxz.setVisible(false);
+            }
+        });
+        cbXcbj.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) map_cj.setVisible(true);
+                else map_cj.setVisible(false);
+            }
+        });
     }
 
     public void getGroup() {
@@ -294,9 +309,11 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_cj=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CJ_C);
+        map_tdlyxz=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
-//        bmapsView.setMaxScale(4000);
+        bmapsView.setMaxScale(500);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
         bmapsView.addLayer(mapRSServiceLayer, 2);
@@ -304,11 +321,15 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
         bmapsView.addLayer(map_lf, 4);
         bmapsView.addLayer(map_lfimg, 5);
-        bmapsView.addLayer(map_xzq, 6);
-        bmapsView.addLayer(map_lf_text, 7);
-        bmapsView.addLayer(map_lfimg_text, 8);
-        bmapsView.addLayer(pointlayer, 9);
-        bmapsView.addLayer(weatherlayer, 10);
+        bmapsView.addLayer(map_tdlyxz,6);
+        bmapsView.addLayer(map_cj,7);
+        bmapsView.addLayer(map_xzq, 8);
+        bmapsView.addLayer(map_lf_text, 9);
+        bmapsView.addLayer(map_lfimg_text, 10);
+        bmapsView.addLayer(pointlayer, 11);
+        bmapsView.addLayer(weatherlayer, 12);
+        map_tdlyxz.setVisible(false);
+        map_cj.setVisible(false);
         weatherlayer.setVisible(false);
         mapRSServiceLayer.setVisible(false);
         mapRStextLayer.setVisible(false);
@@ -887,6 +908,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     OnSingleTapListener mapclick = new OnSingleTapListener() {
         @Override
         public void onSingleTap(float v, float v1) {
+            MyLogUtil.showLog(bmapsView.getScale());
             islocation = false;
             hideBottom();
             Point point = bmapsView.toMapPoint(v, v1);

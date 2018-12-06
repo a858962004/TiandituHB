@@ -243,7 +243,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
         parameter.put("page", "1");
         if (key.equals("search") || key.equals("route") || key.equals("navi")) {
             if (bean.isInput()) {
-                qury = "'名称' like '%" + bean.getData() + "%'";
+                qury = "'兴趣点' like '%" + bean.getData() + "%'";
             } else {
                 //分类查询条件
                 qury = getQury(bean.getData());
@@ -347,37 +347,37 @@ public class AroundActivity extends BaseActivity implements BaseView {
         String qury = "";
         switch (data) {
             case "公共管理":
-                qury = "yifl = '01'";
+                qury = "yif1 = '19'";
                 break;
             case "住宿餐饮":
-                qury = "yifl = '06'";
+                qury = "yif1 = '11' or yif1 = '12'";
                 break;
             case "金融保险":
-                qury = "yifl = '03    '";
+                qury = "yifl = '18'";
                 break;
             case "交通运输":
-                qury = "yifl = '02'";
+                qury = "yifl = '20'";
                 break;
             case "房产楼盘":
-                qury = "yifl = '04'";
+                qury = "yifl = '22'";
                 break;
             case "生活服务":
-                qury = "yifl = '05'";
+                qury = "yifl = '21'";
                 break;
             case "休闲娱乐":
-                qury = "yifl = '07'";
+                qury = "yifl = '16' or yifl = '13'";
                 break;
             case "旅游服务":
-                qury = "yifl = '08'";
+                qury = "yifl = '17'";
                 break;
             case "医疗卫生":
-                qury = "yifl = '09'";
+                qury = "yifl = '14'";
                 break;
             case "文化媒体":
-                qury = "yifl = '10'";
+                qury = "yifl = '14'";
                 break;
             case "其他行业":
-                qury = "yifl = '11'";
+                qury = "yifl = '23' or yifl = '99'";
                 break;
         }
 

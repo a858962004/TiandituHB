@@ -28,9 +28,9 @@ public class NewSearchModel implements BaseModel {
                 .addParams("maxitems", maxitems)
                 .addParams("page", page)
                 .addParams("fieldsout", "*")
-                .addParams("srsout", "EPSG:4326")
-                .addParams("srsin", "EPSG:4326")
-                .addParams("layer", "dmdz")
+                .addParams("srsout", "EPSG:4490")
+                .addParams("srsin", "EPSG:4490")
+                .addParams("layer", "地名地址更新后数据")
                 .addParams("format", "json")
                 .addParams("where", where)
                 .build()
@@ -42,6 +42,7 @@ public class NewSearchModel implements BaseModel {
 
                     @Override
                     public void onResponse(String response, int id) {
+                        response= response.replace("D:\\照片\\兴趣点","");
                         Gson gson = new Gson();
                         NewSearchBean newSearchBean = gson.fromJson(response, NewSearchBean.class);
                         back.success(newSearchBean);

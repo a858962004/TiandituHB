@@ -24,6 +24,14 @@ public enum TianDiTuTiledMapServiceType {
     /**
      * 行政区边界
      */
-    XZQ_C
+    XZQ_C,
+    /**
+     * 村界
+     */
+    CJ_C,
+    /**
+     * 土地利用现状
+     */
+    TDLYXZ_C
 
 }
