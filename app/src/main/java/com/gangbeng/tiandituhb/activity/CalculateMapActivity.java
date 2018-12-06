@@ -364,7 +364,7 @@ public class CalculateMapActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btnclear:
-                if (callout.isShowing()){
+                if (callout!=null&&callout.isShowing()){
                     callout.hide();
                 }
                 if (activity.equals("点距测量")) {
@@ -381,7 +381,7 @@ public class CalculateMapActivity extends BaseActivity {
                 addOldPoint();
                 break;
             case R.id.btnchexiao:
-                if (callout.isShowing()){
+                if (callout!=null&&callout.isShowing()){
                     callout.hide();
                 }
                 if (oldPoints.size() > 1) {
