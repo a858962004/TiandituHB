@@ -4,7 +4,6 @@ import com.gangbeng.tiandituhb.base.BaseModel;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.base.OnCallBack;
-import com.gangbeng.tiandituhb.callback.SearchAdpterCallBack;
 import com.gangbeng.tiandituhb.model.DriveModel;
 
 import java.util.Map;

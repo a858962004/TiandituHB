@@ -91,14 +91,14 @@ public class SearchResultAdpter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         String name="";
-        if (!data.get(position).getProperties().get兴趣点().equals("")){
-            name=data.get(position).getProperties().get兴趣点();
+        if (!data.get(position).getProperties().get简称().equals("")){
+            name=data.get(position).getProperties().get简称();
         }else {
             if (!data.get(position).getProperties().get名称().equals("")){
                 name=data.get(position).getProperties().get名称();
             }else {
-                if (!data.get(position).getProperties().get简称().equals("")){
-                    name=data.get(position).getProperties().get简称();
+                if (!data.get(position).getProperties().get兴趣点().equals("")){
+                    name=data.get(position).getProperties().get兴趣点();
                 }else {
                     if (!data.get(position).getProperties().get描述().equals("")){
                         name=data.get(position).getProperties().get描述();
@@ -151,10 +151,11 @@ public class SearchResultAdpter extends BaseAdapter {
                     callBack.aroundclick(data.get(position));
                 }
             });
+            final String finalName = name;
             holder.routeLL.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callBack.routeclick(data.get(position));
+                    callBack.routeclick(data.get(position), finalName);
                 }
             });
 

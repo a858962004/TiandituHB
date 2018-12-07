@@ -208,10 +208,10 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
         }
 
         @Override
-        public void routeclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+        public void routeclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean, String name) {
             AroundActivity.getInstence().finish();
             EndPoint endPoint = new EndPoint();
-            endPoint.setName(bean.getProperties().get名称());
+            endPoint.setName(name);
             String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
             String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
             endPoint.setX(x);

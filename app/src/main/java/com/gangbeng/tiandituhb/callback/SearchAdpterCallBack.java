@@ -9,6 +9,6 @@ import com.gangbeng.tiandituhb.bean.NewSearchBean;
 
 public interface SearchAdpterCallBack {
     void aroundclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean);
-    void routeclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean);
+    void routeclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean,String name);
     void itemclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean);
 }

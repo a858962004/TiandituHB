@@ -328,7 +328,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         bmapsView.addLayer(map_lfimg_text, 10);
         bmapsView.addLayer(pointlayer, 11);
         bmapsView.addLayer(weatherlayer, 12);
-        maptextLayer.setVisible(false);
         map_tdlyxz.setVisible(false);
         map_cj.setVisible(false);
         weatherlayer.setVisible(false);
@@ -769,14 +768,14 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 //            Graphic g = new Graphic(ptCurrent, picSymbol);
 //            pointlayer.addGraphic(g);
             String name="";
-            if (!bean.getProperties().get兴趣点().equals("")){
-                name=bean.getProperties().get兴趣点();
+            if (!bean.getProperties().get简称().equals("")){
+                name=bean.getProperties().get简称();
             }else {
                 if (!bean.getProperties().get名称().equals("")){
                     name=bean.getProperties().get名称();
                 }else {
-                    if (!bean.getProperties().get简称().equals("")){
-                        name=bean.getProperties().get简称();
+                    if (!bean.getProperties().get兴趣点().equals("")){
+                        name=bean.getProperties().get兴趣点();
                     }else {
                         if (!bean.getProperties().get描述().equals("")){
                             name=bean.getProperties().get描述();
@@ -794,14 +793,14 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             Graphic g = new Graphic(point, picSymbol);
             pointlayer.addGraphic(g);
             String name="";
-            if (!bean.getProperties().get兴趣点().equals("")){
-                name=bean.getProperties().get兴趣点();
+            if (!bean.getProperties().get简称().equals("")){
+                name=bean.getProperties().get简称();
             }else {
                 if (!bean.getProperties().get名称().equals("")){
                     name=bean.getProperties().get名称();
                 }else {
-                    if (!bean.getProperties().get简称().equals("")){
-                        name=bean.getProperties().get简称();
+                    if (!bean.getProperties().get兴趣点().equals("")){
+                        name=bean.getProperties().get兴趣点();
                     }else {
                         if (!bean.getProperties().get描述().equals("")){
                             name=bean.getProperties().get描述();
@@ -895,7 +894,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         Point point = new Point();
         point.setX(coordinates.get(0));
         point.setY(coordinates.get(1));
-        bmapsView.zoomToScale(point, 3000);
+        bmapsView.zoomToScale(point, 500);
         RefreshOnThread();
         return point;
     }

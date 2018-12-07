@@ -331,7 +331,25 @@ public class AroundActivity extends BaseActivity implements BaseView {
             }
         } else {
             String address = "当前位置";
-            if (bean != null) address = bean.getProperties().get名称();
+            String name="";
+            if (!bean.getProperties().get简称().equals("")){
+                name=bean.getProperties().get简称();
+            }else {
+                if (!bean.getProperties().get名称().equals("")){
+                    name=bean.getProperties().get名称();
+                }else {
+                    if (!bean.getProperties().get兴趣点().equals("")){
+                        name=bean.getProperties().get兴趣点();
+                    }else {
+                        if (!bean.getProperties().get描述().equals("")){
+                            name=bean.getProperties().get描述();
+                        }else {
+                            name=bean.getProperties().get备注();
+                        }
+                    }
+                }
+            }
+            if (bean != null) address = name;
             setToolbarRightVisible(false);
             hideEditText();
             setToolbarTitle(address + "周边");

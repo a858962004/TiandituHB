@@ -218,14 +218,14 @@ public class MapActivity extends BaseActivity implements BaseView {
         Graphic g = new Graphic(point, picSymbol);
         pointlayer.addGraphic(g);
         String name="";
-        if (!bean.getProperties().get兴趣点().equals("")){
-            name=bean.getProperties().get兴趣点();
+        if (!bean.getProperties().get简称().equals("")){
+            name=bean.getProperties().get简称();
         }else {
             if (!bean.getProperties().get名称().equals("")){
                 name=bean.getProperties().get名称();
             }else {
-                if (!bean.getProperties().get简称().equals("")){
-                    name=bean.getProperties().get简称();
+                if (!bean.getProperties().get兴趣点().equals("")){
+                    name=bean.getProperties().get兴趣点();
                 }else {
                     if (!bean.getProperties().get描述().equals("")){
                         name=bean.getProperties().get描述();
@@ -401,7 +401,25 @@ public class MapActivity extends BaseActivity implements BaseView {
                 AroundActivity.getInstence().finish();
                 SearchResultActivity.getInstence().finish();
                 EndPoint endPoint = new EndPoint();
-                endPoint.setName(bean.getProperties().get名称());
+                String name="";
+                if (!bean.getProperties().get简称().equals("")){
+                    name=bean.getProperties().get简称();
+                }else {
+                    if (!bean.getProperties().get名称().equals("")){
+                        name=bean.getProperties().get名称();
+                    }else {
+                        if (!bean.getProperties().get兴趣点().equals("")){
+                            name=bean.getProperties().get兴趣点();
+                        }else {
+                            if (!bean.getProperties().get描述().equals("")){
+                                name=bean.getProperties().get描述();
+                            }else {
+                                name=bean.getProperties().get备注();
+                            }
+                        }
+                    }
+                }
+                endPoint.setName(name);
                 endPoint.setX(String.valueOf(bean.getGeometry().getCoordinates().get(0)));
                 endPoint.setY(String.valueOf(bean.getGeometry().getCoordinates().get(1)));
                 EventBus.getDefault().postSticky(endPoint);
