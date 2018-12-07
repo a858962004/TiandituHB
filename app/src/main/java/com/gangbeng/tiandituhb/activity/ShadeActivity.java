@@ -47,7 +47,7 @@ public class ShadeActivity extends BaseActivity {
     @BindView(R.id.rl_map)
     RelativeLayout rlMap;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_lf_text2, map_xzq2;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_lf_text2, map_xzq2,map_tdlyxz;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private MapView mapview1Shade,mapview2Shade;
     private MapExtent extent;
@@ -130,6 +130,8 @@ public class ShadeActivity extends BaseActivity {
         map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
+        map_tdlyxz=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
+
         mapview2Shade.addLayer(mapRSServiceLayer, 0);
         mapview2Shade.addLayer(mapRStextLayer, 1);
         mapview2Shade.addLayer(map_lfimg, 2);
@@ -140,8 +142,9 @@ public class ShadeActivity extends BaseActivity {
         mapview1Shade.addLayer(mapServiceLayer, 0);
         mapview1Shade.addLayer(maptextLayer, 1);
         mapview1Shade.addLayer(map_lf, 2);
-        mapview1Shade.addLayer(map_xzq, 3);
-        mapview1Shade.addLayer(map_lf_text, 4);
+        mapview1Shade.addLayer(map_tdlyxz,3);
+        mapview1Shade.addLayer(map_xzq, 4);
+        mapview1Shade.addLayer(map_lf_text, 5);
 
 
         mapview1Shade.setOnZoomListener(new OnZoomListener() {

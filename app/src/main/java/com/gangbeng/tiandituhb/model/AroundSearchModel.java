@@ -33,7 +33,7 @@ public class AroundSearchModel implements BaseModel {
                 .addParams("fieldsout", "*")
                 .addParams("srsout", "EPSG:4490")
                 .addParams("srsin", "EPSG:4490")
-                .addParams("layer", "dmdz")
+                .addParams("layer", "dmdzgxys")
                 .addParams("format", "json")
                 .addParams("where", where)
                 .build()

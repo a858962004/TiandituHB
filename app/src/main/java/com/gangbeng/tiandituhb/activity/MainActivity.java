@@ -328,6 +328,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         bmapsView.addLayer(map_lfimg_text, 10);
         bmapsView.addLayer(pointlayer, 11);
         bmapsView.addLayer(weatherlayer, 12);
+        maptextLayer.setVisible(false);
         map_tdlyxz.setVisible(false);
         map_cj.setVisible(false);
         weatherlayer.setVisible(false);
@@ -767,14 +768,50 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         if (islocation) {
 //            Graphic g = new Graphic(ptCurrent, picSymbol);
 //            pointlayer.addGraphic(g);
-            tvName.setText(bean.getProperties().get名称() + "附近");
+            String name="";
+            if (!bean.getProperties().get兴趣点().equals("")){
+                name=bean.getProperties().get兴趣点();
+            }else {
+                if (!bean.getProperties().get名称().equals("")){
+                    name=bean.getProperties().get名称();
+                }else {
+                    if (!bean.getProperties().get简称().equals("")){
+                        name=bean.getProperties().get简称();
+                    }else {
+                        if (!bean.getProperties().get描述().equals("")){
+                            name=bean.getProperties().get描述();
+                        }else {
+                            name=bean.getProperties().get备注();
+                        }
+                    }
+                }
+            }
+            tvName.setText(name + "附近");
             tvName.setMaxLines(3);
             tvAddress.setText("");
         } else {
             Point point = zoom2bean(bean.getGeometry().getCoordinates());
             Graphic g = new Graphic(point, picSymbol);
             pointlayer.addGraphic(g);
-            tvName.setText(bean.getProperties().get名称());
+            String name="";
+            if (!bean.getProperties().get兴趣点().equals("")){
+                name=bean.getProperties().get兴趣点();
+            }else {
+                if (!bean.getProperties().get名称().equals("")){
+                    name=bean.getProperties().get名称();
+                }else {
+                    if (!bean.getProperties().get简称().equals("")){
+                        name=bean.getProperties().get简称();
+                    }else {
+                        if (!bean.getProperties().get描述().equals("")){
+                            name=bean.getProperties().get描述();
+                        }else {
+                            name=bean.getProperties().get备注();
+                        }
+                    }
+                }
+            }
+            tvName.setText(name);
             tvName.setMaxLines(3);
             tvAddress.setText(bean.getProperties().get地址());
             tvAddress.setMaxLines(3);
@@ -912,7 +949,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             islocation = false;
             hideBottom();
             Point point = bmapsView.toMapPoint(v, v1);
-            setPointRequest(point, "20");
+            setPointRequest(point, "5");
+            MyLogUtil.showLog(bmapsView.getSpatialReference().toString());
         }
     };
 
