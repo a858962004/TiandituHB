@@ -45,6 +45,7 @@ public class AroundSearchModel implements BaseModel {
 
                     @Override
                     public void onResponse(String response, int id) {
+                        response= response.replace("D:\\照片\\兴趣点","");
                         Gson gson = new Gson();
                         NewSearchBean newSearchBean = gson.fromJson(response, NewSearchBean.class);
                         back.success(newSearchBean);
