@@ -2,6 +2,7 @@ package com.gangbeng.tiandituhb.activity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -31,6 +32,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * @author zhanghao
@@ -46,10 +48,12 @@ public class ShadeActivity extends BaseActivity {
     MapZoomView mapzoomShade;
     @BindView(R.id.rl_map)
     RelativeLayout rlMap;
+    @BindView(R.id.change_calulate)
+    CardView changeCalulate;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_lf_text2, map_xzq2,map_tdlyxz;
-    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-    private MapView mapview1Shade,mapview2Shade;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_lf_text2, map_xzq2, map_tdlyxz, map2_lfimg, map2_lftext;
+    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer, map2ServiceLayer, map2TextLayer;
+    private MapView mapview1Shade, mapview2Shade;
     private MapExtent extent;
 
     @Override
@@ -57,19 +61,19 @@ public class ShadeActivity extends BaseActivity {
         setContentLayout(R.layout.activity_shade);
         int currentapiVersion = Build.VERSION.SDK_INT;
         MyLogUtil.showLog(currentapiVersion);
-        mapview1Shade=new MapView(this);
-        mapview2Shade=new MapView(this);
+        mapview1Shade = new MapView(this);
+        mapview2Shade = new MapView(this);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT); //添加相应的规则
         mapview1Shade.setLayoutParams(params);
         mapview2Shade.setLayoutParams(params);
-        if (currentapiVersion==23){
+        if (currentapiVersion == 23) {
             rlMap.addView(mapview2Shade);
             rlMap.addView(mapview1Shade);
-        }else {
+        } else {
             rlMap.addView(mapview1Shade);
             rlMap.addView(mapview2Shade);
         }
-
+//        setRightImageBtnText("切换");
         setToolbarTitle("地图卷帘");
         setToolbarRightVisible(false);
         setMapView();
@@ -96,6 +100,31 @@ public class ShadeActivity extends BaseActivity {
             }
         });
     }
+
+//    @Override
+//    protected void setRightClickListen() {
+//        if (mapRStextLayer.isVisible()) {
+//            map2ServiceLayer.setVisible(true);
+//            map2TextLayer.setVisible(true);
+//            map2_lfimg.setVisible(true);
+//            map2_lftext.setVisible(true);
+//            mapRSServiceLayer.setVisible(false);
+//            mapRStextLayer.setVisible(false);
+//            map_lfimg.setVisible(false);
+//            map_lf_text2.setVisible(false);
+//        } else {
+//            map2ServiceLayer.setVisible(false);
+//            map2TextLayer.setVisible(false);
+//            map2_lfimg.setVisible(false);
+//            map2_lftext.setVisible(false);
+//            mapRSServiceLayer.setVisible(true);
+//            mapRStextLayer.setVisible(true);
+//            map_lfimg.setVisible(true);
+//            map_lf_text2.setVisible(true);
+//        }
+//
+//
+//    }
 
     private void setMapView2Center() {
         Point center1 = mapview1Shade.getCenter();
@@ -130,19 +159,31 @@ public class ShadeActivity extends BaseActivity {
         map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
-        map_tdlyxz=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
+        map_tdlyxz = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
+        map2ServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
+        map2TextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map2_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
+        map2_lftext = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
 
-        mapview2Shade.addLayer(mapRSServiceLayer, 0);
-        mapview2Shade.addLayer(mapRStextLayer, 1);
-        mapview2Shade.addLayer(map_lfimg, 2);
-        mapview2Shade.addLayer(map_xzq2, 3);
-        mapview2Shade.addLayer(map_lf_text2, 4);
+        mapview2Shade.addLayer(map2ServiceLayer, 0);
+        mapview2Shade.addLayer(map2TextLayer, 1);
+        mapview2Shade.addLayer(map2_lfimg, 2);
+        mapview2Shade.addLayer(map2_lftext, 3);
+        mapview2Shade.addLayer(mapRSServiceLayer, 4);
+        mapview2Shade.addLayer(mapRStextLayer, 5);
+        mapview2Shade.addLayer(map_lfimg, 6);
+        mapview2Shade.addLayer(map_xzq2, 7);
+        mapview2Shade.addLayer(map_lf_text2, 8);
         mapzoomShade.setMapView(mapview1Shade);
+        map2ServiceLayer.setVisible(false);
+        map2TextLayer.setVisible(false);
+        map2_lfimg.setVisible(false);
+        map2_lftext.setVisible(false);
 
         mapview1Shade.addLayer(mapServiceLayer, 0);
         mapview1Shade.addLayer(maptextLayer, 1);
         mapview1Shade.addLayer(map_lf, 2);
-        mapview1Shade.addLayer(map_tdlyxz,3);
+        mapview1Shade.addLayer(map_tdlyxz, 3);
         mapview1Shade.addLayer(map_xzq, 4);
         mapview1Shade.addLayer(map_lf_text, 5);
 
@@ -330,4 +371,27 @@ public class ShadeActivity extends BaseActivity {
         this.extent = extent;
     }
 
+    @OnClick(R.id.change_calulate)
+    public void onViewClicked() {
+        if (mapRStextLayer.isVisible()) {
+            map2ServiceLayer.setVisible(true);
+            map2TextLayer.setVisible(true);
+            map2_lfimg.setVisible(true);
+            map2_lftext.setVisible(true);
+            mapRSServiceLayer.setVisible(false);
+            mapRStextLayer.setVisible(false);
+            map_lfimg.setVisible(false);
+            map_lf_text2.setVisible(false);
+        } else {
+            map2ServiceLayer.setVisible(false);
+            map2TextLayer.setVisible(false);
+            map2_lfimg.setVisible(false);
+            map2_lftext.setVisible(false);
+            mapRSServiceLayer.setVisible(true);
+            mapRStextLayer.setVisible(true);
+            map_lfimg.setVisible(true);
+            map_lf_text2.setVisible(true);
+        }
+
+    }
 }
