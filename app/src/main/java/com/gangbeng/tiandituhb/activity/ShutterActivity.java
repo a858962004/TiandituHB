@@ -59,11 +59,17 @@ public class ShutterActivity extends BaseActivity {
         map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
+        mapview1Shutter.setMaxScale(500);
+        mapview1Shutter.setMinScale(80000);
+
         mapview1Shutter.addLayer(mapServiceLayer, 0);
         mapview1Shutter.addLayer(maptextLayer, 1);
         mapview1Shutter.addLayer(map_lf, 2);
         mapview1Shutter.addLayer(map_xzq, 3);
         mapview1Shutter.addLayer(map_lf_text, 4);
+
+        mapview2Shutter.setMaxScale(500);
+        mapview2Shutter.setMinScale(80000);
 
         mapview2Shutter.addLayer(mapRSServiceLayer, 0);
         mapview2Shutter.addLayer(mapRStextLayer, 1);

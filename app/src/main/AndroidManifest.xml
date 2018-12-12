@@ -107,6 +107,7 @@
         <activity android:name=".activity.GroupActivity" />
         <activity android:name=".activity.GroupSetActivity" />
         <activity android:name=".activity.GroupRemoveActivity" />
+        <activity android:name=".activity.ExemptionActivity" />
 
         <receiver android:name=".provider.WidgetProvider">
             <intent-filter>

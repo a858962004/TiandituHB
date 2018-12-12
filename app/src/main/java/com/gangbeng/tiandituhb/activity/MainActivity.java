@@ -314,6 +314,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
         bmapsView.setMaxScale(500);
+        bmapsView.setMinScale(80000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
         bmapsView.addLayer(mapRSServiceLayer, 2);
