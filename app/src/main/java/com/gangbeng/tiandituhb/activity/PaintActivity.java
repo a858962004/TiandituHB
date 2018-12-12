@@ -286,10 +286,20 @@ public class PaintActivity extends BaseActivity {
                 mapviewPaint.zoomToScale(ptCurrent, 50000);
                 break;
             case R.id.save_paint:
+                savePaint.setVisibility(View.GONE);
+                quitPaint.setVisibility(View.GONE);
+                llBtnGroup.setVisibility(View.GONE);
                 boolean flag = ScreenShotUtils.shotBitmap(PaintActivity.this);
                 if (flag) {
-                    ShowToast("图片保存成功" + Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF" + File.separator + "pic");
+                    ShowToast("图片保存成功" + Environment.getExternalStorageDirectory()
+                            + File.separator + Environment.DIRECTORY_DCIM+File.separator +"tianditulf");
+                    savePaint.setVisibility(View.VISIBLE);
+                    quitPaint.setVisibility(View.VISIBLE);
+                    llBtnGroup.setVisibility(View.VISIBLE);
                 } else {
+                    savePaint.setVisibility(View.VISIBLE);
+                    quitPaint.setVisibility(View.VISIBLE);
+                    llBtnGroup.setVisibility(View.VISIBLE);
                     ShowToast("图片保存失败");
                 }
                 break;

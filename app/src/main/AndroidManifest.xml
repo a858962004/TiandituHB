@@ -33,7 +33,7 @@
         android:theme="@style/Theme.Design.Light.NoActionBar">
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="FesP40zjxNYmoeMnIDsDCAeYfNxth7bs"></meta-data>
+            android:value="FesP40zjxNYmoeMnIDsDCAeYfNxth7bs"/>
 
         <service
             android:name="com.baidu.location.f"

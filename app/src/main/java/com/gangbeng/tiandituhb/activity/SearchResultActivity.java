@@ -230,9 +230,27 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
                 skip(MapActivity.class,bundle,false);
             }else {
                 AroundActivity.getInstence().finish();
+                String name="";
+                if (!bean.getProperties().get简称().equals("")){
+                    name=bean.getProperties().get简称();
+                }else {
+                    if (!bean.getProperties().get名称().equals("")){
+                        name=bean.getProperties().get名称();
+                    }else {
+                        if (!bean.getProperties().get兴趣点().equals("")){
+                            name=bean.getProperties().get兴趣点();
+                        }else {
+                            if (!bean.getProperties().get描述().equals("")){
+                                name=bean.getProperties().get描述();
+                            }else {
+                                name=bean.getProperties().get备注();
+                            }
+                        }
+                    }
+                }
                 if (isStart.isstart()){
                     StartPoint startPoint = new StartPoint();
-                    startPoint.setName(bean.getProperties().get名称());
+                    startPoint.setName(name);
                     String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
                     String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
                     startPoint.setX(x);
@@ -240,7 +258,7 @@ public class SearchResultActivity extends BaseActivity implements BaseView {
                     EventBus.getDefault().postSticky(startPoint);
                 }else {
                     EndPoint endPoint = new EndPoint();
-                    endPoint.setName(bean.getProperties().get名称());
+                    endPoint.setName(name);
                     String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
                     String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
                     endPoint.setX(x);

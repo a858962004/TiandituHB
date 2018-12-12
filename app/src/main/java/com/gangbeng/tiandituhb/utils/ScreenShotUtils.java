@@ -1,9 +1,11 @@
 package com.gangbeng.tiandituhb.utils;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 
 import java.io.File;
@@ -27,7 +29,7 @@ public class ScreenShotUtils {
         Bitmap bitmap = null;
         View view = pActivity.getWindow().getDecorView();
         // 设置是否可以进行绘图缓存
-        view.setDrawingCacheEnabled(true);
+        view.setDrawingCacheEnabled(false);
         // 如果绘图缓存无法，强制构建绘图缓存
         view.buildDrawingCache();
         // 返回这个缓存视图
@@ -43,15 +45,16 @@ public class ScreenShotUtils {
         bitmap = Bitmap.createBitmap(bitmap, 0, stautsHeight, width, height - stautsHeight);
         return bitmap;
     }
+
     /**
      * 保存图片到sdcard中
      *
      * @param pBitmap
      */
-    private static boolean savePic(Bitmap pBitmap, String strName) {
-        File file=new File(strName);
+    private static boolean savePic(Activity activity,Bitmap pBitmap, String strName) {
+        File file = new File(strName);
         File parentFile = file.getParentFile();
-        if(!parentFile.exists()){
+        if (!parentFile.exists()) {
             parentFile.mkdirs();
         }
         FileOutputStream fos = null;
@@ -61,6 +64,10 @@ public class ScreenShotUtils {
                 pBitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
                 fos.flush();
                 fos.close();
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DATA, file.getPath());
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
+                activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 return true;
             }
         } catch (FileNotFoundException e) {
@@ -68,8 +75,9 @@ public class ScreenShotUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
-    }
+
+    return false;
+}
 
     /**
      * 截图
@@ -78,6 +86,8 @@ public class ScreenShotUtils {
      * @return 截图并且保存sdcard成功返回true，否则返回false
      */
     public static boolean shotBitmap(Activity pActivity) {
-        return ScreenShotUtils.savePic(takeScreenShot(pActivity), Environment.getExternalStorageDirectory()+ File.separator+"Tianditu_LF"+ File.separator+"pic"+ File.separator + System.currentTimeMillis() + ".png");
+        return ScreenShotUtils.savePic(pActivity,takeScreenShot(pActivity), Environment.getExternalStorageDirectory()
+                + File.separator + Environment.DIRECTORY_DCIM + File.separator + "tianditulf" + File.separator + System.currentTimeMillis() + ".png");
     }
+
 }

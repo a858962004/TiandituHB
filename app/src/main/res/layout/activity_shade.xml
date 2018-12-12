@@ -43,16 +43,14 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/mapviewscale_shade"
         android:layout_marginBottom="20dp"
-        android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@+id/seekbar_shade" />
+        android:layout_marginLeft="20dp" />
     <android.support.v7.widget.CardView
         android:id="@+id/change_calulate"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="20dp"
         app:cardCornerRadius="5dp"
-        android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@+id/seekbar_shade">
+        android:layout_marginLeft="20dp">
 
         <TextView
             style="@style/style_cardtv_map"
