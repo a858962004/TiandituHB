@@ -3,6 +3,7 @@ package com.gangbeng.tiandituhb.activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -48,11 +49,14 @@ public class ShadeActivity extends BaseActivity {
     MapZoomView mapzoomShade;
     @BindView(R.id.rl_map)
     RelativeLayout rlMap;
-    @BindView(R.id.change_calulate)
-    CardView changeCalulate;
+    @BindView(R.id.change_shade)
+    CardView changeShade;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_lf_text2, map_xzq2, map_tdlyxz, map2_lfimg, map2_lftext;
-    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer, map2ServiceLayer, map2TextLayer;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_tdlyxz;
+    private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
+
+    private TianDiTuLFServiceLayer map_lf_text2, map_lf2, map_lfimg2, map_xzq2;
+    private TianDiTuTiledMapServiceLayer maptextLayer2, mapServiceLayer2, mapRStextLayer2, mapRSServiceLayer2;
     private MapView mapview1Shade, mapview2Shade;
     private MapExtent extent;
 
@@ -73,7 +77,6 @@ public class ShadeActivity extends BaseActivity {
             rlMap.addView(mapview1Shade);
             rlMap.addView(mapview2Shade);
         }
-//        setRightImageBtnText("切换");
         setToolbarTitle("地图卷帘");
         setToolbarRightVisible(false);
         setMapView();
@@ -100,31 +103,6 @@ public class ShadeActivity extends BaseActivity {
             }
         });
     }
-
-//    @Override
-//    protected void setRightClickListen() {
-//        if (mapRStextLayer.isVisible()) {
-//            map2ServiceLayer.setVisible(true);
-//            map2TextLayer.setVisible(true);
-//            map2_lfimg.setVisible(true);
-//            map2_lftext.setVisible(true);
-//            mapRSServiceLayer.setVisible(false);
-//            mapRStextLayer.setVisible(false);
-//            map_lfimg.setVisible(false);
-//            map_lf_text2.setVisible(false);
-//        } else {
-//            map2ServiceLayer.setVisible(false);
-//            map2TextLayer.setVisible(false);
-//            map2_lfimg.setVisible(false);
-//            map2_lftext.setVisible(false);
-//            mapRSServiceLayer.setVisible(true);
-//            mapRStextLayer.setVisible(true);
-//            map_lfimg.setVisible(true);
-//            map_lf_text2.setVisible(true);
-//        }
-//
-//
-//    }
 
     private void setMapView2Center() {
         Point center1 = mapview1Shade.getCenter();
@@ -156,37 +134,47 @@ public class ShadeActivity extends BaseActivity {
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+
+
+        mapServiceLayer2 = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
+        maptextLayer2 = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        mapRSServiceLayer2 = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        mapRStextLayer2 = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+
+        map_lf2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map_lfimg2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         map_tdlyxz = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
-        map2ServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
-        map2TextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map2_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
-        map2_lftext = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
 
-        mapview2Shade.addLayer(map2ServiceLayer, 0);
-        mapview2Shade.addLayer(map2TextLayer, 1);
-        mapview2Shade.addLayer(map2_lfimg, 2);
-        mapview2Shade.addLayer(map2_lftext, 3);
-        mapview2Shade.addLayer(mapRSServiceLayer, 4);
-        mapview2Shade.addLayer(mapRStextLayer, 5);
-        mapview2Shade.addLayer(map_lfimg, 6);
+        mapview2Shade.addLayer(mapServiceLayer2, 0);
+        mapview2Shade.addLayer(maptextLayer2, 1);
+        mapview2Shade.addLayer(map_lf2, 2);
+        mapview2Shade.addLayer(mapRSServiceLayer2, 3);
+        mapview2Shade.addLayer(mapRStextLayer2, 4);
+        mapview2Shade.addLayer(map_lfimg2, 5);
+        mapview2Shade.addLayer(map_tdlyxz, 6);
         mapview2Shade.addLayer(map_xzq2, 7);
         mapview2Shade.addLayer(map_lf_text2, 8);
         mapzoomShade.setMapView(mapview1Shade);
-        map2ServiceLayer.setVisible(false);
-        map2TextLayer.setVisible(false);
-        map2_lfimg.setVisible(false);
-        map2_lftext.setVisible(false);
 
         mapview1Shade.addLayer(mapServiceLayer, 0);
         mapview1Shade.addLayer(maptextLayer, 1);
         mapview1Shade.addLayer(map_lf, 2);
-        mapview1Shade.addLayer(map_tdlyxz, 3);
-        mapview1Shade.addLayer(map_xzq, 4);
-        mapview1Shade.addLayer(map_lf_text, 5);
+        mapview1Shade.addLayer(mapRSServiceLayer, 3);
+        mapview1Shade.addLayer(mapRStextLayer, 4);
+        mapview1Shade.addLayer(map_lfimg, 5);
+        mapview1Shade.addLayer(map_xzq, 6);
+        mapview1Shade.addLayer(map_lf_text, 7);
+        mapzoomShade.setMapView(mapview1Shade);
 
+        mapServiceLayer.setVisible(false);
+        maptextLayer.setVisible(false);
+        map_lf.setVisible(false);
+        mapServiceLayer2.setVisible(false);
+        maptextLayer2.setVisible(false);
+        map_lf2.setVisible(false);
 
         mapview1Shade.setOnZoomListener(new OnZoomListener() {
             @Override
@@ -344,7 +332,7 @@ public class ShadeActivity extends BaseActivity {
         mapview2Shade.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
-                if (o.equals(map_lfimg) && status == STATUS.LAYER_LOADED) {
+                if (o.equals(map_lfimg2) && status == STATUS.LAYER_LOADED) {
                     mapview1Shade.zoomToScale(extent.getCenter(), extent.getScale());
                     mapview2Shade.zoomToScale(extent.getCenter(), extent.getScale());
                 }
@@ -371,26 +359,27 @@ public class ShadeActivity extends BaseActivity {
         this.extent = extent;
     }
 
-    @OnClick(R.id.change_calulate)
-    public void onViewClicked() {
-        if (mapRStextLayer.isVisible()) {
-            map2ServiceLayer.setVisible(true);
-            map2TextLayer.setVisible(true);
-            map2_lfimg.setVisible(true);
-            map2_lftext.setVisible(true);
-            mapRSServiceLayer.setVisible(false);
-            mapRStextLayer.setVisible(false);
-            map_lfimg.setVisible(false);
-            map_lf_text2.setVisible(false);
-        } else {
-            map2ServiceLayer.setVisible(false);
-            map2TextLayer.setVisible(false);
-            map2_lfimg.setVisible(false);
-            map2_lftext.setVisible(false);
-            mapRSServiceLayer.setVisible(true);
-            mapRStextLayer.setVisible(true);
-            map_lfimg.setVisible(true);
-            map_lf_text2.setVisible(true);
+    @OnClick(R.id.change_shade)
+    public void onViewClicked(View view) {
+        switch (view.getId()){
+            case R.id.change_shade:
+                MyLogUtil.showLog("11111");
+                if (mapServiceLayer2.isVisible()) {
+                    mapServiceLayer.setVisible(true);
+                    maptextLayer.setVisible(true);
+                    map_lf.setVisible(true);
+                    mapServiceLayer2.setVisible(true);
+                    maptextLayer2.setVisible(true);
+                    map_lf2.setVisible(true);
+                } else {
+                    mapServiceLayer.setVisible(false);
+                    maptextLayer.setVisible(false);
+                    map_lf.setVisible(false);
+                    mapServiceLayer2.setVisible(false);
+                    maptextLayer2.setVisible(false);
+                    map_lf2.setVisible(false);
+                }
+                break;
         }
 
     }
