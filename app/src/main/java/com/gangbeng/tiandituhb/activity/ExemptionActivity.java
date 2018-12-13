@@ -31,5 +31,4 @@ public class ExemptionActivity extends BaseActivity {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
     }
-
 }
