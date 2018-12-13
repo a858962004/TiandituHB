@@ -1,18 +1,10 @@
 package com.gangbeng.tiandituhb.activity;
 
-import android.content.res.Resources;
-import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.webkit.WebView;
 
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
-import com.gangbeng.tiandituhb.utils.MyLogUtil;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,11 +20,9 @@ public class ExemptionActivity extends BaseActivity {
     @Override
     protected void initView() {
         setContentLayout(R.layout.activity_exemption);
-        setTitle("免责声明");
+        setToolbarTitle("免责声明");
         setToolbarRightVisible(false);
-
-        getXmlResouse();
-
+        webExemption.loadUrl("file:///android_asset/web/exemption.html");
     }
 
     @Override
@@ -42,7 +32,4 @@ public class ExemptionActivity extends BaseActivity {
         ButterKnife.bind(this);
     }
 
-    public void getXmlResouse() {
-
-    }
 }
