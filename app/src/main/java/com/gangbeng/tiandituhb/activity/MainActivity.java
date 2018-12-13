@@ -314,7 +314,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
         bmapsView.setMaxScale(500);
-        bmapsView.setMinScale(80000);
+        bmapsView.setMinScale(100000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
         bmapsView.addLayer(mapRSServiceLayer, 2);
@@ -503,6 +503,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 weatherlayer.clearSelection();
                 hideBottom();
                 if (weatherlayer.isVisible()) {
+                    bmapsView.zoomToScale(bmapsView.getCenter(), 50000);
+                    bmapsView.setMinScale(100000);
                     imgHefeng.setVisibility(View.GONE);
                     weatherlayer.setVisible(false);
                     bmapsView.setOnSingleTapListener(mapclick);
@@ -514,6 +516,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     bubbletextview.setVisibility(View.GONE);
                     bubbletextview.setText("正在查询...");
                     bmapsView.setOnPanListener(null);
+                    bmapsView.setMinScale(1500000);
                     bmapsView.zoomToScale(new Point(116.75750057616959, 39.31351869282022), 1500000);
                     weatherlayer.setVisible(true);
                     bmapsView.setOnSingleTapListener(weatherclick);
@@ -533,6 +536,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 } else {
                     llQuanjing.setBackgroundColor(getResources().getColor(R.color.lightblue));
                     qttvSearchlocal.setVisibility(View.VISIBLE);
+                    if (weatherlayer.isVisible()){
+                        bmapsView.zoomToScale(bmapsView.getCenter(),50000);
+                        bmapsView.setMinScale(100000);
+                    }
                     weatherlayer.setVisible(false);
                     hideBottom();
                     hideWeatherBottom();

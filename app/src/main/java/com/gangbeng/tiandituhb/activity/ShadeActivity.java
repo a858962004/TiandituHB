@@ -147,28 +147,32 @@ public class ShadeActivity extends BaseActivity {
         map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         map_tdlyxz = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
+        mapview2Shade.setMaxScale(500);
+        mapview2Shade.setMinScale(80000);
         mapview2Shade.addLayer(mapRSServiceLayer2, 0);
         mapview2Shade.addLayer(mapRStextLayer2, 1);
         mapview2Shade.addLayer(map_lfimg2, 2);
         mapview2Shade.addLayer(mapServiceLayer2, 3);
         mapview2Shade.addLayer(maptextLayer2, 4);
         mapview2Shade.addLayer(map_lf2, 5);
-        mapview2Shade.addLayer(map_tdlyxz, 6);
-        mapview2Shade.addLayer(map_xzq2, 7);
-        mapview2Shade.addLayer(map_lf_text2, 8);
+        mapview2Shade.addLayer(map_xzq2, 6);
+        mapview2Shade.addLayer(map_lf_text2, 7);
         mapzoomShade.setMapView(mapview1Shade);
         mapServiceLayer2.setVisible(false);
         maptextLayer2.setVisible(false);
         map_lf2.setVisible(false);
 
+        mapview1Shade.setMaxScale(500);
+        mapview1Shade.setMinScale(80000);
         mapview1Shade.addLayer(mapRSServiceLayer, 0);
         mapview1Shade.addLayer(mapRStextLayer, 1);
         mapview1Shade.addLayer(map_lfimg, 2);
         mapview1Shade.addLayer(mapServiceLayer, 3);
         mapview1Shade.addLayer(maptextLayer, 4);
         mapview1Shade.addLayer(map_lf, 5);
-        mapview1Shade.addLayer(map_xzq, 6);
-        mapview1Shade.addLayer(map_lf_text, 7);
+        mapview1Shade.addLayer(map_tdlyxz, 6);
+        mapview1Shade.addLayer(map_xzq, 7);
+        mapview1Shade.addLayer(map_lf_text, 8);
         mapzoomShade.setMapView(mapview1Shade);
         mapServiceLayer.setVisible(false);
         maptextLayer.setVisible(false);
