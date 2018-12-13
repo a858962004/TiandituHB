@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">天地图-廊坊</string>
+    <string name="app_name">天地图·廊坊</string>
 
     <string name="title_activity_choose_area">ChooseAreaActivity</string>
     <string name="appwidget_text">EXAMPLE</string>

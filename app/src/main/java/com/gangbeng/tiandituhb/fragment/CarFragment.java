@@ -106,6 +106,9 @@ public class CarFragment extends BaseFragment implements BaseView {
 //        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
+        mapCarfragment.setMaxScale(500);
+        mapCarfragment.setMinScale(80000);
+
         mapCarfragment.addLayer(mapServiceLayer, 0);
         mapCarfragment.addLayer(maptextLayer, 1);
 //        mapCarfragment.addLayer(mapRSServiceLayer, 2);

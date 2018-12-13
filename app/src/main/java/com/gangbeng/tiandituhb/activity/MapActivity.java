@@ -292,6 +292,9 @@ public class MapActivity extends BaseActivity implements BaseView {
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
 
+        idMap.setMaxScale(500);
+        idMap.setMinScale(80000);
+
         idMap.addLayer(mapServiceLayer, 0);
         idMap.addLayer(maptextLayer, 1);
         idMap.addLayer(mapRSServiceLayer, 2);

@@ -157,6 +157,9 @@ public class ShadeActivity extends BaseActivity {
         mapview2Shade.addLayer(map_xzq2, 7);
         mapview2Shade.addLayer(map_lf_text2, 8);
         mapzoomShade.setMapView(mapview1Shade);
+        mapServiceLayer2.setVisible(false);
+        maptextLayer2.setVisible(false);
+        map_lf2.setVisible(false);
 
         mapview1Shade.addLayer(mapRSServiceLayer, 0);
         mapview1Shade.addLayer(mapRStextLayer, 1);
@@ -167,13 +170,9 @@ public class ShadeActivity extends BaseActivity {
         mapview1Shade.addLayer(map_xzq, 6);
         mapview1Shade.addLayer(map_lf_text, 7);
         mapzoomShade.setMapView(mapview1Shade);
-
         mapServiceLayer.setVisible(false);
         maptextLayer.setVisible(false);
         map_lf.setVisible(false);
-        mapServiceLayer2.setVisible(false);
-        maptextLayer2.setVisible(false);
-        map_lf2.setVisible(false);
 
         mapview1Shade.setOnZoomListener(new OnZoomListener() {
             @Override
@@ -363,20 +362,32 @@ public class ShadeActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.change_shade:
                 MyLogUtil.showLog("11111");
-                if (mapServiceLayer2.isVisible()) {
-                    mapServiceLayer.setVisible(true);
-                    maptextLayer.setVisible(true);
-                    map_lf.setVisible(true);
+                if (mapRSServiceLayer2.isVisible()) {
+                    mapRSServiceLayer2.setVisible(false);
+                    mapRStextLayer2.setVisible(false);
+                    map_lfimg2.setVisible(false);
+                    mapRSServiceLayer.setVisible(false);
+                    mapRStextLayer.setVisible(false);
+                    map_lfimg.setVisible(false);
                     mapServiceLayer2.setVisible(true);
                     maptextLayer2.setVisible(true);
                     map_lf2.setVisible(true);
+                    mapServiceLayer.setVisible(true);
+                    maptextLayer.setVisible(true);
+                    map_lf.setVisible(true);
                 } else {
-                    mapServiceLayer.setVisible(false);
-                    maptextLayer.setVisible(false);
-                    map_lf.setVisible(false);
+                    mapRSServiceLayer2.setVisible(true);
+                    mapRStextLayer2.setVisible(true);
+                    map_lfimg2.setVisible(true);
+                    mapRSServiceLayer.setVisible(true);
+                    mapRStextLayer.setVisible(true);
+                    map_lfimg.setVisible(true);
                     mapServiceLayer2.setVisible(false);
                     maptextLayer2.setVisible(false);
                     map_lf2.setVisible(false);
+                    mapServiceLayer.setVisible(false);
+                    maptextLayer.setVisible(false);
+                    map_lf.setVisible(false);
                 }
                 break;
         }
