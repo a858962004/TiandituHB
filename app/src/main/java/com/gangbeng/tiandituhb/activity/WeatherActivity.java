@@ -718,6 +718,8 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             }
             spEdit.apply();
         }
+
+        vp.setAdapter(null);
         finish();
     }
 

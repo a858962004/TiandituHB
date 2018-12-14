@@ -243,7 +243,8 @@ public class AroundActivity extends BaseActivity implements BaseView {
         parameter.put("page", "1");
         if (key.equals("search") || key.equals("route") || key.equals("navi")) {
             if (bean.isInput()) {
-                qury = "'兴趣点' like '%" + bean.getData() + "%'";
+//                qury = "'兴趣点' like '%" + bean.getData() + "%'";
+                qury="'兴趣点' like '%" + bean.getData() + "%' or '简称' like '%" + bean.getData() + "%' or '名称' like '%" + bean.getData() + "%' or '描述' like '%" + bean.getData() + "%' or '备注' like '%" + bean.getData() + "%'";
             } else {
                 //分类查询条件
                 qury = getQury(bean.getData());
@@ -373,31 +374,31 @@ public class AroundActivity extends BaseActivity implements BaseView {
                 qury = "yif1 = '11' or yif1 = '12'";
                 break;
             case "金融保险":
-                qury = "yifl = '18'";
+                qury = "yif1 = '18'";
                 break;
             case "交通运输":
-                qury = "yifl = '20'";
+                qury = "yif1 = '20'";
                 break;
             case "房产楼盘":
-                qury = "yifl = '22'";
+                qury = "yif1 = '22'";
                 break;
             case "生活服务":
-                qury = "yifl = '21'";
+                qury = "yif1 = '21'";
                 break;
             case "休闲娱乐":
-                qury = "yifl = '16' or yifl = '13'";
+                qury = "yif1 = '16' or yif1 = '13'";
                 break;
             case "旅游服务":
-                qury = "yifl = '17'";
+                qury = "yif1 = '17'";
                 break;
             case "医疗卫生":
-                qury = "yifl = '14'";
+                qury = "yif1 = '14'";
                 break;
             case "文化媒体":
-                qury = "yifl = '14'";
+                qury = "yif1 = '14'";
                 break;
             case "其他行业":
-                qury = "yifl = '23' or yifl = '99'";
+                qury = "yif1 = '23' or yif1 = '99'";
                 break;
         }
 

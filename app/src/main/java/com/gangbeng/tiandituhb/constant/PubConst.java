@@ -14,6 +14,7 @@ public class PubConst {
     public final static String drive = "http://124.165.248.18:8720/newmap/rest/services/xiaoyi/route/NetWorkServer/route";
 
 //    http://124.165.248.18:8720/newmap/rest/services/xiaoyi/route/NetWorkServer/route?points=111.77952852400398,37.15078227322101;111.77952852400398,37.15078227322101&type=shortest&format=gpx-track
+//public final static String mapurl = "http://222.222.66.230:8719/newmapserver4/rest/services/dmdz/FeatureServer/";
 
     public final static String mapurl = "http://222.222.66.179:8719/newmap/rest/services/lftdtgx/dmdz/FeatureServer/";
     public final static String searchapi = mapurl + "feature";

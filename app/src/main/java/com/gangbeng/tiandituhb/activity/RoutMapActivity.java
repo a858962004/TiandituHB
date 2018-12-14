@@ -96,7 +96,6 @@ public class RoutMapActivity extends BaseActivity {
         map_xzq=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         idRoutmap.setMaxScale(500);
-        idRoutmap.setMinScale(80000);
 
         idRoutmap.addLayer(mapServiceLayer, 0);
         idRoutmap.addLayer(maptextLayer, 1);

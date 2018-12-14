@@ -1,6 +1,8 @@
 package com.gangbeng.tiandituhb.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -12,7 +14,9 @@ import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.event.UserEvent;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 import com.gangbeng.tiandituhb.utils.ShowDialog;
+import com.gangbeng.tiandituhb.utils.Util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,11 +38,11 @@ public class MoreActivity extends BaseActivity {
     public static MoreActivity activity;
 
     String[] names = new String[]{"登录/注册", "地块核查", "添加信息点", "组队共享",
-            "收藏夹", "点距测量", "面积测量", "绘图板", "地图对比", "地图卷帘", "信息反馈", "版本更新", "免责声明"};
+            "收藏夹", "点距测量", "面积测量", "绘图板", "地图对比", "地图卷帘", "信息反馈", "版本更新", "清除缓存", "免责声明"};
     int[] resource = new int[]{R.mipmap.icon_user, R.mipmap.icon_dikuaihecha,
             R.mipmap.icon_tianjiaxinxi, R.mipmap.icon_zudui, R.mipmap.icon_shoucang1,
             R.mipmap.icon_dianju, R.mipmap.icon_mianji, R.mipmap.icon_huitu, R.mipmap.icon_duibi,
-            R.mipmap.icon_juanlian, R.mipmap.icon_fankui, R.mipmap.icon_gengxin, R.mipmap.icon_attention};
+            R.mipmap.icon_juanlian, R.mipmap.icon_fankui, R.mipmap.icon_gengxin, R.mipmap.icon_delete, R.mipmap.icon_attention};
 
     public static MoreActivity instence() {
         return activity;
@@ -158,6 +162,25 @@ public class MoreActivity extends BaseActivity {
                     break;
                 case "免责声明":
                     skip(ExemptionActivity.class, false);
+                    break;
+                case "清除缓存":
+                    ShowDialog.showAttention(MoreActivity.this, "请注意", "是否清除地图缓存", new ShowDialog.DialogCallBack() {
+                        @Override
+                        public void dialogSure(DialogInterface dialog) {
+                            boolean b = Util.deleteDirectory(MoreActivity.this, Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF" + File.separator + "map_lf" + File.separator);
+                            if (b) {
+                                ShowToast("清除成功");
+                            } else {
+                                ShowToast("清除失败");
+                            }
+                            dialog.dismiss();
+                        }
+
+                        @Override
+                        public void dialogCancle(DialogInterface dialog) {
+                            dialog.dismiss();
+                        }
+                    });
                     break;
             }
         }

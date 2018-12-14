@@ -75,12 +75,14 @@ public class ComparisonActivity extends BaseActivity {
         map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
+        mapview1Comparison.setMaxScale(500);
         mapview1Comparison.addLayer(mapServiceLayer, 0);
         mapview1Comparison.addLayer(maptextLayer, 1);
         mapview1Comparison.addLayer(map_lf, 2);
         mapview1Comparison.addLayer(map_xzq, 3);
         mapview1Comparison.addLayer(map_lf_text, 4);
 
+        mapview2Comparison.setMaxScale(500);
         mapview2Comparison.addLayer(mapRSServiceLayer, 0);
         mapview2Comparison.addLayer(mapRStextLayer, 1);
         mapview2Comparison.addLayer(map_lfimg, 2);

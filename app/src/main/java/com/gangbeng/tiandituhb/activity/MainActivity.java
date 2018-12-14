@@ -314,7 +314,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
         bmapsView.setMaxScale(500);
-        bmapsView.setMinScale(100000);
+//        bmapsView.setMinScale(100000);
         bmapsView.addLayer(mapServiceLayer, 0);
         bmapsView.addLayer(maptextLayer, 1);
         bmapsView.addLayer(mapRSServiceLayer, 2);
@@ -503,8 +503,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 weatherlayer.clearSelection();
                 hideBottom();
                 if (weatherlayer.isVisible()) {
-                    bmapsView.zoomToScale(bmapsView.getCenter(), 50000);
-                    bmapsView.setMinScale(100000);
                     imgHefeng.setVisibility(View.GONE);
                     weatherlayer.setVisible(false);
                     bmapsView.setOnSingleTapListener(mapclick);
@@ -516,7 +514,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     bubbletextview.setVisibility(View.GONE);
                     bubbletextview.setText("正在查询...");
                     bmapsView.setOnPanListener(null);
-                    bmapsView.setMinScale(1500000);
+//                    bmapsView.setMinScale(1500000);
                     bmapsView.zoomToScale(new Point(116.75750057616959, 39.31351869282022), 1500000);
                     weatherlayer.setVisible(true);
                     bmapsView.setOnSingleTapListener(weatherclick);
@@ -536,10 +534,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 } else {
                     llQuanjing.setBackgroundColor(getResources().getColor(R.color.lightblue));
                     qttvSearchlocal.setVisibility(View.VISIBLE);
-                    if (weatherlayer.isVisible()){
-                        bmapsView.zoomToScale(bmapsView.getCenter(),50000);
-                        bmapsView.setMinScale(100000);
-                    }
                     weatherlayer.setVisible(false);
                     hideBottom();
                     hideWeatherBottom();
@@ -608,7 +602,25 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 setEventBus("route");
                 if (!islocation) {
                     EndPoint endPoint = new EndPoint();
-                    endPoint.setName(bean.getProperties().get名称());
+                    String name="";
+                    if (!bean.getProperties().get简称().equals("")){
+                        name=bean.getProperties().get简称();
+                    }else {
+                        if (!bean.getProperties().get名称().equals("")){
+                            name=bean.getProperties().get名称();
+                        }else {
+                            if (!bean.getProperties().get兴趣点().equals("")){
+                                name=bean.getProperties().get兴趣点();
+                            }else {
+                                if (!bean.getProperties().get描述().equals("")){
+                                    name=bean.getProperties().get描述();
+                                }else {
+                                    name=bean.getProperties().get备注();
+                                }
+                            }
+                        }
+                    }
+                    endPoint.setName(name);
                     endPoint.setX(String.valueOf(bean.getGeometry().getCoordinates().get(0)));
                     endPoint.setY(String.valueOf(bean.getGeometry().getCoordinates().get(1)));
                     EventBus.getDefault().postSticky(endPoint);
@@ -970,7 +982,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 int graphicID = graphicIDs[0];
                 Graphic graphic = weatherlayer.getGraphic(graphicID);
                 weatherlayer.setSelectedGraphics(new int[]{graphicID}, true);
-                bmapsView.zoomToScale((Point) graphic.getGeometry(), 1500000);
                 setWeatherBottom(graphic);
             }
         }

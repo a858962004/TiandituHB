@@ -141,8 +141,6 @@ public class PaintActivity extends BaseActivity {
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         mapviewPaint.setMaxScale(500);
-        mapviewPaint.setMinScale(80000);
-
         mapviewPaint.addLayer(mapServiceLayer, 0);
         mapviewPaint.addLayer(maptextLayer, 1);
         mapviewPaint.addLayer(mapRSServiceLayer, 2);

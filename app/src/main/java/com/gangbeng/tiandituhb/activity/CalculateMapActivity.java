@@ -171,7 +171,6 @@ public class CalculateMapActivity extends BaseActivity {
         drawPointLayer = new GraphicsLayer();
         drawLayer = new GraphicsLayer();
         mapCalculate.setMaxScale(500);
-        mapCalculate.setMinScale(80000);
         mapCalculate.addLayer(mapServiceLayer, 0);
         mapCalculate.addLayer(maptextLayer, 1);
         mapCalculate.addLayer(mapRSServiceLayer, 2);

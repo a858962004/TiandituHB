@@ -224,8 +224,6 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
         popupLayer = new GraphicsLayer();
 
         mapGroup.setMaxScale(500);
-        mapGroup.setMinScale(80000);
-
         mapGroup.addLayer(mapServiceLayer, 0);
         mapGroup.addLayer(maptextLayer, 1);
         mapGroup.addLayer(mapRSServiceLayer, 2);
