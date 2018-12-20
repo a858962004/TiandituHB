@@ -340,9 +340,9 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             @Override
             public void destroyItem(ViewGroup container, int position, Object object) {
                 container.removeView((View) object);
-                //super.destroyItem(container, position, object);
-                //container.removeView(viewList.get(position));
-                //container.removeViewAt(position);
+//                super.destroyItem(container, position, object);
+//                container.removeView(viewList.get(position));
+//                container.removeViewAt(position);
             }
 
             @Override
@@ -718,8 +718,12 @@ public class WeatherActivity extends AppCompatActivity implements ViewPager.OnPa
             }
             spEdit.apply();
         }
-
-        vp.setAdapter(null);
+//        hourlyRecycler.setAdapter(null);
+//        hourlyWeatherAdapter=null;
+//        hourlyWeatherList.clear();
+//        pagerAdapter=null;
+//        viewList.clear();
+//        vp.setAdapter(null);
         finish();
     }
 
@@ -1317,5 +1321,7 @@ if (lifestyle!=null&&lifestyle.size()>0){
             progressDialog.dismiss();
         }
     }
+
+
 
 }

@@ -493,7 +493,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                     if (!soapObject.toString().equals("anyType{}")) {
                         drawPointLayer.removeAll();
                         List<Point>points=new ArrayList<>();
-                        List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
+                        List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "newestlocation");
                         for (SoapObject object : newestLocation) {
                             String id = RequestUtil.getSoapObjectValue(object, "ID");
                             String loginname = RequestUtil.getSoapObjectValue(object, "loginname");
@@ -547,7 +547,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                 if (!soapObject.toString().equals("anyType{}")) {
                     drawPointLayer.removeAll();
                     this.data.clear();
-                    List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
+                    List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "newestlocation");
                     for (SoapObject object : newestLocation) {
                         String id = RequestUtil.getSoapObjectValue(object, "ID");
                         String loginname = RequestUtil.getSoapObjectValue(object, "loginname");

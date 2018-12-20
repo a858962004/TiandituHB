@@ -286,7 +286,7 @@ public class GroupSetActivity extends BaseActivity implements NewBaseView {
                 if (!soapObject.toString().equals("anyType{}")) {
                     this.data.clear();
                     mdata.clear();
-                    List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "NewestLocation");
+                    List<SoapObject> newestLocation = RequestUtil.getObjectValue(soapObject, "newestlocation");
                     for (SoapObject object : newestLocation) {
                         String id = RequestUtil.getSoapObjectValue(object, "ID");
                         String loginname = RequestUtil.getSoapObjectValue(object, "loginname");

@@ -17,33 +17,33 @@ public class TianDiTuLFUrl {
         this.level = level;
         this.col = col;
         this.row = row;
-        MyLogUtil.showLog("VEC_C:",level+"----"+col+"----"+row);
+        MyLogUtil.showLog("VEC_C:", level + "----" + col + "----" + row);
     }
 
-    public String generatUrl(){
+    public String generatUrl() {
         /**
          * 天地图矢量、影像
          * */
-        StringBuilder url=new StringBuilder("");
+        StringBuilder url = new StringBuilder("");
 
-        switch(this.tiandituMapServiceType){
+        switch (this.tiandituMapServiceType) {
             /**
              * 天地图矢量
              * */
             case VEC_C:
 //                url = "http://www.bjmap.gov.cn/services/ogc/wmts/12?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=12&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJMap&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
-                level=level-15;
+                level = level - 15;
 //                url.append("http://222.222.66.179:8719/newmapserver4/ogc/tianditu/lfgzvector/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=lfgzvector&STYLE=Default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/png");
                 url.append("http://222.222.66.179:8719/newmap/ogc/lftdtgxx/sldt/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=sldt&STYLE=Default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/png");
 
-                MyLogUtil.showLog("VEC_C:",url.toString());
+                MyLogUtil.showLog("VEC_C:", url.toString());
                 break;
             /**
              * 天地图矢量标注
              * */
             case CVA_C:
 //                url = "http://www.bjmap.gov.cn/services/ogc/wmts/13?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=13&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJMapAnno&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
-                level=level-15;
+                level = level - 15;
 //                url.append("http://222.222.66.179:8719/newmap/ogc/tianditu/lfgzvectorbz/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=lfgzvectorbz&STYLE=Default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/png");
                 url.append("http://222.222.66.179:8719/newmap/ogc/lftdtgxx/slzj/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=slzj&STYLE=Default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/png");
 
@@ -53,25 +53,27 @@ public class TianDiTuLFUrl {
              * */
             case IMG_C:
 //                url = "http://www.bjmap.gov.cn/services/ogc/wmts/15?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=15&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJImageAnno&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
-                level=level-17;
+                level = level - 17;
 //                url.append("http://222.222.66.179:8719/newmapserver4/ogc/tianditu/lfgzimage/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=lfgzimage&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
                 url.append("http://222.222.66.179:8719/newmap/ogc/lftdtgx/yxsj/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=yxsj&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
                 break;
             case CIA_C:
-                level=level-15;
+                level = level - 15;
 //                url.append("http://222.222.66.179:8719/newmap/ogc/tianditu/lfgzimagebz/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=lfgzimagebz&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
                 url.append("http://222.222.66.179:8719/newmap/ogc/lftdtgxx/yxzj/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=yxzj&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
                 break;
             case XZQ_C:
-                level=level-9;
-                url.append("http://222.222.66.179:8719/newmap/ogc/tianditu/Ifjxnew/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Ifjxnew&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
+//                level=level-9;
+                level = level - 9;
+//                url.append("http://222.222.66.179:8719/newmap/ogc/tianditu/Ifjxnew/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Ifjxnew&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
+                url.append("http://222.222.66.179:8719/newmap/ogc/lftdtgx/jjappcs1/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=jjappcs1&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
                 break;
             case CJ_C:
-                level=level-9;
+                level = level - 9;
                 url.append("http://222.222.66.179:8719/newmap/ogc/lftdtgx/cunjie/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cunjie&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
                 break;
             case TDLYXZ_C:
-                level=level-9;
+                level = level - 9;
                 url.append("http://222.222.66.179:8719/newmap/ogc/lftdtgx/tdlyxz/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=tdlyxz&STYLE=default&TILEMATRIXSET=TileMatrixSet_0&TILEMATRIX=").append(this.level).append("&TILEROW=").append(this.row).append("&TILECOL=").append(this.col).append("&FORMAT=image/jpeg");
                 break;
         }

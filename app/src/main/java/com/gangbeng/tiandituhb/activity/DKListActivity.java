@@ -229,7 +229,7 @@ public class DKListActivity extends BaseActivity implements BaseView {
                 } else {
                     tvNodata.setVisibility(View.GONE);
                     listDk.setVisibility(View.VISIBLE);
-                    dkhcInfo = RequestUtil.getObjectValue(soapObject, "DKHCInfo");
+                    dkhcInfo = RequestUtil.getObjectValue(soapObject, "dkhcinfo");
                     adapter = new DKLVAdapter(DKListActivity.this, dkhcInfo, infostate,0, false, null);
                     listDk.setAdapter(adapter);
                 }
