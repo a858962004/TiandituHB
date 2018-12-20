@@ -38,11 +38,11 @@ public class MoreActivity extends BaseActivity {
     public static MoreActivity activity;
 
     String[] names = new String[]{"登录/注册",
-            "地块核查",
+//            "地块核查",
             "添加信息点", "组队共享",
             "收藏夹", "点距测量", "面积测量", "绘图板", "地图对比", "地图卷帘", "信息反馈", "版本更新", "清除缓存", "免责声明"};
     int[] resource = new int[]{R.mipmap.icon_user,
-            R.mipmap.icon_dikuaihecha,
+//            R.mipmap.icon_dikuaihecha,
             R.mipmap.icon_tianjiaxinxi, R.mipmap.icon_zudui, R.mipmap.icon_shoucang1,
             R.mipmap.icon_dianju, R.mipmap.icon_mianji, R.mipmap.icon_huitu, R.mipmap.icon_duibi,
             R.mipmap.icon_juanlian, R.mipmap.icon_fankui, R.mipmap.icon_gengxin, R.mipmap.icon_delete, R.mipmap.icon_attention};
