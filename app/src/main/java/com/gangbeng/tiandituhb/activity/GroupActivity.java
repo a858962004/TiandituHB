@@ -104,6 +104,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
     private static GroupActivity activity;
     private boolean first=true;
     private Map<String, String> choosedata;
+    private boolean isIMG=false;
 
     public static GroupActivity getInstence(){
         return activity;
@@ -258,6 +259,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscaleGroup.refreshScaleView(mapGroup.getScale());
+                setLayerVisibale();
                 refreshGroupLocation();
             }
         });
@@ -269,6 +271,35 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
         parameter.put("loginname",user.getLoginname());
         presenter.setRequest(parameter, PubConst.LABLE_ZOOMGETGROUP);
     }
+
+    private void setLayerVisibale() {
+        if (mapGroup.getScale()>9027.9993438721) {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(true);
+                mapRStextLayer.setVisible(true);
+                map_lfimg.setVisible(false);
+//                map_lfimg_text.setVisible(false);
+            }else {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+            }
+        }else {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(false);
+                mapRStextLayer.setVisible(false);
+                map_lfimg.setVisible(true);
+//                map_lfimg_text.setVisible(true);
+            }else {
+                mapServiceLayer.setVisible(false);
+                maptextLayer.setVisible(false);
+                map_lf.setVisible(true);
+                map_lf_text.setVisible(true);
+            }
+        }
+    }
+
 
 
     private void locationGPS() {
@@ -312,7 +343,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.change_group:
-                if (map_lfimg.isVisible()) {
+                if (isIMG) {
                     map_lfimg.setVisible(false);
                     map_lf.setVisible(true);
                     mapRSServiceLayer.setVisible(false);
@@ -327,6 +358,8 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                     mapServiceLayer.setVisible(false);
                     maptextLayer.setVisible(false);
                 }
+                isIMG=!isIMG;
+                setLayerVisibale();
                 break;
             case R.id.location_group:
                 mapGroup.zoomToScale(lacation, 50000);

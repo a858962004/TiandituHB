@@ -95,6 +95,7 @@ public class ComparisonActivity extends BaseActivity {
                 double scale = mapview1Comparison.getScale();
                 Point center = mapview1Comparison.getCenter();
                 mapview2Comparison.zoomToScale(center, scale);
+                setLayerVisibale(mapview1Comparison);
             }
 
             @Override
@@ -102,6 +103,7 @@ public class ComparisonActivity extends BaseActivity {
                 double scale = mapview1Comparison.getScale();
                 Point center = mapview1Comparison.getCenter();
                 mapview2Comparison.zoomToScale(center, scale);
+                setLayerVisibale(mapview1Comparison);
             }
         });
 
@@ -194,6 +196,7 @@ public class ComparisonActivity extends BaseActivity {
                 double scale = mapview2Comparison.getScale();
                 Point center = mapview2Comparison.getCenter();
                 mapview1Comparison.zoomToScale(center, scale);
+                setLayerVisibale(mapview2Comparison);
             }
 
             @Override
@@ -201,6 +204,7 @@ public class ComparisonActivity extends BaseActivity {
                 double scale = mapview2Comparison.getScale();
                 Point center = mapview2Comparison.getCenter();
                 mapview1Comparison.zoomToScale(center, scale);
+                setLayerVisibale(mapview2Comparison);
             }
         });
 
@@ -306,6 +310,29 @@ public class ComparisonActivity extends BaseActivity {
             }
         });
     }
+
+    private void setLayerVisibale(MapView bmapsView) {
+        if (bmapsView.getScale()>9027.9993438721) {
+                mapRSServiceLayer.setVisible(true);
+                mapRStextLayer.setVisible(true);
+                map_lfimg.setVisible(false);
+                map_lf_text2.setVisible(false);
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+        }else {
+                mapRSServiceLayer.setVisible(false);
+                mapRStextLayer.setVisible(false);
+                map_lfimg.setVisible(true);
+                map_lf_text2.setVisible(true);
+                mapServiceLayer.setVisible(false);
+                maptextLayer.setVisible(false);
+                map_lf.setVisible(true);
+                map_lf_text.setVisible(true);
+        }
+    }
+
 
     /**
      * eventbus接收地图位置

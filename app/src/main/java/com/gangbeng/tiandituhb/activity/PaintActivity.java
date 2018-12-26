@@ -79,6 +79,7 @@ public class PaintActivity extends BaseActivity {
     private Point ptCurrent;
     private boolean isFirstlocal = true;
     private MapExtent extent;
+    private boolean isIMG=false;
 
 
     @Override
@@ -164,6 +165,7 @@ public class PaintActivity extends BaseActivity {
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscale.refreshScaleView(mapviewPaint.getScale());
+                setLayerVisibale();
             }
         });
 
@@ -178,6 +180,35 @@ public class PaintActivity extends BaseActivity {
         });
         mapzoom.setMapView(mapviewPaint);
     }
+
+    private void setLayerVisibale() {
+        if (mapviewPaint.getScale()>9027.9993438721) {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(true);
+                mapRStextLayer.setVisible(true);
+                map_lfimg.setVisible(false);
+//                map_lfimg_text.setVisible(false);
+            }else {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+            }
+        }else {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(false);
+                mapRStextLayer.setVisible(false);
+                map_lfimg.setVisible(true);
+//                map_lfimg_text.setVisible(true);
+            }else {
+                mapServiceLayer.setVisible(false);
+                maptextLayer.setVisible(false);
+                map_lf.setVisible(true);
+                map_lf_text.setVisible(true);
+            }
+        }
+    }
+
 
     private void locationGPS() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, 0);
@@ -267,7 +298,7 @@ public class PaintActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.change_map:
-                if (map_lfimg.isVisible()) {
+                if (isIMG) {
                     map_lfimg.setVisible(false);
                     map_lf.setVisible(true);
                     mapRSServiceLayer.setVisible(false);
@@ -282,6 +313,8 @@ public class PaintActivity extends BaseActivity {
                     mapServiceLayer.setVisible(false);
                     maptextLayer.setVisible(false);
                 }
+                isIMG=!isIMG;
+                setLayerVisibale();
                 break;
             case R.id.location_map:
                 mapviewPaint.zoomToScale(ptCurrent, 50000);

@@ -190,6 +190,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private NewBasePresenter uploadpresenter, updatepresenter, grouppresenter;
     private UserEvent user;
     private static MainActivity activity;
+    private boolean isIMG=false;
 
     public static MainActivity getInstense() {
         return activity;
@@ -351,12 +352,41 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscale.refreshScaleView(bmapsView.getScale());
+                setLayerVisibale();
             }
         });
 
         mapzoom.setMapView(bmapsView);
 
         bmapsView.setOnSingleTapListener(mapclick);
+    }
+
+    private void setLayerVisibale() {
+        if (bmapsView.getScale()>9027.9993438721) {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(true);
+                mapRStextLayer.setVisible(true);
+                map_lfimg.setVisible(false);
+                map_lfimg_text.setVisible(false);
+            }else {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+            }
+        }else {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(false);
+                mapRStextLayer.setVisible(false);
+                map_lfimg.setVisible(true);
+                map_lfimg_text.setVisible(true);
+            }else {
+                mapServiceLayer.setVisible(false);
+                maptextLayer.setVisible(false);
+                map_lf.setVisible(true);
+                map_lf_text.setVisible(true);
+            }
+        }
     }
 
     private void setPointRequest(Point point, String distence) {
@@ -459,7 +489,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 skip(AroundActivity.class, false);
                 break;
             case R.id.change_map:
-                if (map_lfimg.isVisible()) {
+                if (isIMG) {
                     map_lfimg.setVisible(false);
                     map_lfimg_text.setVisible(false);
                     map_lf.setVisible(true);
@@ -478,6 +508,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     mapServiceLayer.setVisible(false);
                     maptextLayer.setVisible(false);
                 }
+                isIMG=!isIMG;
+                setLayerVisibale();
                 break;
             case R.id.bt_navi:
                 setEventBus("navi");

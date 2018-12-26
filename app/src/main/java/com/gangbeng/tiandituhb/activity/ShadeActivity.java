@@ -59,6 +59,7 @@ public class ShadeActivity extends BaseActivity {
     private TianDiTuTiledMapServiceLayer maptextLayer2, mapServiceLayer2, mapRStextLayer2, mapRSServiceLayer2;
     private MapView mapview1Shade, mapview2Shade;
     private MapExtent extent;
+    private boolean isIMG=true;
 
     @Override
     protected void initView() {
@@ -180,11 +181,13 @@ public class ShadeActivity extends BaseActivity {
             @Override
             public void preAction(float v, float v1, double v2) {
                 setMapView2Center();
+                setLayerVisibale(mapview1Shade);
             }
 
             @Override
             public void postAction(float v, float v1, double v2) {
                 setMapView2Center();
+                setLayerVisibale(mapview1Shade);
             }
         });
 
@@ -252,11 +255,13 @@ public class ShadeActivity extends BaseActivity {
             @Override
             public void preAction(float v, float v1, double v2) {
                 setMapView1Center();
+                setLayerVisibale(mapview2Shade);
             }
 
             @Override
             public void postAction(float v, float v1, double v2) {
                 setMapView1Center();
+                setLayerVisibale(mapview2Shade);
             }
         });
 
@@ -364,7 +369,7 @@ public class ShadeActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.change_shade:
                 MyLogUtil.showLog("11111");
-                if (mapRSServiceLayer2.isVisible()) {
+                if (isIMG) {
                     mapRSServiceLayer2.setVisible(false);
                     mapRStextLayer2.setVisible(false);
                     map_lfimg2.setVisible(false);
@@ -391,8 +396,51 @@ public class ShadeActivity extends BaseActivity {
                     maptextLayer.setVisible(false);
                     map_lf.setVisible(false);
                 }
+                isIMG=!isIMG;
+                setLayerVisibale(mapview1Shade);
                 break;
         }
 
     }
+
+    private void setLayerVisibale(MapView bmapsView) {
+        if (bmapsView.getScale()>9027.9993438721) {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(true);
+                mapRStextLayer.setVisible(true);
+                map_lfimg.setVisible(false);
+                mapRSServiceLayer2.setVisible(true);
+                mapRStextLayer2.setVisible(true);
+                map_lfimg2.setVisible(false);
+//                map_lfimg_text.setVisible(false);
+            }else {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                mapServiceLayer2.setVisible(true);
+                maptextLayer2.setVisible(true);
+                map_lf2.setVisible(false);
+//                map_lf_text.setVisible(false);
+            }
+        }else {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(false);
+                mapRStextLayer.setVisible(false);
+                map_lfimg.setVisible(true);
+                mapRSServiceLayer2.setVisible(false);
+                mapRStextLayer2.setVisible(false);
+                map_lfimg2.setVisible(true);
+//                map_lfimg_text.setVisible(true);
+            }else {
+                mapServiceLayer.setVisible(false);
+                maptextLayer.setVisible(false);
+                map_lf.setVisible(true);
+                mapServiceLayer2.setVisible(false);
+                maptextLayer2.setVisible(false);
+                map_lf2.setVisible(true);
+//                map_lf_text.setVisible(true);
+            }
+        }
+    }
+
 }

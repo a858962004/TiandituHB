@@ -130,6 +130,7 @@ public class CalculateMapActivity extends BaseActivity {
     private GoogleApiClient client;
     private Callout callout;
     private Point changePoint = null;
+    private boolean isIMG=false;
 
 
     @Override
@@ -212,6 +213,7 @@ public class CalculateMapActivity extends BaseActivity {
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscale.refreshScaleView(mapCalculate.getScale());
+                setLayerVisibale();
             }
         });
         mapCalculate.setOnStatusChangedListener(new OnStatusChangedListener() {
@@ -269,6 +271,35 @@ public class CalculateMapActivity extends BaseActivity {
             addOldPoint();
         }
     }
+
+    private void setLayerVisibale() {
+        if (mapCalculate.getScale()>9027.9993438721) {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(true);
+                mapRStextLayer.setVisible(true);
+                map_lfimg.setVisible(false);
+//                map_lfimg_text.setVisible(false);
+            }else {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+            }
+        }else {
+            if (isIMG){
+                mapRSServiceLayer.setVisible(false);
+                mapRStextLayer.setVisible(false);
+                map_lfimg.setVisible(true);
+//                map_lfimg_text.setVisible(true);
+            }else {
+                mapServiceLayer.setVisible(false);
+                maptextLayer.setVisible(false);
+                map_lf.setVisible(true);
+                map_lf_text.setVisible(true);
+            }
+        }
+    }
+
 
     private void addOldPoint() {
         List<Point> pointList = new ArrayList<>();
@@ -397,7 +428,7 @@ public class CalculateMapActivity extends BaseActivity {
                 }
                 break;
             case R.id.change_calulate:
-                if (map_lfimg.isVisible()) {
+                if (isIMG) {
                     map_lfimg.setVisible(false);
                     map_lf.setVisible(true);
                     mapRSServiceLayer.setVisible(false);
@@ -412,6 +443,8 @@ public class CalculateMapActivity extends BaseActivity {
                     mapServiceLayer.setVisible(false);
                     maptextLayer.setVisible(false);
                 }
+                isIMG=!isIMG;
+                setLayerVisibale();
                 break;
             case R.id.location_calculate:
                 mapCalculate.zoomToScale(lacation, 50000);
