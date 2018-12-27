@@ -121,39 +121,11 @@ public class RoutMapActivity extends BaseActivity {
 
             @Override
             public void postAction(float v, float v1, double v2) {
-                setLayerVisibale();
             }
         });
 
     }
 
-    private void setLayerVisibale() {
-        if (idRoutmap.getScale()>9027.9993438721) {
-//            if (isIMG){
-//                mapRSServiceLayer.setVisible(true);
-//                mapRStextLayer.setVisible(true);
-//                map_lfimg.setVisible(false);
-//                map_lfimg_text.setVisible(false);
-//            }else {
-                mapServiceLayer.setVisible(true);
-                maptextLayer.setVisible(true);
-                map_lf.setVisible(false);
-                map_lf_text.setVisible(false);
-//            }
-        }else {
-//            if (isIMG){
-//                mapRSServiceLayer.setVisible(false);
-//                mapRStextLayer.setVisible(false);
-//                map_lfimg.setVisible(true);
-//                map_lfimg_text.setVisible(true);
-//            }else {
-                mapServiceLayer.setVisible(false);
-                maptextLayer.setVisible(false);
-                map_lf.setVisible(true);
-                map_lf_text.setVisible(true);
-//            }
-        }
-    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

@@ -24,24 +24,24 @@ import java.util.concurrent.RejectedExecutionException;
 /**
  * Created by admin on 2016/6/22.
  */
-public class TianDiTuLFServiceLayer extends TiledServiceLayer {
+public class TianDiTuLFNewServiceLayer extends TiledServiceLayer {
 
     private TianDiTuTiledMapServiceType _mapType;
     private TileInfo tiandituTileInfo;
 
-    public TianDiTuLFServiceLayer() {
+    public TianDiTuLFNewServiceLayer() {
         this(null, null, true);
     }
 
-    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType) {
+    public TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType mapType) {
         this(mapType, null, true);
     }
 
-    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials) {
+    public TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials) {
         this(mapType, usercredentials, true);
     }
 
-    public TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials, boolean flag) {
+    public TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType mapType, UserCredentials usercredentials, boolean flag) {
         super("");
         this._mapType = mapType;
         setCredentials(usercredentials);
@@ -54,11 +54,11 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
                         a.initLayer();
                     }
 
-                    final TianDiTuLFServiceLayer a;
+                    final TianDiTuLFNewServiceLayer a;
 
 
                     {
-                        a = TianDiTuLFServiceLayer.this;
+                        a = TianDiTuLFNewServiceLayer.this;
                         //super();
                     }
                 });
@@ -94,11 +94,11 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
                         }
                 }
 
-                final TianDiTuLFServiceLayer a;
+                final TianDiTuLFNewServiceLayer a;
 
 
                 {
-                    a = TianDiTuLFServiceLayer.this;
+                    a = TianDiTuLFNewServiceLayer.this;
                     //super();
                 }
             });
@@ -119,10 +119,10 @@ public class TianDiTuLFServiceLayer extends TiledServiceLayer {
          * */
 
         MyLogUtil.showLog("xzqlayer",_mapType+"----"+level + "----" + col + "----" + row);
-        if (Contant.ins().getMaplevel()!=-1&&level!=Contant.ins().getMaplevel()){
+        if (Contant.ins().getNewmaplevel()!=-1&&level!=Contant.ins().getNewmaplevel()){
             return null;
         }
-        Contant.ins().setMaplevel(level);
+        Contant.ins().setNewmaplevel(level);
 
 //        MyLogUtil.showLog("maplayer",_mapType+"----"+level + "----" + col + "----" + row);
 

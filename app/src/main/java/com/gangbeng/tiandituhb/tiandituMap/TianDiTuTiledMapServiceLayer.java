@@ -8,6 +8,7 @@ import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.SpatialReference;
 import com.esri.core.io.UserCredentials;
+import com.gangbeng.tiandituhb.utils.MyLogUtil;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -113,6 +114,12 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
 
     @Override
     protected byte[] getTile(final int level, final int col, final int row) throws Exception {
+
+        if (_mapType== TianDiTuTiledMapServiceType.XZQ_C) {
+            MyLogUtil.showLog("maplayer","xzq----"+level + "----" + col + "----" + row);
+        }
+//        MyLogUtil.showLog("maplayer","tianditu----"+level + "----" + col + "----" + row);
+
         /**
          *
          * */

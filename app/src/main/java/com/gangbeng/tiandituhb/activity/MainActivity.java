@@ -178,8 +178,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     @BindView(R.id.img_hefeng)
     ImageView imgHefeng;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text,map_cj,map_tdlyxz, map_xzq;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_cj, map_tdlyxz,map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
+//    private TianDiTuLFXZQLayer map_xzq;
     private GraphicsLayer pointlayer, weatherlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
@@ -190,7 +191,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private NewBasePresenter uploadpresenter, updatepresenter, grouppresenter;
     private UserEvent user;
     private static MainActivity activity;
-    private boolean isIMG=false;
+    private boolean isIMG = false;
 
     public static MainActivity getInstense() {
         return activity;
@@ -304,14 +305,15 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
+//        map_xzq2=new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         map_lfimg_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
         map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
-        map_cj=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CJ_C);
-        map_tdlyxz=new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
+        map_cj = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CJ_C);
+        map_tdlyxz = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
         pointlayer = new GraphicsLayer();
         weatherlayer = new GraphicsLayer();
         bmapsView.setMaxScale(500);
@@ -323,8 +325,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
         bmapsView.addLayer(map_lf, 4);
         bmapsView.addLayer(map_lfimg, 5);
-        bmapsView.addLayer(map_tdlyxz,6);
-        bmapsView.addLayer(map_cj,7);
+        bmapsView.addLayer(map_tdlyxz, 6);
+        bmapsView.addLayer(map_cj, 7);
         bmapsView.addLayer(map_xzq, 8);
         bmapsView.addLayer(map_lf_text, 9);
         bmapsView.addLayer(map_lfimg_text, 10);
@@ -347,12 +349,19 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         bmapsView.setOnZoomListener(new OnZoomListener() {
             @Override
             public void preAction(float v, float v1, double v2) {
+
             }
 
             @Override
             public void postAction(float v, float v1, double v2) {
                 mapviewscale.refreshScaleView(bmapsView.getScale());
                 setLayerVisibale();
+                Contant.ins().setMaplevel(-1);
+                map_xzq.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
+                map_lfimg.refresh();
+                map_lfimg_text.refresh();
             }
         });
 
@@ -362,25 +371,25 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     }
 
     private void setLayerVisibale() {
-        if (bmapsView.getScale()>9027.9993438721) {
-            if (isIMG){
+        if (isIMG) {
+            if (bmapsView.getScale() > 9027.9993438721) {
                 mapRSServiceLayer.setVisible(true);
                 mapRStextLayer.setVisible(true);
                 map_lfimg.setVisible(false);
                 map_lfimg_text.setVisible(false);
-            }else {
-                mapServiceLayer.setVisible(true);
-                maptextLayer.setVisible(true);
-                map_lf.setVisible(false);
-                map_lf_text.setVisible(false);
-            }
-        }else {
-            if (isIMG){
+            } else {
                 mapRSServiceLayer.setVisible(false);
                 mapRStextLayer.setVisible(false);
                 map_lfimg.setVisible(true);
                 map_lfimg_text.setVisible(true);
-            }else {
+            }
+        } else {
+            if (bmapsView.getScale() > 36111.997375488) {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+            } else {
                 mapServiceLayer.setVisible(false);
                 maptextLayer.setVisible(false);
                 map_lf.setVisible(true);
@@ -508,7 +517,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     mapServiceLayer.setVisible(false);
                     maptextLayer.setVisible(false);
                 }
-                isIMG=!isIMG;
+                isIMG = !isIMG;
                 setLayerVisibale();
                 break;
             case R.id.bt_navi:
@@ -634,20 +643,20 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 setEventBus("route");
                 if (!islocation) {
                     EndPoint endPoint = new EndPoint();
-                    String name="";
-                    if (!bean.getProperties().get简称().equals("")){
-                        name=bean.getProperties().get简称();
-                    }else {
-                        if (!bean.getProperties().get名称().equals("")){
-                            name=bean.getProperties().get名称();
-                        }else {
-                            if (!bean.getProperties().get兴趣点().equals("")){
-                                name=bean.getProperties().get兴趣点();
-                            }else {
-                                if (!bean.getProperties().get描述().equals("")){
-                                    name=bean.getProperties().get描述();
-                                }else {
-                                    name=bean.getProperties().get备注();
+                    String name = "";
+                    if (!bean.getProperties().get简称().equals("")) {
+                        name = bean.getProperties().get简称();
+                    } else {
+                        if (!bean.getProperties().get名称().equals("")) {
+                            name = bean.getProperties().get名称();
+                        } else {
+                            if (!bean.getProperties().get兴趣点().equals("")) {
+                                name = bean.getProperties().get兴趣点();
+                            } else {
+                                if (!bean.getProperties().get描述().equals("")) {
+                                    name = bean.getProperties().get描述();
+                                } else {
+                                    name = bean.getProperties().get备注();
                                 }
                             }
                         }
@@ -819,20 +828,20 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         if (islocation) {
 //            Graphic g = new Graphic(ptCurrent, picSymbol);
 //            pointlayer.addGraphic(g);
-            String name="";
-            if (!bean.getProperties().get简称().equals("")){
-                name=bean.getProperties().get简称();
-            }else {
-                if (!bean.getProperties().get名称().equals("")){
-                    name=bean.getProperties().get名称();
-                }else {
-                    if (!bean.getProperties().get兴趣点().equals("")){
-                        name=bean.getProperties().get兴趣点();
-                    }else {
-                        if (!bean.getProperties().get描述().equals("")){
-                            name=bean.getProperties().get描述();
-                        }else {
-                            name=bean.getProperties().get备注();
+            String name = "";
+            if (!bean.getProperties().get简称().equals("")) {
+                name = bean.getProperties().get简称();
+            } else {
+                if (!bean.getProperties().get名称().equals("")) {
+                    name = bean.getProperties().get名称();
+                } else {
+                    if (!bean.getProperties().get兴趣点().equals("")) {
+                        name = bean.getProperties().get兴趣点();
+                    } else {
+                        if (!bean.getProperties().get描述().equals("")) {
+                            name = bean.getProperties().get描述();
+                        } else {
+                            name = bean.getProperties().get备注();
                         }
                     }
                 }
@@ -844,20 +853,20 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             Point point = zoom2bean(bean.getGeometry().getCoordinates());
             Graphic g = new Graphic(point, picSymbol);
             pointlayer.addGraphic(g);
-            String name="";
-            if (!bean.getProperties().get简称().equals("")){
-                name=bean.getProperties().get简称();
-            }else {
-                if (!bean.getProperties().get名称().equals("")){
-                    name=bean.getProperties().get名称();
-                }else {
-                    if (!bean.getProperties().get兴趣点().equals("")){
-                        name=bean.getProperties().get兴趣点();
-                    }else {
-                        if (!bean.getProperties().get描述().equals("")){
-                            name=bean.getProperties().get描述();
-                        }else {
-                            name=bean.getProperties().get备注();
+            String name = "";
+            if (!bean.getProperties().get简称().equals("")) {
+                name = bean.getProperties().get简称();
+            } else {
+                if (!bean.getProperties().get名称().equals("")) {
+                    name = bean.getProperties().get名称();
+                } else {
+                    if (!bean.getProperties().get兴趣点().equals("")) {
+                        name = bean.getProperties().get兴趣点();
+                    } else {
+                        if (!bean.getProperties().get描述().equals("")) {
+                            name = bean.getProperties().get描述();
+                        } else {
+                            name = bean.getProperties().get备注();
                         }
                     }
                 }
@@ -996,12 +1005,12 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     OnSingleTapListener mapclick = new OnSingleTapListener() {
         @Override
         public void onSingleTap(float v, float v1) {
-            MyLogUtil.showLog(bmapsView.getScale());
+            MyLogUtil.showLog("maplayer", bmapsView.getScale());
             islocation = false;
             hideBottom();
             Point point = bmapsView.toMapPoint(v, v1);
             setPointRequest(point, "5");
-            MyLogUtil.showLog(bmapsView.getSpatialReference().toString());
+
         }
     };
 

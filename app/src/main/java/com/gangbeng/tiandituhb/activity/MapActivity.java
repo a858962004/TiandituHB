@@ -35,6 +35,7 @@ import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
+import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.ChannelEvent;
 import com.gangbeng.tiandituhb.event.EndPoint;
@@ -42,7 +43,7 @@ import com.gangbeng.tiandituhb.event.IsStart;
 import com.gangbeng.tiandituhb.event.MapExtent;
 import com.gangbeng.tiandituhb.event.StartPoint;
 import com.gangbeng.tiandituhb.presenter.AroundSearchPresenter;
-import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
+import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFNewServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
@@ -108,7 +109,7 @@ public class MapActivity extends BaseActivity implements BaseView {
     @BindView(R.id.ll_button)
     LinearLayout llButton;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
+    private TianDiTuLFNewServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private GraphicsLayer pointlayer;
     private LocationDisplayManager ldm;
@@ -280,6 +281,7 @@ public class MapActivity extends BaseActivity implements BaseView {
     }
 
     private void setMapView() {
+        Contant.ins().setNewmaplevel(Contant.ins().getMaplevel());
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
@@ -288,10 +290,10 @@ public class MapActivity extends BaseActivity implements BaseView {
 
         pointlayer = new GraphicsLayer();
 
-        map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
-        map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
-        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        map_lf = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
+        map_lf_text = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map_xzq = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_lfimg = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
 
         idMap.setMaxScale(500);
 
@@ -326,6 +328,11 @@ public class MapActivity extends BaseActivity implements BaseView {
             public void postAction(float v, float v1, double v2) {
                 mapviewscale.refreshScaleView(idMap.getScale());
                 setLayerVisibale();
+                Contant.ins().setNewmaplevel(-1);
+                map_xzq.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
+                map_lfimg.refresh();
             }
         });
         mapzoom.setMapView(idMap);
@@ -333,25 +340,25 @@ public class MapActivity extends BaseActivity implements BaseView {
     }
 
     private void setLayerVisibale() {
-        if (idMap.getScale()>9027.9993438721) {
-            if (isIMG){
+        if (isIMG) {
+            if (idMap.getScale() > 9027.9993438721) {
                 mapRSServiceLayer.setVisible(true);
                 mapRStextLayer.setVisible(true);
                 map_lfimg.setVisible(false);
 //                map_lfimg_text.setVisible(false);
-            }else {
-                mapServiceLayer.setVisible(true);
-                maptextLayer.setVisible(true);
-                map_lf.setVisible(false);
-                map_lf_text.setVisible(false);
-            }
-        }else {
-            if (isIMG){
+            } else {
                 mapRSServiceLayer.setVisible(false);
                 mapRStextLayer.setVisible(false);
                 map_lfimg.setVisible(true);
 //                map_lfimg_text.setVisible(true);
-            }else {
+            }
+        } else {
+            if (idMap.getScale() > 36111.997375488) {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+            } else {
                 mapServiceLayer.setVisible(false);
                 maptextLayer.setVisible(false);
                 map_lf.setVisible(true);

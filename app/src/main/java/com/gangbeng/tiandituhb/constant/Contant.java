@@ -15,7 +15,24 @@ public class Contant {
     private boolean isnewest=true;
     private boolean isNormalQuit;
     private String updateUrl;
+    private int maplevel=-1;
+    private int newmaplevel=-1;
 
+    public int getNewmaplevel() {
+        return newmaplevel;
+    }
+
+    public void setNewmaplevel(int newmaplevel) {
+        this.newmaplevel = newmaplevel;
+    }
+
+    public int getMaplevel() {
+        return maplevel;
+    }
+
+    public void setMaplevel(int maplevel) {
+        this.maplevel = maplevel;
+    }
 
     public String getUpdateUrl() {
         return updateUrl;

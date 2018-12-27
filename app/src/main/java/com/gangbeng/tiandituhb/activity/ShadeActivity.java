@@ -17,8 +17,9 @@ import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.event.MapExtent;
-import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
+import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFNewServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
@@ -52,10 +53,10 @@ public class ShadeActivity extends BaseActivity {
     @BindView(R.id.change_shade)
     CardView changeShade;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_tdlyxz;
+    private TianDiTuLFNewServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_tdlyxz;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
 
-    private TianDiTuLFServiceLayer map_lf_text2, map_lf2, map_lfimg2, map_xzq2;
+    private TianDiTuLFNewServiceLayer map_lf_text2, map_lf2, map_lfimg2, map_xzq2;
     private TianDiTuTiledMapServiceLayer maptextLayer2, mapServiceLayer2, mapRStextLayer2, mapRSServiceLayer2;
     private MapView mapview1Shade, mapview2Shade;
     private MapExtent extent;
@@ -125,16 +126,17 @@ public class ShadeActivity extends BaseActivity {
     }
 
     private void setMapView() {
+        Contant.ins().setNewmaplevel(Contant.ins().getMaplevel());
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
 
-        map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
-        map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_lf = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
+        map_lf_text = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map_lfimg = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        map_xzq = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
 
         mapServiceLayer2 = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
@@ -142,12 +144,12 @@ public class ShadeActivity extends BaseActivity {
         mapRSServiceLayer2 = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         mapRStextLayer2 = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
 
-        map_lf2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
-        map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map_lfimg2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_lf2 = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
+        map_lf_text2 = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map_lfimg2 = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        map_xzq2 = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
-        map_tdlyxz = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
+        map_tdlyxz = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.TDLYXZ_C);
         mapview2Shade.setMaxScale(500);
         mapview2Shade.addLayer(mapRSServiceLayer2, 0);
         mapview2Shade.addLayer(mapRStextLayer2, 1);
@@ -188,6 +190,15 @@ public class ShadeActivity extends BaseActivity {
             public void postAction(float v, float v1, double v2) {
                 setMapView2Center();
                 setLayerVisibale(mapview1Shade);
+                Contant.ins().setNewmaplevel(-1);
+                map_xzq.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
+                map_lfimg.refresh();
+                map_xzq2.refresh();
+                map_lf2.refresh();
+                map_lf_text2.refresh();
+                map_lfimg2.refresh();
             }
         });
 
@@ -262,6 +273,15 @@ public class ShadeActivity extends BaseActivity {
             public void postAction(float v, float v1, double v2) {
                 setMapView1Center();
                 setLayerVisibale(mapview2Shade);
+                Contant.ins().setNewmaplevel(-1);
+                map_xzq.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
+                map_lfimg.refresh();
+                map_xzq2.refresh();
+                map_lf2.refresh();
+                map_lf_text2.refresh();
+                map_lfimg2.refresh();
             }
         });
 
@@ -404,41 +424,27 @@ public class ShadeActivity extends BaseActivity {
     }
 
     private void setLayerVisibale(MapView bmapsView) {
-        if (bmapsView.getScale()>9027.9993438721) {
-            if (isIMG){
+        if (isIMG) {
+            if (bmapsView.getScale() > 9027.9993438721) {
                 mapRSServiceLayer.setVisible(true);
                 mapRStextLayer.setVisible(true);
                 map_lfimg.setVisible(false);
-                mapRSServiceLayer2.setVisible(true);
-                mapRStextLayer2.setVisible(true);
-                map_lfimg2.setVisible(false);
-//                map_lfimg_text.setVisible(false);
-            }else {
-                mapServiceLayer.setVisible(true);
-                maptextLayer.setVisible(true);
-                map_lf.setVisible(false);
-                mapServiceLayer2.setVisible(true);
-                maptextLayer2.setVisible(true);
-                map_lf2.setVisible(false);
-//                map_lf_text.setVisible(false);
-            }
-        }else {
-            if (isIMG){
+            } else {
                 mapRSServiceLayer.setVisible(false);
                 mapRStextLayer.setVisible(false);
                 map_lfimg.setVisible(true);
-                mapRSServiceLayer2.setVisible(false);
-                mapRStextLayer2.setVisible(false);
-                map_lfimg2.setVisible(true);
-//                map_lfimg_text.setVisible(true);
-            }else {
+            }
+        } else {
+            if (bmapsView.getScale() > 36111.997375488) {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+            } else {
                 mapServiceLayer.setVisible(false);
                 maptextLayer.setVisible(false);
                 map_lf.setVisible(true);
-                mapServiceLayer2.setVisible(false);
-                maptextLayer2.setVisible(false);
-                map_lf2.setVisible(true);
-//                map_lf_text.setVisible(true);
+                map_lf_text.setVisible(true);
             }
         }
     }

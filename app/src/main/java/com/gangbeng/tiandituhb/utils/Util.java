@@ -358,4 +358,36 @@ public class Util {
         } } else { Toast.makeText(context, "删除单个文件失败：" + filePath$Name + "不存在！", Toast.LENGTH_SHORT).show();
             return false;
         } }
+
+    public static int getScaleLevel(double scale){
+        int level=0;
+        if (scale<4513.999671936) {
+            level=8;
+            return level;
+        }
+        if (scale>1155583.9160156){
+            level=0;
+            return level;
+        }
+        double[] scalearrays = {
+                1155583.9160156,
+                577791.95800781,
+                288895.97900391,
+                144447.98950195,
+                72223.994750977,
+                36111.997375488,
+                18055.998687744,
+                9027.9993438721,
+                4513.999671936,
+        };
+        for (int i = 0; i < scalearrays.length; i++) {
+            if (scale<scalearrays[i]){
+                continue;
+            }else {
+                level=i-1;
+                return level;
+            }
+        }
+        return level;
+    }
 }

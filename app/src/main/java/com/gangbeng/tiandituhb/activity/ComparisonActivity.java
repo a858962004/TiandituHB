@@ -12,8 +12,9 @@ import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.event.MapExtent;
-import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
+import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFNewServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
@@ -36,7 +37,7 @@ public class ComparisonActivity extends BaseActivity {
     @BindView(R.id.mapview2_comparison)
     MapView mapview2Comparison;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_lf_text2, map_xzq2;
+    private TianDiTuLFNewServiceLayer map_lf_text, map_lf, map_lfimg, map_xzq, map_lf_text2, map_xzq2;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
     private LocationDisplayManager ldm, ldm2;
     private boolean isFirstlocal = true;
@@ -62,18 +63,19 @@ public class ComparisonActivity extends BaseActivity {
     }
 
     private void setMapView() {
+        Contant.ins().setNewmaplevel(Contant.ins().getMaplevel());
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
         mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
         mapRStextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CIA_C);
 
-        map_lf = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
-        map_lf_text = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map_lfimg = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
-        map_xzq = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
-        map_lf_text2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
-        map_xzq2 = new TianDiTuLFServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_lf = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
+        map_lf_text = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map_lfimg = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
+        map_xzq = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
+        map_lf_text2 = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
+        map_xzq2 = new TianDiTuLFNewServiceLayer(TianDiTuTiledMapServiceType.XZQ_C);
 
         mapview1Comparison.setMaxScale(500);
         mapview1Comparison.addLayer(mapServiceLayer, 0);
@@ -104,6 +106,13 @@ public class ComparisonActivity extends BaseActivity {
                 Point center = mapview1Comparison.getCenter();
                 mapview2Comparison.zoomToScale(center, scale);
                 setLayerVisibale(mapview1Comparison);
+                Contant.ins().setNewmaplevel(-1);
+                map_xzq.refresh();
+                map_xzq2.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
+                map_lfimg.refresh();
+                map_lf_text2.refresh();
             }
         });
 
@@ -205,6 +214,13 @@ public class ComparisonActivity extends BaseActivity {
                 Point center = mapview2Comparison.getCenter();
                 mapview1Comparison.zoomToScale(center, scale);
                 setLayerVisibale(mapview2Comparison);
+                Contant.ins().setNewmaplevel(-1);
+                map_xzq.refresh();
+                map_xzq2.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
+                map_lfimg.refresh();
+                map_lf_text2.refresh();
             }
         });
 
@@ -317,19 +333,19 @@ public class ComparisonActivity extends BaseActivity {
                 mapRStextLayer.setVisible(true);
                 map_lfimg.setVisible(false);
                 map_lf_text2.setVisible(false);
-                mapServiceLayer.setVisible(true);
-                maptextLayer.setVisible(true);
-                map_lf.setVisible(false);
-                map_lf_text.setVisible(false);
+//                mapServiceLayer.setVisible(true);
+//                maptextLayer.setVisible(true);
+//                map_lf.setVisible(false);
+//                map_lf_text.setVisible(false);
         }else {
                 mapRSServiceLayer.setVisible(false);
                 mapRStextLayer.setVisible(false);
                 map_lfimg.setVisible(true);
                 map_lf_text2.setVisible(true);
-                mapServiceLayer.setVisible(false);
-                maptextLayer.setVisible(false);
-                map_lf.setVisible(true);
-                map_lf_text.setVisible(true);
+//                mapServiceLayer.setVisible(false);
+//                maptextLayer.setVisible(false);
+//                map_lf.setVisible(true);
+//                map_lf_text.setVisible(true);
         }
     }
 
