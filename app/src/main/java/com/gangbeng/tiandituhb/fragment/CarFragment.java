@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.MapView;
+import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Line;
 import com.esri.core.geometry.Point;
@@ -27,6 +28,7 @@ import com.gangbeng.tiandituhb.base.BaseFragment;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.DriveRouteBean;
+import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
 import com.gangbeng.tiandituhb.presenter.DrivePresenter;
@@ -94,6 +96,7 @@ public class CarFragment extends BaseFragment implements BaseView {
 
     private void setMapView() {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
+        Contant.ins().setMaplevel(-1);
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
 //        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
@@ -122,7 +125,38 @@ public class CarFragment extends BaseFragment implements BaseView {
 //        mapRSServiceLayer.setVisible(false);
 //        mapRStextLayer.setVisible(false);
 //        map_lfimg.setVisible(false);
+        mapCarfragment.setOnZoomListener(new OnZoomListener() {
+            @Override
+            public void preAction(float v, float v1, double v2) {
+
+            }
+
+            @Override
+            public void postAction(float v, float v1, double v2) {
+
+                setLayerVisibale();
+                Contant.ins().setMaplevel(-1);
+                map_xzq.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
+            }
+        });
     }
+
+    private void setLayerVisibale() {
+            if (mapCarfragment.getScale() > 36111.997375488) {
+                mapServiceLayer.setVisible(true);
+                maptextLayer.setVisible(true);
+                map_lf.setVisible(false);
+                map_lf_text.setVisible(false);
+            } else {
+                mapServiceLayer.setVisible(false);
+                maptextLayer.setVisible(false);
+                map_lf.setVisible(true);
+                map_lf_text.setVisible(true);
+            }
+        }
+
 
     private void getData() {
         Gps startgps = points.get(0);

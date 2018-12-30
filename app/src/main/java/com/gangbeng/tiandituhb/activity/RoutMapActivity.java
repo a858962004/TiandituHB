@@ -22,6 +22,7 @@ import com.esri.core.symbol.SimpleLineSymbol;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.bean.BusBean;
+import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
@@ -84,6 +85,7 @@ public class RoutMapActivity extends BaseActivity {
 
     private void setMapView() {
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
+        Contant.ins().setMaplevel(-1);
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
 //        mapRSServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.IMG_C);
@@ -121,11 +123,28 @@ public class RoutMapActivity extends BaseActivity {
 
             @Override
             public void postAction(float v, float v1, double v2) {
+                setLayerVisibale();
+                Contant.ins().setMaplevel(-1);
+                map_xzq.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
             }
         });
-
     }
 
+    private void setLayerVisibale() {
+        if (idRoutmap.getScale() > 36111.997375488) {
+            mapServiceLayer.setVisible(true);
+            maptextLayer.setVisible(true);
+            map_lf.setVisible(false);
+            map_lf_text.setVisible(false);
+        } else {
+            mapServiceLayer.setVisible(false);
+            maptextLayer.setVisible(false);
+            map_lf.setVisible(true);
+            map_lf_text.setVisible(true);
+        }
+    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

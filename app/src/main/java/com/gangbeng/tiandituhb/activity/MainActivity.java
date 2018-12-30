@@ -52,7 +52,6 @@ import com.gangbeng.tiandituhb.bean.CountryBean;
 import com.gangbeng.tiandituhb.bean.NewSearchBean;
 import com.gangbeng.tiandituhb.bean.PointBean;
 import com.gangbeng.tiandituhb.bean.SearchBean;
-import com.gangbeng.tiandituhb.bean.UpdateBean;
 import com.gangbeng.tiandituhb.bean.WeatherBean;
 import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.constant.PubConst;
@@ -212,7 +211,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         setMapView();
         locationGPS();
         setWeather();
-        updatepresenter.setRequest(null, PubConst.LABLE_UPDATE);
+        updatepresenter.setRequest(null, PubConst.LABLE_GETVERSION);
         cbLyxz.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -730,14 +729,16 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         SoapObject soapObject = null;
         if (data instanceof SoapObject) soapObject = (SoapObject) data;
         switch (lable) {
-            case PubConst.LABLE_UPDATE:
-                UpdateBean bean = (UpdateBean) data;
-                String versionCode = bean.getData().getData().getVersionCode();
-                String versionName = bean.getData().getData().getVersionName();
-                String updateUrl = bean.getData().getData().getUpdateUrl();
-                MyLogUtil.showLog("服务器版本：" + versionCode + "----" + versionName);
-                if (Integer.valueOf(versionCode) > BuildConfig.VERSION_CODE) {
-                    Contant.ins().setUpdateUrl(updateUrl);
+            case PubConst.LABLE_GETVERSION:
+                String versionCode = RequestUtil.getSoapObjectValue(soapObject, "versionCode");
+                String versionName = RequestUtil.getSoapObjectValue(soapObject, "versionName");
+//                UpdateBean bean = (UpdateBean) data;
+//                String versionCode = bean.getData().getData().getVersionCode();
+//                String versionName = bean.getData().getData().getVersionName();
+//                String updateUrl = bean.getData().getData().getUpdateUrl();
+//                MyLogUtil.showLog("服务器版本：" + versionCode + "----" + versionName);
+                if (Double.valueOf(versionCode) > BuildConfig.VERSION_CODE) {
+//                    Contant.ins().setUpdateUrl(updateUrl);
                     Contant.ins().setIsnewest(false);
                     imgMoreTab.setVisibility(View.VISIBLE);
                 }

@@ -10,11 +10,18 @@ import android.widget.ListView;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.adpter.MoreLVAdapter;
 import com.gangbeng.tiandituhb.base.BaseActivity;
+import com.gangbeng.tiandituhb.base.NewBasePresenter;
+import com.gangbeng.tiandituhb.base.NewBaseView;
 import com.gangbeng.tiandituhb.constant.Contant;
+import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.event.UserEvent;
+import com.gangbeng.tiandituhb.http.RequestUtil;
+import com.gangbeng.tiandituhb.presenter.UpdatePresenter;
 import com.gangbeng.tiandituhb.utils.SharedUtil;
 import com.gangbeng.tiandituhb.utils.ShowDialog;
 import com.gangbeng.tiandituhb.utils.Util;
+
+import org.ksoap2.serialization.SoapObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,12 +37,13 @@ import butterknife.ButterKnife;
  * @date 2018-08-04
  */
 
-public class MoreActivity extends BaseActivity {
+public class MoreActivity extends BaseActivity implements NewBaseView {
     @BindView(R.id.lv_more)
     ListView lvMore;
     MoreLVAdapter adapter;
 
     public static MoreActivity activity;
+    private NewBasePresenter updatepresenter;
 
     String[] names = new String[]{"登录/注册",
 //            "地块核查",
@@ -57,6 +65,7 @@ public class MoreActivity extends BaseActivity {
         setContentLayout(R.layout.activity_more);
         setToolbarTitle("更多");
         setToolbarRightVisible(false);
+        updatepresenter = new UpdatePresenter(this);
         setListData();
     }
 
@@ -151,7 +160,9 @@ public class MoreActivity extends BaseActivity {
 //                    break;
                 case "版本更新":
                     if (!Contant.ins().isnewest()) {
-                        ShowDialog.update(MoreActivity.this, Contant.ins().getUpdateUrl());
+                        updatepresenter.setRequest(null, PubConst.LABLE_GETNEWVERSION);
+
+//                        ShowDialog.update(MoreActivity.this, Contant.ins().getUpdateUrl());
                     } else {
                         ShowToast("已是最新版本");
                     }
@@ -189,4 +200,30 @@ public class MoreActivity extends BaseActivity {
         }
     };
 
+    @Override
+    public void showMsg(String msg) {
+        ShowToast(msg);
+    }
+
+    @Override
+    public void showLoadingDialog(String lable, String title, String msg, boolean flag) {
+        showProcessDialog(title, msg, flag);
+    }
+
+    @Override
+    public void canelLoadingDialog(String lable) {
+        dismissProcessDialog();
+    }
+
+    @Override
+    public void setData(Object data, String lable) {
+        String result = data.toString();
+        if (!result.equals("")) {
+            String url = result.substring(result.indexOf("=") + 1, result.indexOf(";"));
+            ShowDialog.update(MoreActivity.this, url);
+        } else {
+            showMsg("下载地址获取失败");
+        }
+
+    }
 }

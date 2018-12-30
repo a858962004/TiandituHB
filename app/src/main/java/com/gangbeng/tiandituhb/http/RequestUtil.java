@@ -3,6 +3,7 @@ package com.gangbeng.tiandituhb.http;
 import android.util.Log;
 
 import com.gangbeng.tiandituhb.bean.DKHCInfo;
+import com.gangbeng.tiandituhb.utils.MyLogUtil;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.PropertyInfo;
@@ -57,6 +58,8 @@ public class RequestUtil {
     public static final String ExitShareGroup="ExitShareGroup";//退出当前共享组
     public static final String GetShareGroup="GetShareGroup";//获取用户所在组信息
     public static final String GetGroupShareLocation="GetGroupShareLocation";//获取当前组成员位置
+    public static final String getNewVersion="getNewVersion";//获取版本
+    public static final String getVersion="getVersion";//获取版本号
 
 
     public static String post(String methodName, Map<String,String> param){
@@ -65,11 +68,13 @@ public class RequestUtil {
 
         // 指定WebService的命名空间和调用方法
         SoapObject soapObject = new SoapObject(NAMESPACE,methodName);
-        //设置参数
-        Set<String> keySet = param.keySet();
-        for(String key:keySet){
-            String value = param.get(key);
-            soapObject.addProperty(key,value);
+        if (param!=null){
+            //设置参数
+            Set<String> keySet = param.keySet();
+            for(String key:keySet){
+                String value = param.get(key);
+                soapObject.addProperty(key,value);
+            }
         }
         Log.i("TAG","------------"+methodName);
         // 生成调用WebService方法调用的soap信息，并且指定Soap版本(版本号与jar包一致)
@@ -105,11 +110,13 @@ public class RequestUtil {
 
         // 指定WebService的命名空间和调用方法
         SoapObject soapObject = new SoapObject(NAMESPACE,methodName);
-        //设置参数
-        Set<String> keySet = param.keySet();
-        for(String key:keySet){
-            Object value = param.get(key);
-            soapObject.addProperty(key,value);
+        if (param!=null){
+            //设置参数
+            Set<String> keySet = param.keySet();
+            for(String key:keySet){
+                Object value = param.get(key);
+                soapObject.addProperty(key,value);
+            }
         }
         // 生成调用WebService方法调用的soap信息，并且指定Soap版本(版本号与jar包一致)
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
@@ -133,6 +140,48 @@ public class RequestUtil {
             return object;
         }
     }
+
+
+    public static String postobByBody(String methodName, Map<String,Object> param){
+        String object = "";
+        Log.i("TAG","------------"+methodName);
+
+        // 指定WebService的命名空间和调用方法
+        SoapObject soapObject = new SoapObject(NAMESPACE,methodName);
+        if (param!=null){
+            //设置参数
+            Set<String> keySet = param.keySet();
+            for(String key:keySet){
+                Object value = param.get(key);
+                soapObject.addProperty(key,value);
+            }
+        }
+        // 生成调用WebService方法调用的soap信息，并且指定Soap版本(版本号与jar包一致)
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        envelope.bodyOut = soapObject;
+        envelope.dotNet = true;
+        envelope.setOutputSoapObject(soapObject);
+        try {
+            HttpTransportSE trans = new HttpTransportSE(url,100000);
+            trans.call(NAMESPACE + methodName, envelope);
+
+//            object = (SoapObject) envelope.getResponse();
+            MyLogUtil.showLog(envelope.bodyIn.toString());
+
+//            if("nouser".equals(object)){
+//                object = null;
+//            }
+            object= envelope.bodyIn.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return object;
+        }
+    }
+
 
     public static String getSoapObjectValue(SoapObject soapObject,String name){
         String value="";

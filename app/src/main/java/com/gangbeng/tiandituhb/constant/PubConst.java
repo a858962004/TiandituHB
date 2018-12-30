@@ -35,7 +35,8 @@ public class PubConst {
     public final static String LABLE_NORMAL_QUIT = "LABLE_NORMAL_QUIT";//正常退出
     public final static String LABLE_UNNORMAL_QUIT = "LABLE_UNNORMAL_QUIT";//非正常退出
 
-    public final static String LABLE_UPDATE = "LABLE_UPDATE";//更新
+    public final static String LABLE_GETVERSION = "LABLE_GETVERSION";//获取版本号
+    public final static String LABLE_GETNEWVERSION="LABLE_GETNEWVERSION";//获取下载链接
 
     public final static String LABLE_CREATEGROUP = "CREATEGROUP";//创建分组
     public final static String LABLE_ADDGROUP = "ADDGROUP";//添加分组
@@ -45,7 +46,7 @@ public class PubConst {
     public final static String LABLE_GETGROUPLOCATION="GETGROUPLOCATION";//获取组员位置
     public final static String LABLE_ZOOMGETGROUP="ZOOMGETGROUP";//缩放时获取位置
 
-    //更新接口地址
-    public final static String update = "http://hb9.api.okayapi.com/?s=App.Table.Get&model_name=TiandituLFUpdate&check_code=_6F19660F12F207E04C917F3F380695F1&id=1&app_key=6F19660F12F207E04C917F3F380695F1&sign=5F65D01F75FF7EB8DD0838C246205E61";
+//    //更新接口地址
+//    public final static String update = "http://hb9.api.okayapi.com/?s=App.Table.Get&model_name=TiandituLFUpdate&check_code=_6F19660F12F207E04C917F3F380695F1&id=1&app_key=6F19660F12F207E04C917F3F380695F1&sign=5F65D01F75FF7EB8DD0838C246205E61";
 
 }

@@ -46,9 +46,9 @@ public class ShowDialog {
                 if (!f.exists()) {
                     f.mkdirs();
                 }
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext).setTitle("软件更新").setMessage("您的版本过低,需升级版本才可使用").setCancelable(false).setPositiveButton("更新", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(mContext).setTitle("软件更新").setMessage("您的版本过低,需升级版本才可使用").setCancelable(false).setPositiveButton("更新", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
                         final ProgressDialog progressDialog = new ProgressDialog(mContext);
                         progressDialog.setTitle("下载更新");
                         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -93,12 +93,15 @@ public class ShowDialog {
                                     }
                                 }).start();
                     }
-                });
-
-                builder.show();
-            }
+//                });
+//
+//                builder.show();
+//            }
         }
     }
+
+
+
 
     private static void openFile(Context mContext, File file) {
         // TODO Auto-generated method stub
