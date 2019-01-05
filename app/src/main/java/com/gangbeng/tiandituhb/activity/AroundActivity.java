@@ -395,7 +395,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
                 qury = "yif1 = '14'";
                 break;
             case "文化媒体":
-                qury = "yif1 = '14'";
+                qury = "yif1 = '15'";
                 break;
             case "其他行业":
                 qury = "yif1 = '23' or yif1 = '99'";
