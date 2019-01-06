@@ -25,12 +25,12 @@ import java.util.List;
 
 public class SearchResultAdpter extends BaseAdapter {
     private Context context;
-    private List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data;
+    private List<NewSearchBean.ListBean> data;
     private SearchAdpterCallBack callBack;
     private SearchAdpaterCancelBack cancelBack;
     private boolean isvisible;
 
-    public SearchResultAdpter(Context context, List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data, boolean isvisible) {
+    public SearchResultAdpter(Context context, List<NewSearchBean.ListBean> data, boolean isvisible) {
         this.context = context;
         this.data = data;
         this.isvisible=isvisible;
@@ -59,7 +59,7 @@ public class SearchResultAdpter extends BaseAdapter {
         return position;
     }
 
-    public void addData(List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data) {
+    public void addData(List<NewSearchBean.ListBean> data) {
         this.data.addAll(data);
         notifyDataSetChanged();
     }
@@ -90,26 +90,9 @@ public class SearchResultAdpter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        String name="";
-        if (!data.get(position).getProperties().get简称().equals("")){
-            name=data.get(position).getProperties().get简称();
-        }else {
-            if (!data.get(position).getProperties().get名称().equals("")){
-                name=data.get(position).getProperties().get名称();
-            }else {
-                if (!data.get(position).getProperties().get兴趣点().equals("")){
-                    name=data.get(position).getProperties().get兴趣点();
-                }else {
-                    if (!data.get(position).getProperties().get描述().equals("")){
-                        name=data.get(position).getProperties().get描述();
-                    }else {
-                        name=data.get(position).getProperties().get备注();
-                    }
-                }
-            }
-        }
+        String name=data.get(position).get简称();
         holder.nameTV.setText(name);
-        holder.addressTV.setText(data.get(position).getProperties().get地址());
+        holder.addressTV.setText(data.get(position).get地址());
         if (Util.isCollect(data.get(position))){
             holder.collectIMG.setVisibility(View.GONE);
             holder.collect2IMG.setVisibility(View.VISIBLE);

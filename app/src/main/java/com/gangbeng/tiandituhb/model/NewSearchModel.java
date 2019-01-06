@@ -23,14 +23,12 @@ public class NewSearchModel implements BaseModel {
         String maxitems = String.valueOf(parameter.get("maxitems"));//每页条数
         String page = String.valueOf(parameter.get("page"));//当前页
         String where = String.valueOf(parameter.get("where"));//查询条件
+        String str=String.valueOf(parameter.get("str"));//搜索内容
         OkHttpUtils.get()
                 .url(PubConst.searchapi)
-                .addParams("maxitems", maxitems)
-                .addParams("page", page)
-                .addParams("fieldsout", "*")
-                .addParams("srsout", "EPSG:4490")
-                .addParams("srsin", "EPSG:4490")
-                .addParams("layer", "地名地址更新后数据")
+                .addParams("limit", maxitems)
+                .addParams("offset", page)
+                .addParams("str", str)
                 .addParams("format", "json")
                 .addParams("where", where)
                 .build()
@@ -42,10 +40,13 @@ public class NewSearchModel implements BaseModel {
 
                     @Override
                     public void onResponse(String response, int id) {
-                        response= response.replace("D:\\照片\\兴趣点","");
-                        Gson gson = new Gson();
-                        NewSearchBean newSearchBean = gson.fromJson(response, NewSearchBean.class);
-                        back.success(newSearchBean);
+                        if (response.equals("{\"exceptionCode\":\"400\",\"exceptionText\":\"没有匹配的结果\"}")){
+                            back.failed("未查找到结果");
+                        }else {
+                            Gson gson = new Gson();
+                            NewSearchBean newSearchBean = gson.fromJson(response, NewSearchBean.class);
+                            back.success(newSearchBean);
+                        }
                     }
                 });
 

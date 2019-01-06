@@ -60,6 +60,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +115,7 @@ public class MapActivity extends BaseActivity implements BaseView {
     private GraphicsLayer pointlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent, choosePoint;
-    private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
+    private NewSearchBean.ListBean bean;
     private String key;
     private boolean isFirstlocal = true;
     private BasePresenter presenter;
@@ -134,11 +135,12 @@ public class MapActivity extends BaseActivity implements BaseView {
         setToolbarRightVisible(false);
         presenter = new AroundSearchPresenter(this);
         locationGPS();
-        setMapView();
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         key = bundleExtra.getString("key");
+        setMapView();
+
         if (key.equals("point")) {
-            bean = (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean) bundleExtra.getSerializable("data");
+            bean = (NewSearchBean.ListBean) bundleExtra.getSerializable("data");
             setbottom(bean);
         } else if (key.equals("addPoint")) {
 //            mapviewscale.setVisibility(View.VISIBLE);
@@ -159,7 +161,7 @@ public class MapActivity extends BaseActivity implements BaseView {
                     pointlayer.removeAll();
                     hideBottom();
                     Point point = idMap.toMapPoint(v, v1);
-                    setPointRequest(point,"20");
+                    setPointRequest(point,"5");
                 }
             });
             idMap.setOnStatusChangedListener(new OnStatusChangedListener() {
@@ -183,17 +185,17 @@ public class MapActivity extends BaseActivity implements BaseView {
             AroundActivity.getInstence().finish();
             if (isStart.isstart()) {
                 StartPoint startPoint = new StartPoint();
-                startPoint.setName(bean.getProperties().get名称());
-                String x = String.valueOf(bean.getGeometry().getCoordinates().get(0));
-                String y = String.valueOf(bean.getGeometry().getCoordinates().get(1));
+                startPoint.setName(bean.get简称());
+                String x = String.valueOf(bean.getX());
+                String y = String.valueOf(bean.getY());
                 startPoint.setX(x);
                 startPoint.setY(y);
                 EventBus.getDefault().postSticky(startPoint);
             } else {
                 EndPoint endPoint = new EndPoint();
-                endPoint.setName(bean.getProperties().get名称());
-                String x = String.valueOf(bean.getGeometry().getCoordinates().get(0));
-                String y = String.valueOf(bean.getGeometry().getCoordinates().get(1));
+                endPoint.setName(bean.get简称());
+                String x = String.valueOf(bean.getX());
+                String y = String.valueOf(bean.getY());
                 endPoint.setX(x);
                 endPoint.setY(y);
                 EventBus.getDefault().postSticky(endPoint);
@@ -203,7 +205,7 @@ public class MapActivity extends BaseActivity implements BaseView {
         }
     }
 
-    private void setbottom(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+    private void setbottom(NewSearchBean.ListBean bean) {
         pointlayer.removeAll();
         rlBottom.setVisibility(View.VISIBLE);
         int i = DensityUtil.dip2px(this, 10);
@@ -212,34 +214,20 @@ public class MapActivity extends BaseActivity implements BaseView {
         params.addRule(RelativeLayout.ABOVE, R.id.rl_bottom); //设置控件的位置
         params.setMargins(i1, 0, 0, i);//左上右下
         mapviewscale.setLayoutParams(params);
-        Point point = zoom2bean(bean.getGeometry().getCoordinates());
+        List<Double>coordinates=new ArrayList<>();
+        coordinates.add(bean.getX());
+        coordinates.add(bean.getY());
+        Point point = zoom2bean(coordinates);
         Drawable drawable = getResources().getDrawable(R.mipmap.icon_dingwei03);
         Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
         PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
         picSymbol.setOffsetY(drawable1.getIntrinsicHeight() / 2);
         Graphic g = new Graphic(point, picSymbol);
         pointlayer.addGraphic(g);
-        String name="";
-        if (!bean.getProperties().get简称().equals("")){
-            name=bean.getProperties().get简称();
-        }else {
-            if (!bean.getProperties().get名称().equals("")){
-                name=bean.getProperties().get名称();
-            }else {
-                if (!bean.getProperties().get兴趣点().equals("")){
-                    name=bean.getProperties().get兴趣点();
-                }else {
-                    if (!bean.getProperties().get描述().equals("")){
-                        name=bean.getProperties().get描述();
-                    }else {
-                        name=bean.getProperties().get备注();
-                    }
-                }
-            }
-        }
+        String name=bean.get简称();
         tvName.setText(name);
         tvName.setMaxLines(3);
-        tvAddress.setText(bean.getProperties().get地址());
+        tvAddress.setText(bean.get地址());
         tvAddress.setMaxLines(3);
         if (Util.isCollect(bean)) {
             imgCollect.setVisibility(View.GONE);
@@ -281,7 +269,11 @@ public class MapActivity extends BaseActivity implements BaseView {
     }
 
     private void setMapView() {
-        Contant.ins().setNewmaplevel(Contant.ins().getMaplevel());
+        if (key.equals("point")) {
+            Contant.ins().setNewmaplevel(20);
+        }else {
+            Contant.ins().setNewmaplevel(Contant.ins().getMaplevel());
+        }
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
         mapServiceLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.VEC_C);
         maptextLayer = new TianDiTuTiledMapServiceLayer(TianDiTuTiledMapServiceType.CVA_C);
@@ -314,7 +306,10 @@ public class MapActivity extends BaseActivity implements BaseView {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
                 if (map_xzq == o && status == STATUS.LAYER_LOADED) {
-                    if (key.equals("point")) zoom2bean(bean.getGeometry().getCoordinates());
+                    List<Double>coordinates=new ArrayList<>();
+                    coordinates.add(bean.getX());
+                    coordinates.add(bean.getY());
+                    if (key.equals("point")) zoom2bean(coordinates);
                 }
             }
         });
@@ -428,7 +423,10 @@ public class MapActivity extends BaseActivity implements BaseView {
                 Util.cancelCollect(bean);
                 break;
             case R.id.rl_item:
-                zoom2bean(bean.getGeometry().getCoordinates());
+                List<Double>coordinates=new ArrayList<>();
+                coordinates.add(bean.getX());
+                coordinates.add(bean.getY());
+                zoom2bean(coordinates);
                 break;
             case R.id.ll_around:
                 AroundActivity.getInstence().finish();
@@ -441,27 +439,10 @@ public class MapActivity extends BaseActivity implements BaseView {
                 AroundActivity.getInstence().finish();
                 SearchResultActivity.getInstence().finish();
                 EndPoint endPoint = new EndPoint();
-                String name="";
-                if (!bean.getProperties().get简称().equals("")){
-                    name=bean.getProperties().get简称();
-                }else {
-                    if (!bean.getProperties().get名称().equals("")){
-                        name=bean.getProperties().get名称();
-                    }else {
-                        if (!bean.getProperties().get兴趣点().equals("")){
-                            name=bean.getProperties().get兴趣点();
-                        }else {
-                            if (!bean.getProperties().get描述().equals("")){
-                                name=bean.getProperties().get描述();
-                            }else {
-                                name=bean.getProperties().get备注();
-                            }
-                        }
-                    }
-                }
+                String name=bean.get简称();
                 endPoint.setName(name);
-                endPoint.setX(String.valueOf(bean.getGeometry().getCoordinates().get(0)));
-                endPoint.setY(String.valueOf(bean.getGeometry().getCoordinates().get(1)));
+                endPoint.setX(String.valueOf(bean.getX()));
+                endPoint.setY(String.valueOf(bean.getY()));
                 EventBus.getDefault().postSticky(endPoint);
                 EventBus.getDefault().postSticky(new ChannelEvent("route"));
                 skip(PlanActivity.class, true);
@@ -497,7 +478,7 @@ public class MapActivity extends BaseActivity implements BaseView {
         Bundle bundleExtra = intent.getBundleExtra(PubConst.DATA);
         String key = bundleExtra.getString("key");
         if (key.equals("point")) {
-            bean = (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean) bundleExtra.getSerializable("data");
+            bean = (NewSearchBean.ListBean) bundleExtra.getSerializable("data");
             setbottom(bean);
         }
     }
@@ -577,10 +558,8 @@ public class MapActivity extends BaseActivity implements BaseView {
     public void setData(Object data) {
         if (data instanceof NewSearchBean) {
             NewSearchBean bean = (NewSearchBean) data;
-            NewSearchBean.ContentBean content = bean.getContent();
-            if (content != null) {
-                NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
-                List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
+            if (bean != null) {
+                List<NewSearchBean.ListBean> features1 = bean.getList();
                 if (features1.size() > 0) {
                     this.bean = features1.get(0);
                     setbottom(this.bean);

@@ -51,7 +51,7 @@ public class CollectActivity extends BaseActivity {
     }
 
     private void setData() {
-        List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data = (List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean>) SharedUtil.getSerializeObject("collectpoint");
+        List<NewSearchBean.ListBean> data = (List<NewSearchBean.ListBean>) SharedUtil.getSerializeObject("collectpoint");
         if (data != null&&data.size() != 0) {
             tvNote.setVisibility(View.GONE);
             adpter = new SearchResultAdpter(this, data, false);
@@ -74,50 +74,33 @@ public class CollectActivity extends BaseActivity {
 
     SearchAdpterCallBack callBack = new SearchAdpterCallBack() {
         @Override
-        public void aroundclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+        public void aroundclick(NewSearchBean.ListBean bean) {
 
         }
 
         @Override
-        public void routeclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean,String name) {
+        public void routeclick(NewSearchBean.ListBean bean,String name) {
 
         }
 
         @Override
-        public void itemclick(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+        public void itemclick(NewSearchBean.ListBean bean) {
             if (channelEvent.getChannel().equals("route") || channelEvent.getChannel().equals("navi")) {
                 AroundActivity.getInstence().finish();
-                String name="";
-                if (!bean.getProperties().get简称().equals("")){
-                    name=bean.getProperties().get简称();
-                }else {
-                    if (!bean.getProperties().get名称().equals("")){
-                        name=bean.getProperties().get名称();
-                    }else {
-                        if (!bean.getProperties().get兴趣点().equals("")){
-                            name=bean.getProperties().get兴趣点();
-                        }else {
-                            if (!bean.getProperties().get描述().equals("")){
-                                name=bean.getProperties().get描述();
-                            }else {
-                                name=bean.getProperties().get备注();
-                            }
-                        }
-                    }
-                }
+                String name=bean.get简称();
                 if (isStart.isstart()){
                     StartPoint startPoint = new StartPoint();
                     startPoint.setName(name);
-                    String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
-                    String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
+                    String x=String.valueOf(bean.getX());
+                    String y=String.valueOf(bean.getY());
                     startPoint.setX(x);
                     startPoint.setY(y);
                     EventBus.getDefault().postSticky(startPoint);
                 }else {
                     EndPoint endPoint = new EndPoint();
                     endPoint.setName(name);
-                    String x=String.valueOf(bean.getGeometry().getCoordinates().get(0));
-                    String y=String.valueOf(bean.getGeometry().getCoordinates().get(1));
+                    String x=String.valueOf(bean.getX());
+                    String y=String.valueOf(bean.getY());
                     endPoint.setX(x);
                     endPoint.setY(y);
                     EventBus.getDefault().postSticky(endPoint);

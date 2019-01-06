@@ -36,12 +36,12 @@ import java.util.List;
 
 public class Util {
 
-    public static boolean isCollect(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+    public static boolean isCollect(NewSearchBean.ListBean bean) {
         boolean iscollect = false;
-        List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data = (List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean>) SharedUtil.getSerializeObject("collectpoint");
+        List<NewSearchBean.ListBean> data = (List<NewSearchBean.ListBean>) SharedUtil.getSerializeObject("collectpoint");
         if (data != null) {
-            for (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean poisBean : data) {
-                if (poisBean.getId().equals(bean.getId())) {
+            for (NewSearchBean.ListBean poisBean : data) {
+                if (poisBean.getGid().equals(bean.getGid())) {
                     iscollect = true;
                     return iscollect;
                 }
@@ -50,17 +50,17 @@ public class Util {
         return iscollect;
     }
 
-    public static void setCollect(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
-        List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data = (List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean>) SharedUtil.getSerializeObject("collectpoint");
+    public static void setCollect(NewSearchBean.ListBean bean) {
+        List<NewSearchBean.ListBean> data = (List<NewSearchBean.ListBean>) SharedUtil.getSerializeObject("collectpoint");
         if (data == null) data = new ArrayList<>();
         data.add(bean);
         SharedUtil.saveSerializeObject("collectpoint", data);
     }
 
-    public static void cancelCollect(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
-        List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> data = (List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean>) SharedUtil.getSerializeObject("collectpoint");
-        for (NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean poisBean : data) {
-            if (bean.getId().equals(poisBean.getId())) {
+    public static void cancelCollect(NewSearchBean.ListBean bean) {
+        List<NewSearchBean.ListBean> data = (List<NewSearchBean.ListBean>) SharedUtil.getSerializeObject("collectpoint");
+        for (NewSearchBean.ListBean poisBean : data) {
+            if (bean.getGid().equals(poisBean.getGid())) {
                 data.remove(poisBean);
                 break;
             }

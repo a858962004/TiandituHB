@@ -17,8 +17,8 @@ public class PubConst {
 //public final static String mapurl = "http://222.222.66.230:8719/newmapserver4/rest/services/dmdz/FeatureServer/";
 
     public final static String mapurl = "http://222.222.66.179:8719/newmap/rest/services/lftdtgx/dmdz/FeatureServer/";
-    public final static String searchapi = mapurl + "feature";
-    public final static String aroundapi = mapurl + "feature";
+    public final static String searchapi = "http://222.222.66.179:8719/newmap/rest/services/lftdtgx/dmdzzz/GeoCodeServer/geocode";
+    public final static String aroundapi = "http://222.222.66.179:8719/newmap/rest/services/lftdtgx/dmdzzzys/FeatureServer/feature";
     public final static String weatherapi = "https://free-api.heweather.com/s6/weather";
     public final static String weatherKey = "336d33871eea4a8bbbea6b13f7d692f2";
 

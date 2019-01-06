@@ -80,6 +80,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
     private static AroundActivity activity;
     private ChannelEvent channelEvent;
     private String qury;
+    private String str="*";
     private String geo = "";
     private IsStart isStart;
 
@@ -89,15 +90,15 @@ public class AroundActivity extends BaseActivity implements BaseView {
 
     private int[] sortImgs = new int[]{R.mipmap.icon_gggl, R.mipmap.icon_zzcy, R.mipmap.icon_jrbx, R.mipmap.icon_jtrs
             , R.mipmap.icon_fclp, R.mipmap.icon_shfw, R.mipmap.icon_xxyl, R.mipmap.icon_lyfw
-            , R.mipmap.icon_ylws, R.mipmap.icon_whmt, R.mipmap.icon_qthy};
-    private String[] sortStrs = new String[]{"公共管理", "住宿餐饮", "金融保险", "交通运输", "房产楼盘", "生活服务", "休闲娱乐", "旅游服务"
-            , "医疗卫生", "文化媒体", "其他行业"};
+            , R.mipmap.icon_ylws, R.mipmap.icon_whmt, R.mipmap.icon_qthy,R.mipmap.icon_qthy, R.mipmap.icon_whmt, R.mipmap.icon_qthy,R.mipmap.icon_qthy};
+    private String[] sortStrs = new String[]{"餐饮", "住宿", "购物", "卫生保健", "科教文化", "体育休闲", "旅游景点", "金融保险"
+            , "机关团体", "交通运输", "生活服务","房产园区","公司企业","地名标识","其他地点"};
 
     private List<RecordBean> data = new ArrayList<>();
     private String key;
     private PointBean ptpoint;
     private String keyword;
-    private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
+    private NewSearchBean.ListBean bean;
 
     @Override
     protected void initView() {
@@ -157,7 +158,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
      * @param bean
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onGetPoi(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+    public void onGetPoi(NewSearchBean.ListBean bean) {
         this.bean = bean;
     }
 
@@ -240,23 +241,27 @@ public class AroundActivity extends BaseActivity implements BaseView {
     private void requestData(RecordBean bean) {
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("maxitems", "20");
-        parameter.put("page", "1");
+        parameter.put("page", "0");
         if (key.equals("search") || key.equals("route") || key.equals("navi")) {
             if (bean.isInput()) {
 //                qury = "'兴趣点' like '%" + bean.getData() + "%'";
-                qury="'兴趣点' like '%" + bean.getData() + "%' or '简称' like '%" + bean.getData() + "%' or '名称' like '%" + bean.getData() + "%' or '描述' like '%" + bean.getData() + "%' or '备注' like '%" + bean.getData() + "%'";
+                qury="";
+                str=bean.getData();
+
+
             } else {
                 //分类查询条件
                 qury = getQury(bean.getData());
             }
             parameter.put("where", qury);
+            parameter.put("str",str);
             presenter.setRequest(parameter);
         } else {
             //周边查询
             Point point = new Point();
             if (this.bean != null) {
-                point.setX(this.bean.getGeometry().getCoordinates().get(0));
-                point.setY(this.bean.getGeometry().getCoordinates().get(1));
+                point.setX(this.bean.getX());
+                point.setY(this.bean.getY());
             } else {
                 point.setX(Double.parseDouble(ptpoint.getX()));
                 point.setY(Double.parseDouble(ptpoint.getY()));
@@ -301,16 +306,11 @@ public class AroundActivity extends BaseActivity implements BaseView {
     public void setData(Object data) {
         if (data instanceof NewSearchBean) {
             NewSearchBean bean = (NewSearchBean) data;
-            if (bean.getHeader() == null) {
+            String count = String.valueOf(bean.getTotal());
+            if (count.equals("0") || bean.getList() == null || bean.getList().size() == 0) {
                 showMsg("未查找到相应数据");
                 return;
             }
-            String count = String.valueOf(bean.getHeader().getTotalItemsCount());
-            if (count.equals("0") || bean.getContent().getFeatures().getFeatures() == null || bean.getContent().getFeatures().getFeatures().size() == 0) {
-                showMsg("未查找到相应数据");
-                return;
-            }
-            List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features = bean.getContent().getFeatures().getFeatures();
             Bundle bundle = new Bundle();
             bundle.putSerializable("data", (Serializable) bean);
             if (!geo.equals("")) {
@@ -318,6 +318,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
             }
             bundle.putString("key", key);
             bundle.putString("keywords", qury);
+            bundle.putString("str",str);
             skip(SearchResultActivity.class, bundle, false);
         }
     }
@@ -332,26 +333,8 @@ public class AroundActivity extends BaseActivity implements BaseView {
             }
         } else {
             String address = "当前位置";
-            String name="";
             if (bean != null){
-                if (!bean.getProperties().get简称().equals("")){
-                    name=bean.getProperties().get简称();
-                }else {
-                    if (!bean.getProperties().get名称().equals("")){
-                        name=bean.getProperties().get名称();
-                    }else {
-                        if (!bean.getProperties().get兴趣点().equals("")){
-                            name=bean.getProperties().get兴趣点();
-                        }else {
-                            if (!bean.getProperties().get描述().equals("")){
-                                name=bean.getProperties().get描述();
-                            }else {
-                                name=bean.getProperties().get备注();
-                            }
-                        }
-                    }
-                }
-                address = name;
+                address = bean.get简称();
             }
             setToolbarRightVisible(false);
             hideEditText();
@@ -366,39 +349,54 @@ public class AroundActivity extends BaseActivity implements BaseView {
      */
     public String getQury(String data) {
         String qury = "";
+
+//        "餐饮", "住宿", "购物", "卫生保健", "科教文化", "体育休闲", "旅游景点", "金融保险"
+//                , "机关团体", "交通运输", "生活服务","房产园区","公司企业","地名标识","其他地点"
         switch (data) {
-            case "公共管理":
-                qury = "yif1 = '19'";
+            case "餐饮":
+                qury = "yif1 = '11'";
                 break;
-            case "住宿餐饮":
-                qury = "yif1 = '11' or yif1 = '12'";
+            case "住宿":
+                qury = "yif1 = '12'";
+                break;
+            case "购物":
+                qury = "yif1 = '13'";
+                break;
+            case "卫生保健":
+                qury = "yif1 = '14'";
+                break;
+            case "科教文化":
+                qury = "yif1 = '15'";
+                break;
+            case "体育休闲":
+                qury = "yif1 = '16'";
+                break;
+            case "旅游景点":
+                qury = "yif1 = '17'";
                 break;
             case "金融保险":
                 qury = "yif1 = '18'";
                 break;
+            case "机关团体":
+                qury = "yif1 = '19'";
+                break;
             case "交通运输":
                 qury = "yif1 = '20'";
-                break;
-            case "房产楼盘":
-                qury = "yif1 = '22'";
                 break;
             case "生活服务":
                 qury = "yif1 = '21'";
                 break;
-            case "休闲娱乐":
-                qury = "yif1 = '16' or yif1 = '13'";
+            case "房产园区":
+                qury = "yif1 = '22'";
                 break;
-            case "旅游服务":
-                qury = "yif1 = '17'";
+            case "公司企业":
+                qury = "yif1 = '23'";
                 break;
-            case "医疗卫生":
-                qury = "yif1 = '14'";
+            case "地名标识":
+                qury = "yif1 = '24'";
                 break;
-            case "文化媒体":
-                qury = "yif1 = '15'";
-                break;
-            case "其他行业":
-                qury = "yif1 = '23' or yif1 = '99'";
+            case "其他地点":
+                qury = "yif1 = '99'";
                 break;
         }
 
@@ -409,7 +407,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
     @Override
     protected void setLeftClickListen() {
         finish();
-        EventBus.getDefault().removeStickyEvent(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean.class);
+        EventBus.getDefault().removeStickyEvent(NewSearchBean.ListBean.class);
     }
 
 
@@ -417,7 +415,7 @@ public class AroundActivity extends BaseActivity implements BaseView {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
-            EventBus.getDefault().removeStickyEvent(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean.class);
+            EventBus.getDefault().removeStickyEvent(NewSearchBean.ListBean.class);
         }
         return false;
     }

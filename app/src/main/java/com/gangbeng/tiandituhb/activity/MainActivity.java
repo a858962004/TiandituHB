@@ -87,6 +87,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.ksoap2.serialization.SoapObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -185,7 +186,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private Point ptCurrent;
     private boolean isFirstlocal = true;
     private BasePresenter presenter, weatherpresenter;
-    private NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean;
+    private NewSearchBean.ListBean bean;
     private boolean islocation = false;
     private NewBasePresenter uploadpresenter, updatepresenter, grouppresenter;
     private UserEvent user;
@@ -642,27 +643,10 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 setEventBus("route");
                 if (!islocation) {
                     EndPoint endPoint = new EndPoint();
-                    String name = "";
-                    if (!bean.getProperties().get简称().equals("")) {
-                        name = bean.getProperties().get简称();
-                    } else {
-                        if (!bean.getProperties().get名称().equals("")) {
-                            name = bean.getProperties().get名称();
-                        } else {
-                            if (!bean.getProperties().get兴趣点().equals("")) {
-                                name = bean.getProperties().get兴趣点();
-                            } else {
-                                if (!bean.getProperties().get描述().equals("")) {
-                                    name = bean.getProperties().get描述();
-                                } else {
-                                    name = bean.getProperties().get备注();
-                                }
-                            }
-                        }
-                    }
+                    String name = bean.get简称();
                     endPoint.setName(name);
-                    endPoint.setX(String.valueOf(bean.getGeometry().getCoordinates().get(0)));
-                    endPoint.setY(String.valueOf(bean.getGeometry().getCoordinates().get(1)));
+                    endPoint.setX(String.valueOf(bean.getX()));
+                    endPoint.setY(String.valueOf(bean.getY()));
                     EventBus.getDefault().postSticky(endPoint);
                     EventBus.getDefault().postSticky(new ChannelEvent("route"));
                 }
@@ -759,10 +743,8 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     public void setData(Object data) {
         if (data instanceof NewSearchBean) {
             NewSearchBean bean = (NewSearchBean) data;
-            NewSearchBean.ContentBean content = bean.getContent();
-            if (content != null) {
-                NewSearchBean.ContentBean.FeaturesBeanX features = content.getFeatures();
-                List<NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean> features1 = features.getFeatures();
+            if (bean != null) {
+                List<NewSearchBean.ListBean> features1 = bean.getList();
                 if (features1.size() > 0) {
                     this.bean = features1.get(0);
                     setbottom(this.bean);
@@ -807,7 +789,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
 
     }
 
-    private void setbottom(NewSearchBean.ContentBean.FeaturesBeanX.FeaturesBean bean) {
+    private void setbottom(NewSearchBean.ListBean bean) {
         pointlayer.removeAll();
         rlBottom.setVisibility(View.VISIBLE);
         int i = DensityUtil.dip2px(this, 10);
@@ -829,52 +811,21 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
         if (islocation) {
 //            Graphic g = new Graphic(ptCurrent, picSymbol);
 //            pointlayer.addGraphic(g);
-            String name = "";
-            if (!bean.getProperties().get简称().equals("")) {
-                name = bean.getProperties().get简称();
-            } else {
-                if (!bean.getProperties().get名称().equals("")) {
-                    name = bean.getProperties().get名称();
-                } else {
-                    if (!bean.getProperties().get兴趣点().equals("")) {
-                        name = bean.getProperties().get兴趣点();
-                    } else {
-                        if (!bean.getProperties().get描述().equals("")) {
-                            name = bean.getProperties().get描述();
-                        } else {
-                            name = bean.getProperties().get备注();
-                        }
-                    }
-                }
-            }
+            String name = bean.get简称();
             tvName.setText(name + "附近");
             tvName.setMaxLines(3);
             tvAddress.setText("");
         } else {
-            Point point = zoom2bean(bean.getGeometry().getCoordinates());
+            List<Double>coordinates=new ArrayList<>();
+            coordinates.add(bean.getX());
+            coordinates.add(bean.getY());
+            Point point = zoom2bean(coordinates);
             Graphic g = new Graphic(point, picSymbol);
             pointlayer.addGraphic(g);
-            String name = "";
-            if (!bean.getProperties().get简称().equals("")) {
-                name = bean.getProperties().get简称();
-            } else {
-                if (!bean.getProperties().get名称().equals("")) {
-                    name = bean.getProperties().get名称();
-                } else {
-                    if (!bean.getProperties().get兴趣点().equals("")) {
-                        name = bean.getProperties().get兴趣点();
-                    } else {
-                        if (!bean.getProperties().get描述().equals("")) {
-                            name = bean.getProperties().get描述();
-                        } else {
-                            name = bean.getProperties().get备注();
-                        }
-                    }
-                }
-            }
+            String name = bean.get简称();
             tvName.setText(name);
             tvName.setMaxLines(3);
-            tvAddress.setText(bean.getProperties().get地址());
+            tvAddress.setText(bean.get地址());
             tvAddress.setMaxLines(3);
         }
     }
