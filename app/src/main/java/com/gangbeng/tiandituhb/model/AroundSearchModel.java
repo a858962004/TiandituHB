@@ -48,6 +48,10 @@ public class AroundSearchModel implements BaseModel {
 
                     @Override
                     public void onResponse(String response, int id) {
+                        if (response.equals("{\"error\":\"没有符合条件的结果\"}")){
+                            back.failed("未查找到相应数据");
+                            return;
+                        }
                         Gson gson = new Gson();
                         AroundSearchBean bean = gson.fromJson(response, AroundSearchBean.class);
                         if (bean.getHeader() == null) {
