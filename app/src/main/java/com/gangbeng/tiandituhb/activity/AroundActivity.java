@@ -88,9 +88,9 @@ public class AroundActivity extends BaseActivity implements BaseView {
         return activity;
     }
 
-    private int[] sortImgs = new int[]{R.mipmap.icon_gggl, R.mipmap.icon_zzcy, R.mipmap.icon_jrbx, R.mipmap.icon_jtrs
-            , R.mipmap.icon_fclp, R.mipmap.icon_shfw, R.mipmap.icon_xxyl, R.mipmap.icon_lyfw
-            , R.mipmap.icon_ylws, R.mipmap.icon_whmt, R.mipmap.icon_qthy,R.mipmap.icon_qthy, R.mipmap.icon_whmt, R.mipmap.icon_qthy,R.mipmap.icon_qthy};
+    private int[] sortImgs = new int[]{R.mipmap.icon_canyin, R.mipmap.icon_zhusu, R.mipmap.icon_gouwu, R.mipmap.icon_weisheng
+            , R.mipmap.icon_kejiao, R.mipmap.icon_tiyu, R.mipmap.icon_lvyou, R.mipmap.icon_jinrong
+            , R.mipmap.icon_jiguan, R.mipmap.icon_jiaotong, R.mipmap.icon_shenghuo,R.mipmap.icon_fangchan, R.mipmap.icon_gongsi, R.mipmap.icon_diming,R.mipmap.icon_qita};
     private String[] sortStrs = new String[]{"餐饮", "住宿", "购物", "卫生保健", "科教文化", "体育休闲", "旅游景点", "金融保险"
             , "机关团体", "交通运输", "生活服务","房产园区","公司企业","地名标识","其他地点"};
 

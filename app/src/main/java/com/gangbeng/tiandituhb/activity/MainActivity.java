@@ -178,9 +178,9 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     @BindView(R.id.img_hefeng)
     ImageView imgHefeng;
 
-    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_cj, map_tdlyxz,map_xzq;
+    private TianDiTuLFServiceLayer map_lf_text, map_lf, map_lfimg, map_lfimg_text, map_cj, map_tdlyxz, map_xzq;
     private TianDiTuTiledMapServiceLayer maptextLayer, mapServiceLayer, mapRStextLayer, mapRSServiceLayer;
-//    private TianDiTuLFXZQLayer map_xzq;
+    //    private TianDiTuLFXZQLayer map_xzq;
     private GraphicsLayer pointlayer, weatherlayer;
     private LocationDisplayManager ldm;
     private Point ptCurrent;
@@ -399,6 +399,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     }
 
     private void setPointRequest(Point point, String distence) {
+
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("maxitems", "20");
         parameter.put("page", "1");
@@ -526,7 +527,13 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                 break;
             case R.id.location_map:
                 this.bean = null;
-                bmapsView.zoomToScale(ptCurrent, 50000);
+                bmapsView.zoomToScale(ptCurrent, bmapsView.getScale());
+                Contant.ins().setNewmaplevel(-1);
+                map_xzq.refresh();
+                map_lf.refresh();
+                map_lf_text.refresh();
+                map_lfimg.refresh();
+                map_lfimg_text.refresh();
                 RefreshOnThread();
                 if (!weatherlayer.isVisible() && imgQuanjing.getVisibility() == View.GONE) {
                     islocation = true;
@@ -816,7 +823,7 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             tvName.setMaxLines(3);
             tvAddress.setText("");
         } else {
-            List<Double>coordinates=new ArrayList<>();
+            List<Double> coordinates = new ArrayList<>();
             coordinates.add(bean.getX());
             coordinates.add(bean.getY());
             Point point = zoom2bean(coordinates);
@@ -904,10 +911,11 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     }
 
     private Point zoom2bean(List<Double> coordinates) {
+        Contant.ins().setMaplevel(20);
         Point point = new Point();
         point.setX(coordinates.get(0));
         point.setY(coordinates.get(1));
-        bmapsView.zoomToScale(point, 500);
+        bmapsView.zoomToScale(point, bmapsView.getScale());
         RefreshOnThread();
         return point;
     }
@@ -961,7 +969,39 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
             islocation = false;
             hideBottom();
             Point point = bmapsView.toMapPoint(v, v1);
-            setPointRequest(point, "5");
+            int scaleLevel = Util.getScaleLevel(bmapsView.getScale());
+            String distence = "";
+            switch (scaleLevel) {
+                case 0:
+                    distence = "1000";
+                    break;
+                case 1:
+                    distence = "500";
+                    break;
+                case 2:
+                    distence = "200";
+                    break;
+                case 3:
+                    distence = "130";
+                    break;
+                case 4:
+                    distence = "80";
+                    break;
+                case 5:
+                    distence = "50";
+                    break;
+                case 6:
+                    distence = "30";
+                    break;
+                case 7:
+                    distence = "20";
+                    break;
+                case 8:
+                    distence = "3";
+                    break;
+            }
+            MyLogUtil.showLog("distence" + distence + "----" + scaleLevel);
+            setPointRequest(point, distence);
 
         }
     };

@@ -126,7 +126,7 @@ public class MapActivity extends BaseActivity implements BaseView {
     private GoogleApiClient client;
     private MapExtent extent;
     private IsStart isStart;
-    private boolean isIMG=false;
+    private boolean isIMG = false;
 
     @Override
     protected void initView() {
@@ -161,7 +161,38 @@ public class MapActivity extends BaseActivity implements BaseView {
                     pointlayer.removeAll();
                     hideBottom();
                     Point point = idMap.toMapPoint(v, v1);
-                    setPointRequest(point,"5");
+                    int scaleLevel = Util.getScaleLevel(idMap.getScale());
+                    String distence = "";
+                    switch (scaleLevel) {
+                        case 0:
+                            distence = "1000";
+                            break;
+                        case 1:
+                            distence = "500";
+                            break;
+                        case 2:
+                            distence = "200";
+                            break;
+                        case 3:
+                            distence = "130";
+                            break;
+                        case 4:
+                            distence = "80";
+                            break;
+                        case 5:
+                            distence = "50";
+                            break;
+                        case 6:
+                            distence = "30";
+                            break;
+                        case 7:
+                            distence = "20";
+                            break;
+                        case 8:
+                            distence = "3";
+                            break;
+                    }
+                    setPointRequest(point, distence);
                 }
             });
             idMap.setOnStatusChangedListener(new OnStatusChangedListener() {
@@ -169,6 +200,7 @@ public class MapActivity extends BaseActivity implements BaseView {
                 public void onStatusChanged(Object o, STATUS status) {
                     if (o.equals(map_lf) && status == STATUS.LAYER_LOADED) {
                         idMap.zoomToScale(extent.getCenter(), extent.getScale());
+                        idMap.zoomin();
                         mapviewscale.refreshScaleView(extent.getScale());
                     }
                 }
@@ -214,7 +246,7 @@ public class MapActivity extends BaseActivity implements BaseView {
         params.addRule(RelativeLayout.ABOVE, R.id.rl_bottom); //设置控件的位置
         params.setMargins(i1, 0, 0, i);//左上右下
         mapviewscale.setLayoutParams(params);
-        List<Double>coordinates=new ArrayList<>();
+        List<Double> coordinates = new ArrayList<>();
         coordinates.add(bean.getX());
         coordinates.add(bean.getY());
         Point point = zoom2bean(coordinates);
@@ -224,7 +256,7 @@ public class MapActivity extends BaseActivity implements BaseView {
         picSymbol.setOffsetY(drawable1.getIntrinsicHeight() / 2);
         Graphic g = new Graphic(point, picSymbol);
         pointlayer.addGraphic(g);
-        String name=bean.get简称();
+        String name = bean.get简称();
         tvName.setText(name);
         tvName.setMaxLines(3);
         tvAddress.setText(bean.get地址());
@@ -254,6 +286,13 @@ public class MapActivity extends BaseActivity implements BaseView {
         point.setX(coordinates.get(0));
         point.setY(coordinates.get(1));
         idMap.zoomToScale(point, 500);
+        idMap.zoomin();
+        if (key.equals("point")) {
+
+        } else if (key.equals("addPoint")) {
+            idMap.zoomToScale(point, idMap.getScale());
+        }
+
         return point;
     }
 
@@ -270,8 +309,8 @@ public class MapActivity extends BaseActivity implements BaseView {
 
     private void setMapView() {
         if (key.equals("point")) {
-            Contant.ins().setNewmaplevel(20);
-        }else {
+            Contant.ins().setNewmaplevel(10);
+        } else {
             Contant.ins().setNewmaplevel(Contant.ins().getMaplevel());
         }
         ArcGISRuntime.setClientId("uK0DxqYT0om1UXa9");
@@ -306,7 +345,7 @@ public class MapActivity extends BaseActivity implements BaseView {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
                 if (map_xzq == o && status == STATUS.LAYER_LOADED) {
-                    List<Double>coordinates=new ArrayList<>();
+                    List<Double> coordinates = new ArrayList<>();
                     coordinates.add(bean.getX());
                     coordinates.add(bean.getY());
                     if (key.equals("point")) zoom2bean(coordinates);
@@ -423,7 +462,7 @@ public class MapActivity extends BaseActivity implements BaseView {
                 Util.cancelCollect(bean);
                 break;
             case R.id.rl_item:
-                List<Double>coordinates=new ArrayList<>();
+                List<Double> coordinates = new ArrayList<>();
                 coordinates.add(bean.getX());
                 coordinates.add(bean.getY());
                 zoom2bean(coordinates);
@@ -439,7 +478,7 @@ public class MapActivity extends BaseActivity implements BaseView {
                 AroundActivity.getInstence().finish();
                 SearchResultActivity.getInstence().finish();
                 EndPoint endPoint = new EndPoint();
-                String name=bean.get简称();
+                String name = bean.get简称();
                 endPoint.setName(name);
                 endPoint.setX(String.valueOf(bean.getX()));
                 endPoint.setY(String.valueOf(bean.getY()));
@@ -463,11 +502,12 @@ public class MapActivity extends BaseActivity implements BaseView {
                     mapServiceLayer.setVisible(false);
                     maptextLayer.setVisible(false);
                 }
-                isIMG=!isIMG;
+                isIMG = !isIMG;
                 setLayerVisibale();
                 break;
             case R.id.location_map:
                 idMap.zoomToScale(ptCurrent, 500);
+                idMap.zoomin();
                 break;
         }
     }

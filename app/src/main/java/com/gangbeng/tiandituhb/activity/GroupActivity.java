@@ -91,11 +91,11 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
     private GraphicsLayer drawPointLayer,popupLayer;
     private LocationDisplayManager ldm;
     private Point lacation;
-    private PictureMarkerSymbol markerSymbolblue, markerSymbolyellow;
+    private PictureMarkerSymbol markerSymbolblue, markerSymbolyellow,markerSymbolblue2, markerSymbolyellow2;
     private boolean isFirstlocal = true;
     private GroupAdapter adapter;
     private String mcommend = "";
-    private String createloginname;
+    private String createloginname="";
     private NewBasePresenter presenter;
     private UserEvent user;
     private AlertDialog mdialog;
@@ -251,6 +251,16 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
         markerSymbolyellow = new PictureMarkerSymbol(drawable3);
         markerSymbolyellow.setOffsetY(drawable3.getIntrinsicHeight() / 2);
 
+        Drawable drawable4 = getResources().getDrawable(R.mipmap.icon_dingwei08);
+        Drawable drawable5 = DensityUtil.zoomDrawable(drawable4, 90, 90);
+        markerSymbolblue2 = new PictureMarkerSymbol(drawable5);
+        markerSymbolblue2.setOffsetY(drawable5.getIntrinsicHeight() / 2);
+//
+        Drawable drawable6 = getResources().getDrawable(R.mipmap.icon_dingwei09);
+        Drawable drawable7 = DensityUtil.zoomDrawable(drawable6, 90, 90);
+        markerSymbolyellow2 = new PictureMarkerSymbol(drawable7);
+        markerSymbolyellow2.setOffsetY(drawable7.getIntrinsicHeight() / 2);
+
         mapGroup.setOnZoomListener(new OnZoomListener() {
             @Override
             public void preAction(float v, float v1, double v2) {
@@ -310,8 +320,20 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
 
     private void locationGPS() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, 0);
-        if (ldm == null) {
+//        if (ldm == null) {
+//        ldm.resume();
             ldm = mapGroup.getLocationDisplayManager();
+            if (!createloginname.equals("")){
+                PictureMarkerSymbol markerSymbol = createloginname.equals(user.getLoginname())?markerSymbolyellow2:markerSymbolblue2;
+                try {
+                    ldm.setCourseSymbol(markerSymbol);
+                    ldm.setDefaultSymbol(markerSymbol);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
             ldm.setAutoPanMode(LocationDisplayManager.AutoPanMode.NAVIGATION);
             ldm.start();
             ldm.setLocationListener(new LocationListener() {
@@ -339,9 +361,9 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
 
                 }
             });
-        } else {
-            ldm.resume();
-        }
+//        } else {
+//            ldm=null;
+//        }
     }
 
 
@@ -410,10 +432,16 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
         @Override
         public void clickCallBack(int position, Map<String, String> data) {
             choosedata=data;
-            setChoosePopup(data);
-            String x = data.get("x");
-            String y = data.get("y");
-            mapGroup.zoomToScale(new Point(Double.valueOf(x),Double.valueOf(y)),mapGroup.getScale());
+            drawPointLayer.clearSelection();
+            if (!data.get("loginname").equals(user.getLoginname())){
+                setChoosePopup(data);
+                String x = data.get("x");
+                String y = data.get("y");
+                mapGroup.zoomToScale(new Point(Double.valueOf(x),Double.valueOf(y)),mapGroup.getScale());
+            }else {
+                mapGroup.zoomToScale(lacation,mapGroup.getScale());
+            }
+
         }
     };
 
@@ -519,6 +547,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                 if (result5.equals("ok")) {
                     mcommend=okString5.substring(0,okString5.lastIndexOf(";"));
                     createloginname=okString5.substring(okString5.lastIndexOf(";")+1,okString5.length());
+                    locationGPS();
                     tvCommend.setText("队伍口令 " + mcommend);
                     tvCommend.setVisibility(View.VISIBLE);
                     Map<String,Object>parameter=new HashMap<>();
@@ -612,7 +641,7 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
                         for (int i = 0; i < this.mdata.size(); i++) {
                             Map<String, String> map = this.mdata.get(i);
                             String loginname = map.get("loginname");
-                            if (choosedata.get("loginname").equals(loginname)){
+                            if (!choosedata.get("loginname").equals(user.getLoginname())&&choosedata.get("loginname").equals(loginname)){
                                 haschoosedata=true;
                                 adapter.setSelectItem(i+1);
                                 setChoosePopup(map);
@@ -699,37 +728,42 @@ public class GroupActivity extends BaseActivity implements NewBaseView {
     }
 
     private void addDrawPoint(String loginname, String id, String username, String x, String y, String state, String updateTime) {
-        Map<String, Object> parameter = new HashMap<>();
-        parameter.put("id", id);
-        parameter.put("loginname", loginname);
-        parameter.put("username", username);
-        parameter.put("x", x);
-        parameter.put("y", y);
-        parameter.put("state", state);
-        parameter.put("updateTime", updateTime);
-        PictureMarkerSymbol symbol = loginname.equals(createloginname) ? markerSymbolyellow : markerSymbolblue;
-        Point point = new Point(Double.valueOf(x), Double.valueOf(y));
-        final Graphic graphic = new Graphic(point, symbol, parameter);
-        drawPointLayer.addGraphic(graphic);
-
+        UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
+        if (!loginname.equals(user.getLoginname())){
+            Map<String, Object> parameter = new HashMap<>();
+            parameter.put("id", id);
+            parameter.put("loginname", loginname);
+            parameter.put("username", username);
+            parameter.put("x", x);
+            parameter.put("y", y);
+            parameter.put("state", state);
+            parameter.put("updateTime", updateTime);
+            PictureMarkerSymbol symbol = loginname.equals(createloginname) ? markerSymbolyellow : markerSymbolblue;
+            Point point = new Point(Double.valueOf(x), Double.valueOf(y));
+            final Graphic graphic = new Graphic(point, symbol, parameter);
+            drawPointLayer.addGraphic(graphic);
+        }
     }
 
     private void addPopupGraphic(String loginname, String username, String x, String y) {
-        View inflate = LayoutInflater.from(this).inflate(R.layout.view_popup, null);
-        BubbleTextView textView=inflate.findViewById(R.id.popup_text);
-        textView.setText(username);
-        Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
-        Drawable drawable = new BitmapDrawable(viewbitmap);
-        PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
-        Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 90, 90);
-        symbol.setOffsetY(drawable1.getIntrinsicHeight()*3/2);
-        Point point = new Point(Double.valueOf(x), Double.valueOf(y));
-        Map<String,Object> parameter=new HashMap<>();
-        parameter.put("loginname", loginname);
-        parameter.put("username", username);
-        parameter.put("x", x);
-        parameter.put("y", y);
-        Graphic graphic = new Graphic(point, symbol,parameter);
-        popupLayer.addGraphic(graphic);
+        UserEvent user = (UserEvent) SharedUtil.getSerializeObject("user");
+        if (!loginname.equals(user.getLoginname())){
+            View inflate = LayoutInflater.from(this).inflate(R.layout.view_popup, null);
+            BubbleTextView textView=inflate.findViewById(R.id.popup_text);
+            textView.setText(username);
+            Bitmap viewbitmap = DensityUtil.convertViewToBitmap(inflate);
+            Drawable drawable = new BitmapDrawable(viewbitmap);
+            PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+            Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 90, 90);
+            symbol.setOffsetY(drawable1.getIntrinsicHeight()*3/2);
+            Point point = new Point(Double.valueOf(x), Double.valueOf(y));
+            Map<String,Object> parameter=new HashMap<>();
+            parameter.put("loginname", loginname);
+            parameter.put("username", username);
+            parameter.put("x", x);
+            parameter.put("y", y);
+            Graphic graphic = new Graphic(point, symbol,parameter);
+            popupLayer.addGraphic(graphic);
+        }
     }
 }
