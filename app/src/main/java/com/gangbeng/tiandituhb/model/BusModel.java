@@ -25,6 +25,7 @@ public class BusModel implements BaseModel {
                 .url(PubConst.url+"transit")
                 .addParams("type","busline")
                 .addParams("postStr",postStr)
+                .addParams("tk","dc2e5b8e87cf7c6b5c347c00602287f9")
                 .build()
                 .execute(new StringCallback() {
                     @Override
