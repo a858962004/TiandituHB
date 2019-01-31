@@ -178,16 +178,11 @@ public class MoreActivity extends BaseActivity implements NewBaseView {
                     skip(ExemptionActivity.class, false);
                     break;
                 case "清除缓存":
-                    ShowDialog.showAttention(MoreActivity.this, "请注意", "是否清除地图缓存", new ShowDialog.DialogCallBack() {
+                    ShowDialog.showAttention(MoreActivity.this, "清除缓存", "建议清除缓存后退出程序重新打开APP", new ShowDialog.DialogCallBack() {
                         @Override
                         public void dialogSure(DialogInterface dialog) {
-                            boolean b = Util.deleteDirectory(MoreActivity.this, Environment.getExternalStorageDirectory() + File.separator + "Tianditu_LF" + File.separator + "map_lf" + File.separator);
-                            if (b) {
-                                ShowToast("清除成功");
-                            } else {
-                                ShowToast("清除失败");
-                            }
                             dialog.dismiss();
+                            ShowDialog.showDeletProgress(MoreActivity.this);
                         }
 
                         @Override

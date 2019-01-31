@@ -25,9 +25,11 @@ import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
+import com.esri.core.geometry.AreaUnit;
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Line;
+import com.esri.core.geometry.LinearUnit;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polygon;
 import com.esri.core.geometry.Polyline;
@@ -622,14 +624,15 @@ public class CalculateMapActivity extends BaseActivity {
             if (points.size() > 1) {
                 getlength(drawLayer);
                 // 计算当前线段的长度
-                Polyline polyline1 = (Polyline) GeometryEngine.project(polyline, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
-
-                if (Math.round(polyline1.calculateLength2D()) > 1000) {
-                    String string = Double.toString(Math.round(polyline1.calculateLength2D()) / 1000.0);
+//                Polyline polyline1 = (Polyline) GeometryEngine.project(polyline, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
+                double v = GeometryEngine.geodesicLength(polyline, SpatialReference.create(4490),
+                        new LinearUnit(LinearUnit.Code.METER));
+                if (Math.round(v) > 1000) {
+                    String string = Double.toString(Math.round(v) / 1000.0);
                     String s = Util.saveTwoU(string);
                     length = s + " 千米";
                 } else {
-                    String string = Double.toString(Math.round(polyline1.calculateLength2D()));
+                    String string = Double.toString(Math.round(v));
                     MyLogUtil.showLog(string);
                     String s = Util.saveTwoU(string);
                     length = s + " 米";
@@ -641,10 +644,14 @@ public class CalculateMapActivity extends BaseActivity {
             //绘制临时多边形
             getArea(drawLayer);
             //计算当前面积
-            Polygon polygonNow = (Polygon) GeometryEngine.project(polygon, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
-            Log.d("tag", String.valueOf(mapCalculate.getSpatialReference()));
-            String sArea = getAreaString(polygonNow.calculateArea2D());
-            Log.d("tag", polygonNow.calculateArea2D() + "");
+//            Polygon polygonNow = (Polygon) GeometryEngine.project(polygon, mapCalculate.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR));
+//            Log.d("tag", String.valueOf(mapCalculate.getSpatialReference()));
+
+            double area = GeometryEngine.geodesicArea(polygon,
+                    SpatialReference.create(4490),
+                    new AreaUnit(AreaUnit.Code.SQUARE_METER));//单位为平方米
+            String sArea = getAreaString(area);
+            Log.d("tag", area + "");
             textTvjieguo.setText(sArea);
         }
     }
