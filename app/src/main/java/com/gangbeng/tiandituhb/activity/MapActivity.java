@@ -406,6 +406,17 @@ public class MapActivity extends BaseActivity implements BaseView {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, 0);
         if (ldm == null) {
             ldm = idMap.getLocationDisplayManager();
+            Drawable imagered = getBaseContext().getResources()
+                    .getDrawable(R.mipmap.local);
+            Drawable drawable = Util.zoomDrawable(imagered, 10, 10);
+            PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
+            try {
+                ldm.setCourseSymbol(markerSymbol);
+                ldm.setDefaultSymbol(markerSymbol);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             ldm.setAutoPanMode(LocationDisplayManager.AutoPanMode.NAVIGATION);
             ldm.start();
             ldm.setLocationListener(new LocationListener() {

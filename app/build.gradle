@@ -54,7 +54,7 @@ dependencies {
     compile 'com.android.support:percent:26.+'
     compile 'org.litepal.android:core:1.4.1'
     compile 'com.android.support:recyclerview-v7:25.+'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+//    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile files('libs/tiandituapi3.0.1.jar')
     /** 控件注解                           **/

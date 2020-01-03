@@ -17,11 +17,11 @@ public class PubConst {
 //public final static String mapurl = "http://222.222.66.230:8719/newmapserver4/rest/services/dmdz/FeatureServer/";
 
     public final static String mapurl = "http://222.222.66.179:8719/newmap/rest/services/lftdtgx/dmdz/FeatureServer/";
-    public final static String searchapi = "http://222.222.66.179:8719/newmap/rest/services/lftdtgx/dmdzzz/GeoCodeServer/geocode";
-    public final static String aroundapi = "http://222.222.66.179:8719/newmap/rest/services/lftdtgx/dmdzzzys/FeatureServer/feature";
+    public final static String searchapi = "http://222.222.66.230:8719/newmap/rest/services/lftdtgx/dmdzzz/GeoCodeServer/geocode";
+    public final static String aroundapi = "http://222.222.66.230:8719/newmap/rest/services/lftdtgx/dmdzzzys/FeatureServer/feature";
     public final static String weatherapi = "https://free-api.heweather.com/s6/weather";
     public final static String weatherKey = "336d33871eea4a8bbbea6b13f7d692f2";
-    public final static String tiandituKey="dc2e5b8e87cf7c6b5c347c00602287f9";
+    public final static String tiandituKey="e08a5566ed7f9d4a33854e6aaa519a65";
 
     public final static String countryString = "{\"countries\":[{\"Latitude\":\"39.436466\",\"Longitude\":\"116.2999\",\"name\":\"固安\"}," +
             "{\"Latitude\":\"39.319717\",\"Longitude\":\"116.49809\",\"name\":\"永清\"},{\"Latitude\":\"39.757214\",\"Longitude\":\"117.007164\",\"name\":\"香河\"}," +

@@ -328,6 +328,17 @@ public class CalculateMapActivity extends BaseActivity {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, 0);
         if (ldm == null) {
             ldm = mapCalculate.getLocationDisplayManager();
+            Drawable imagered = getBaseContext().getResources()
+                    .getDrawable(R.mipmap.local);
+            Drawable drawable = Util.zoomDrawable(imagered, 90, 90);
+            PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
+            try {
+                ldm.setCourseSymbol(markerSymbol);
+                ldm.setDefaultSymbol(markerSymbol);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             ldm.setAutoPanMode(LocationDisplayManager.AutoPanMode.NAVIGATION);
             ldm.start();
             ldm.setLocationListener(new LocationListener() {

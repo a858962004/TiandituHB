@@ -423,7 +423,18 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
     private void locationGPS() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, 0);
         if (ldm == null) {
-            ldm = bmapsView.getLocationDisplayManager();
+                ldm = bmapsView.getLocationDisplayManager();
+                Drawable imagered = getBaseContext().getResources()
+                        .getDrawable(R.mipmap.local);
+            Drawable drawable = Util.zoomDrawable(imagered, 90, 90);
+                PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
+                try {
+                    ldm.setCourseSymbol(markerSymbol);
+                    ldm.setDefaultSymbol(markerSymbol);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             ldm.setAutoPanMode(LocationDisplayManager.AutoPanMode.NAVIGATION);
             ldm.start();
             ldm.setLocationListener(new LocationListener() {

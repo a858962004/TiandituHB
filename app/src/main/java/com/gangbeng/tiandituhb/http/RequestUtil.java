@@ -33,7 +33,8 @@ public class RequestUtil {
 
 
     private static final String NAMESPACE = "http://tempuri.org/";
-    public static final String url = "http://222.222.66.230:8001/LFTDTAPP/Services/WebService1.asmx";//正式服务器
+    public static final String url = "http://222.222.66.230:8719/LFTDTAPP/Services/WebService1.asmx";//正式服务器
+//    public static final String url = "http://222.222.66.330:8719/LFTDTAPP/Services/WebService1.asmx";//正式服务器
 
     public static final String Login="Login";//登录接口
     public static final String AddUserInfo="AddUserInfo";//注册接口
