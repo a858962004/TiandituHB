@@ -2,6 +2,7 @@ package com.gangbeng.tiandituhb.activity;
 
 import android.Manifest;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.map.event.OnZoomListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
+import com.esri.core.symbol.PictureMarkerSymbol;
 import com.gangbeng.tiandituhb.R;
 import com.gangbeng.tiandituhb.base.BaseActivity;
 import com.gangbeng.tiandituhb.constant.Contant;
@@ -26,6 +28,7 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFNewServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.ScreenShotUtils;
+import com.gangbeng.tiandituhb.utils.Util;
 import com.gangbeng.tiandituhb.widget.MapScaleView;
 import com.gangbeng.tiandituhb.widget.MapZoomView;
 import com.gangbeng.tiandituhb.widget.MyToolbar;
@@ -221,6 +224,17 @@ public class PaintActivity extends BaseActivity {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, 0);
         if (ldm == null) {
             ldm = mapviewPaint.getLocationDisplayManager();
+            Drawable imagered = getBaseContext().getResources()
+                    .getDrawable(R.mipmap.local);
+            Drawable drawable = Util.zoomDrawable(imagered, 90, 90);
+            PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
+            try {
+                ldm.setCourseSymbol(markerSymbol);
+                ldm.setDefaultSymbol(markerSymbol);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             ldm.setAutoPanMode(LocationDisplayManager.AutoPanMode.NAVIGATION);
             ldm.start();
             ldm.setLocationListener(new LocationListener() {
