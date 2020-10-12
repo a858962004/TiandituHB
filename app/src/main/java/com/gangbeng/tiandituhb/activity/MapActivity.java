@@ -408,7 +408,7 @@ public class MapActivity extends BaseActivity implements BaseView {
             ldm = idMap.getLocationDisplayManager();
             Drawable imagered = getBaseContext().getResources()
                     .getDrawable(R.mipmap.local);
-            Drawable drawable = Util.zoomDrawable(imagered, 10, 10);
+            Drawable drawable = Util.zoomDrawable(imagered, 90, 90);
             PictureMarkerSymbol markerSymbol = new PictureMarkerSymbol(drawable);
             try {
                 ldm.setCourseSymbol(markerSymbol);

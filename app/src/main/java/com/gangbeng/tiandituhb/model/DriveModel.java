@@ -26,7 +26,7 @@ public class DriveModel implements BaseModel {
                 .url(PubConst.url+"drive")
                 .addParams("postStr",postStr)
                 .addParams("type","search")
-                .addParams("tk","dc2e5b8e87cf7c6b5c347c00602287f9")
+                .addParams("tk",PubConst.tiandituKey)
                 .build()
                 .connTimeOut(50000)
                 .execute(new StringCallback() {
@@ -38,6 +38,7 @@ public class DriveModel implements BaseModel {
 
                     @Override
                     public void onResponse(String response, int id) {
+                        MyLogUtil.showLog("faild:"+response);
                         DriveRouteBean xmlContentForPull = ParserXMLWithPull.getXmlContentForPull(response);
                         back.success(xmlContentForPull);
                     }

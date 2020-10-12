@@ -23,7 +23,7 @@ import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.gangbeng.tiandituhb.R;
-import com.gangbeng.tiandituhb.activity.GPSNaviActivity;
+import com.gangbeng.tiandituhb.activity.GaodeBaseActivity;
 import com.gangbeng.tiandituhb.base.BaseFragment;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
@@ -276,6 +276,6 @@ public class CarFragment extends BaseFragment implements BaseView {
         points.add(endGps);
         Bundle bundle = new Bundle();
         bundle.putSerializable("data", (Serializable) points);
-        skip(GPSNaviActivity.class,bundle,false);
+        skip(GaodeBaseActivity.class,bundle,false);
     }
 }

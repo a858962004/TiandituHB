@@ -552,8 +552,6 @@ public class MainActivity extends BaseActivity implements BaseView, NewBaseView 
                     hideWeatherBottom();
                     setPointRequest(ptCurrent, "100");
                 }
-
-
                 break;
             case R.id.location_tianqi:
                 llTianqi.setBackgroundColor(getResources().getColor(R.color.white));

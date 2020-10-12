@@ -54,7 +54,7 @@ dependencies {
     compile 'com.android.support:percent:26.+'
     compile 'org.litepal.android:core:1.4.1'
     compile 'com.android.support:recyclerview-v7:25.+'
-//    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    //    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile files('libs/tiandituapi3.0.1.jar')
     /** 控件注解                           **/
@@ -78,13 +78,9 @@ dependencies {
     compile 'com.github.lguipeng:BubbleView:1.0.1'
     compile files('libs/gson-2.3.1.jar')
     compile files('libs/arcgis-android-api.jar')
-    compile files('libs/AMap_Location_V2.4.1_20160414.jar')
-    compile files('libs/AMap_Android_3DMapSDK_V3.1.1.jar')
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
-    compile files('libs/AMap_Android_3DMapSDK_V3.1.1.jar')
-    compile files('libs/AMap_Location_V2.4.1_20160414.jar')
-    compile files('libs/AMap_Navi_v1.6.0_20151229.jar')
     compile project(path: ':library')
     compile files('libs/BaiduLBS_Android.jar')
     compile files('libs/ksoap2-android-assembly-2.5.8-jar-with-dependencies.jar')
+    compile files('libs/AMap3DMap_7.6.0_AMapNavi_7.6.0_AMapLocation_5.2.0_20200915.jar')
 }

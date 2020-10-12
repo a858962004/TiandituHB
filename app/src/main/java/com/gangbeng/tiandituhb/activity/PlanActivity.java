@@ -200,7 +200,7 @@ public class PlanActivity extends BaseActivity {
             points.add(endGps);
             Bundle bundle = new Bundle();
             bundle.putSerializable("data", (Serializable) points);
-            skip(GPSNaviActivity.class,bundle,false);
+            skip(GaodeBaseActivity.class,bundle,false);
         }
         if (channelEvent.getChannel().equals("route")){
             Gps startGps=new Gps(Double.parseDouble(startPoint.getY()),Double.parseDouble(startPoint.getX()));

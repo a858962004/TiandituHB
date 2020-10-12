@@ -67,7 +67,7 @@
             android:name=".activity.PlanActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".activity.GPSNaviActivity"
+            android:name=".activity.GaodeBaseActivity"
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.MoreActivity"
@@ -119,6 +119,8 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_provider" />
         </receiver>
+
+        <service android:name="com.amap.api.location.APSService"/>
 
         <service
             android:name=".service.ListViewService"

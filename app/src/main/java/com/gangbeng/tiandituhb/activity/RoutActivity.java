@@ -47,13 +47,14 @@ public class RoutActivity extends BaseActivity {
         Bundle bundleExtra = getIntent().getBundleExtra(PubConst.DATA);
         List<Gps> points = (List<Gps>) bundleExtra.getSerializable("data");
         FragmentHolder holder = new FragmentHolder();
-        holder.setTitle("公交");
-        holder.setFragment(BusFragment.newInstance(points,points.get(0).getName(),points.get(1).getName()));
+        holder.setTitle("驾车");
+        holder.setFragment(CarFragment.newInstance(points));
         holders.add(holder);
-        FragmentHolder holder2 = new FragmentHolder();
-        holder2.setTitle("驾车");
-        holder2.setFragment(CarFragment.newInstance(points));
-        holders.add(holder2);
+        FragmentHolder holder1 = new FragmentHolder();
+        holder1.setTitle("公交");
+        holder1.setFragment(BusFragment.newInstance(points,points.get(0).getName(),points.get(1).getName()));
+        holders.add(holder1);
+
         adapter = new ViewpagerFragmentAdapter(getSupportFragmentManager(), holders);
         customRout.setOffscreenPageLimit(0);
         customRout.setAdapter(adapter);
@@ -72,12 +73,12 @@ public class RoutActivity extends BaseActivity {
             case R.id.img_bus:
                 imgBus.setImageResource(R.mipmap.icon_gongjiao2);
                 imgCar.setImageResource(R.mipmap.icon_zijia1);
-                customRout.setCurrentItem(0);
+                customRout.setCurrentItem(1);
                 break;
             case R.id.img_car:
                 imgBus.setImageResource(R.mipmap.icon_gongjiao1);
                 imgCar.setImageResource(R.mipmap.icon_zijia2);
-                customRout.setCurrentItem(1);
+                customRout.setCurrentItem(0);
                 break;
             case R.id.routtoolbar_leftImgBtn:
                 finish();
