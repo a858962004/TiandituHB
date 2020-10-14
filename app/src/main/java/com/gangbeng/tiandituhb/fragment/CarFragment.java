@@ -28,6 +28,7 @@ import com.gangbeng.tiandituhb.base.BaseFragment;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.DriveRouteBean;
+import com.gangbeng.tiandituhb.bean.NewDriveRouteBean;
 import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
@@ -159,12 +160,13 @@ public class CarFragment extends BaseFragment implements BaseView {
 
 
     private void getData() {
-        Gps startgps = points.get(0);
-        Gps endgps = points.get(1);
-        String postStr = "{\"orig\":\"" + startgps.getWgLon() + "," + startgps.getWgLat() + "\",\"dest\":\""
-                + endgps.getWgLon() + "," + endgps.getWgLat() + "\",\"style\":\"0\"} ";
+        Gps startgps = PositionUtil.gps84_To_Gcj02(points.get(0).getWgLat(), points.get(0).getWgLon());
+        Gps endgps = PositionUtil.gps84_To_Gcj02(points.get(1).getWgLat(), points.get(1).getWgLon());
+        String origin=startgps.getWgLon() + "," + startgps.getWgLat();
+        String destination=endgps.getWgLon() + "," + endgps.getWgLat();
         Map<String, Object> parameter = new HashMap<>();
-        parameter.put("postStr", postStr);
+        parameter.put("origin", origin);
+        parameter.put("destination",destination);
         presenter.setRequest(parameter);
     }
 
@@ -201,23 +203,34 @@ public class CarFragment extends BaseFragment implements BaseView {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void setData(Object data) {
-        if (data instanceof DriveRouteBean) {
-            DriveRouteBean bean = (DriveRouteBean) data;
-            List<DriveRouteBean.StreetLatLonBean> streetLatLon = bean.getStreetLatLon();
-            if (streetLatLon.size() > 0) {
+        if (data instanceof NewDriveRouteBean) {
+            NewDriveRouteBean bean = (NewDriveRouteBean) data;
+            if (bean.getStatus().equals("1")&&Integer.valueOf(bean.getCount())>0){
                 mapCarfragment.setVisibility(View.VISIBLE);
                 rlBottom.setVisibility(View.VISIBLE);
                 tvNodata.setVisibility(View.GONE);
                 Polyline polyline = new Polyline();
                 Polyline polyline2 = new Polyline();
-                for (int i = 0; i < streetLatLon.size() - 1; i++) {
-                    Point start = new Point(streetLatLon.get(i).getX(), streetLatLon.get(i).getY());
-                    Point end = new Point(streetLatLon.get(i + 1).getX(), streetLatLon.get(i + 1).getY());
-                    Line line = new Line();
-                    line.setStart(start);
-                    line.setEnd(end);
-                    polyline.addSegment(line, false);
-                    polyline2.addSegment(line, false);
+
+                for (int i = 0; i < bean.getRoute().getPaths().get(0).getSteps().size() - 1; i++) {
+                    String polylinestring=bean.getRoute().getPaths().get(0).getSteps().get(i).getPolyline();
+                    String[] split = polylinestring.split(";");
+                    for (int i1 = 0; i1 < split.length; i1++) {
+                        if (i1<split.length-2){
+                            String[] startpoint = split[i1].split(",");
+                            String[] endpoint=split[i1+1].split(",");
+                            Gps startgps = PositionUtil.gcj_To_Gps84(Double.valueOf(startpoint[1]), Double.valueOf(startpoint[0]));
+                            Gps endgps = PositionUtil.gcj_To_Gps84(Double.valueOf(endpoint[1]), Double.valueOf(endpoint[0]));
+                            Point start = new Point(startgps.getWgLon(),startgps.getWgLat());
+                            Point end = new Point(endgps.getWgLon(),endgps.getWgLat());
+                            Line line = new Line();
+                            line.setStart(start);
+                            line.setEnd(end);
+                            polyline.addSegment(line, false);
+                            polyline2.addSegment(line, false);
+                        }
+                    }
+
                 }
                 SimpleLineSymbol lineSymbol = new SimpleLineSymbol(getActivity().getColor(R.color.rout), 10, SimpleLineSymbol.STYLE.SOLID);
                 SimpleLineSymbol lineSymbol2 = new SimpleLineSymbol(Color.BLACK, 3, SimpleLineSymbol.STYLE.DOT);
@@ -225,13 +238,13 @@ public class CarFragment extends BaseFragment implements BaseView {
                 Graphic graphic2 = new Graphic(polyline2, lineSymbol2);
                 graphicsLayer.addGraphic(graphic);
                 graphicsLayer.addGraphic(graphic2);
-                Point point = new Point(streetLatLon.get(0).getX(), streetLatLon.get(0).getY());
+                Point point = new Point(points.get(0).getWgLon(),points.get(0).getWgLat());
                 Drawable drawable = getResources().getDrawable(R.mipmap.icon_qidian);
                 Drawable drawable1 = DensityUtil.zoomDrawable(drawable, 100, 100);
                 PictureMarkerSymbol picSymbol = new PictureMarkerSymbol(drawable1);
                 picSymbol.setOffsetY(drawable1.getIntrinsicHeight()/2);
                 Graphic startgraphic = new Graphic(point, picSymbol);
-                Point point2 = new Point(streetLatLon.get(streetLatLon.size() - 1).getX(), streetLatLon.get(streetLatLon.size() - 1).getY());
+                Point point2 = new Point(points.get(1).getWgLon(),points.get(1).getWgLat());
                 Drawable drawable2 = getResources().getDrawable(R.mipmap.icon_zhongdian);
                 Drawable drawable21 = DensityUtil.zoomDrawable(drawable2, 100, 100);
                 PictureMarkerSymbol picSymbol2 = new PictureMarkerSymbol(drawable21);
@@ -240,11 +253,13 @@ public class CarFragment extends BaseFragment implements BaseView {
                 pointLayer.addGraphic(startgraphic);
                 pointLayer.addGraphic(startgraphic2);
                 mapCarfragment.setExtent(polyline);
-                String distance = bean.getDistance();
-                String duration = bean.getDuration();
+                String distance = bean.getRoute().getPaths().get(0).getDistance();
+                String duration = bean.getRoute().getPaths().get(0).getDuration();
                 String time = Util.secondToHour(duration);
-                tvDistence.setText("全程需" + time + ",共" + distance + "公里");
-            } else {
+                String dis=Util.saveTwoU(Double.valueOf(distance)/1000+"");
+                tvDistence.setText("全程需" + time + ",共" + dis + "公里");
+
+            }else {
                 mapCarfragment.setVisibility(View.GONE);
                 rlBottom.setVisibility(View.GONE);
                 tvNodata.setVisibility(View.VISIBLE);

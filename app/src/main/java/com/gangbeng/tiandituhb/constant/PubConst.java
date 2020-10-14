@@ -7,7 +7,7 @@ package com.gangbeng.tiandituhb.constant;
 
 public class PubConst {
     public final static String DATA = "data";// 跳转传值key值
-    public final static String url = "http://api.tianditu.gov.cn/"; //天地图域名
+    public final static String directionurl = "https://restapi.amap.com/v3/direction/"; //高德路径规划域名
     public static final int SHOW_PHOTO = 0;
     public static final int SHOW_PHOTO_ALBUM = 1;
 
@@ -22,6 +22,7 @@ public class PubConst {
     public final static String weatherapi = "https://free-api.heweather.com/s6/weather";
     public final static String weatherKey = "336d33871eea4a8bbbea6b13f7d692f2";
     public final static String tiandituKey="e08a5566ed7f9d4a33854e6aaa519a65";
+    public final static String gaodeDirectionKey="098f50edb4351f6392dc76c56fb5bb84";
 
     public final static String countryString = "{\"countries\":[{\"Latitude\":\"39.436466\",\"Longitude\":\"116.2999\",\"name\":\"固安\"}," +
             "{\"Latitude\":\"39.319717\",\"Longitude\":\"116.49809\",\"name\":\"永清\"},{\"Latitude\":\"39.757214\",\"Longitude\":\"117.007164\",\"name\":\"香河\"}," +

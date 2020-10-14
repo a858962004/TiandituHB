@@ -3,9 +3,11 @@ package com.gangbeng.tiandituhb.model;
 import com.gangbeng.tiandituhb.base.BaseModel;
 import com.gangbeng.tiandituhb.base.OnCallBack;
 import com.gangbeng.tiandituhb.bean.DriveRouteBean;
+import com.gangbeng.tiandituhb.bean.NewDriveRouteBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.xmlparser.ParserXMLWithPull;
+import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -20,13 +22,14 @@ import okhttp3.Call;
 public class DriveModel implements BaseModel {
     @Override
     public void setRequest(Map<String, Object> parameter, final OnCallBack back) {
-        String postStr = String.valueOf(parameter.get("postStr"));
-//        String postStr="{\"orig\":\"111.77952852400398,37.15078227322101\",\"dest\":\"111.76558103712654,37.14408747951984\",\"style\":\"0\"}";
+        String origin = String.valueOf(parameter.get("origin"));
+        String destination = String.valueOf(parameter.get("destination"));
         OkHttpUtils.get()
-                .url(PubConst.url+"drive")
-                .addParams("postStr",postStr)
-                .addParams("type","search")
-                .addParams("tk",PubConst.tiandituKey)
+                .url(PubConst.directionurl +"driving")
+                .addParams("origin",origin)
+                .addParams("destination",destination)
+                .addParams("output","json")
+                .addParams("key",PubConst.gaodeDirectionKey)
                 .build()
                 .connTimeOut(50000)
                 .execute(new StringCallback() {
@@ -38,9 +41,9 @@ public class DriveModel implements BaseModel {
 
                     @Override
                     public void onResponse(String response, int id) {
-                        MyLogUtil.showLog("faild:"+response);
-                        DriveRouteBean xmlContentForPull = ParserXMLWithPull.getXmlContentForPull(response);
-                        back.success(xmlContentForPull);
+                        Gson gson=new Gson();
+                        NewDriveRouteBean newDriveRouteBean = gson.fromJson(response, NewDriveRouteBean.class);
+                        back.success(newDriveRouteBean);
                     }
                 });
 

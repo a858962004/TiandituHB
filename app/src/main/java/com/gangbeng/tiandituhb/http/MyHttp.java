@@ -74,7 +74,7 @@ public class MyHttp {
 //    public static void sendRequestOkHttpForPost(String adress, RequestBody requestBody, Response response){
 //        OkHttpClient client = new OkHttpClient();
 //        Request request = new Request.Builder()
-//                .url(adress)
+//                .directionurl(adress)
 //                .post(requestBody)
 //                .build();
 //        try {

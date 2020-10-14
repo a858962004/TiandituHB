@@ -22,7 +22,7 @@ public class BusModel implements BaseModel {
     public void setRequest(Map<String, Object> parameter, final OnCallBack back) {
         String postStr = String.valueOf(parameter.get("postStr"));
         OkHttpUtils.get()
-                .url(PubConst.url+"transit")
+                .url(PubConst.directionurl +"transit")
                 .addParams("type","busline")
                 .addParams("postStr",postStr)
                 .addParams("tk",PubConst.tiandituKey)

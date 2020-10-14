@@ -172,7 +172,7 @@ public class TianDiTuLFNewServiceLayer extends TiledServiceLayer {
     private String getTianDiMapUrl(int level, int col, int row) {
 
         String url = new TianDiTuLFUrl(this._mapType, level, col, row).generatUrl();
-        MyLogUtil.showLog("url:" + url);
+        MyLogUtil.showLog("directionurl:" + url);
         return url;
     }
 

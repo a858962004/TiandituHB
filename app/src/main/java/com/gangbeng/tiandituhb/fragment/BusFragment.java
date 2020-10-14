@@ -94,14 +94,14 @@ public class BusFragment extends BaseFragment implements BaseView {
 
     @Override
     public void setData(Object data) {
-        if (data instanceof BusBean) {
-            BusBean bean = (BusBean) data;
-            List<BusBean.ResultsBean> results = bean.getResults();
-            BusBean.ResultsBean resultsBean = results.get(0);
-            lines = resultsBean.getLines();
-            BusResultAdapter adapter=new BusResultAdapter(getActivity(),lines);
-            lvBusrout.setAdapter(adapter);
-        }
+//        if (data instanceof BusBean) {
+//            BusBean bean = (BusBean) data;
+//            List<BusBean.ResultsBean> results = bean.getResults();
+//            BusBean.ResultsBean resultsBean = results.get(0);
+//            lines = resultsBean.getLines();
+//            BusResultAdapter adapter=new BusResultAdapter(getActivity(),lines);
+//            lvBusrout.setAdapter(adapter);
+//        }
     }
 
     /**

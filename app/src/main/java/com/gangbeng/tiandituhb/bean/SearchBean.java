@@ -15,7 +15,7 @@ public class SearchBean implements Serializable {
      * count : 48
      * engineversion : 20180412
      * resultType : 1
-     * pois : [{"eaddress":"","ename":"Langfang Railway Northen Station","address":"河北省廊坊市广阳区","phone":"","name":"廊坊北站","hotPointID":"51DC41024B8B95D9","url":"","lonlat":"116.699688 39.512216"}]
+     * pois : [{"eaddress":"","ename":"Langfang Railway Northen Station","address":"河北省廊坊市广阳区","phone":"","name":"廊坊北站","hotPointID":"51DC41024B8B95D9","directionurl":"","lonlat":"116.699688 39.512216"}]
      * dataversion : 2018-7-25 15:51:51
      * prompt : [{"type":4,"admins":[{"name":"廊坊市","adminCode":156131000}]}]
      * mclayer :
@@ -121,7 +121,7 @@ public class SearchBean implements Serializable {
          * phone :
          * name : 廊坊北站
          * hotPointID : 51DC41024B8B95D9
-         * url :
+         * directionurl :
          * lonlat : 116.699688 39.512216
          */
 

@@ -30,28 +30,28 @@ public class TianDiTuUrl {
         Random random=new Random();
         int subdomain = (random.nextInt(6) + 1);
         url.append(subdomain);
-//        String url = "";
+//        String directionurl = "";
         switch(this.tiandituMapServiceType){
             case VEC_C:
-//                url = "http://www.bjmap.gov.cn/services/ogc/wmts/12?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=12&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJMap&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
+//                directionurl = "http://www.bjmap.gov.cn/services/ogc/wmts/12?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=12&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJMap&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
                 url.append(".tianditu.com/DataServer?T=vec_c&X=").append(this.col).append("&Y=").append(this.row).append("&L=").append(this.level);
 
                 break;
             case CVA_C:
-//                url = "http://www.bjmap.gov.cn/services/ogc/wmts/13?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=13&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJMapAnno&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
+//                directionurl = "http://www.bjmap.gov.cn/services/ogc/wmts/13?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=13&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJMapAnno&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
                 url.append(".tianditu.com/DataServer?T=cva_c&X=").append(this.col).append("&Y=").append(this.row).append("&L=").append(this.level);
                 break;
             case CIA_C:
-//                url = "http://www.bjmap.gov.cn/services/ogc/wmts/14?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=14&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJImageMap&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
+//                directionurl = "http://www.bjmap.gov.cn/services/ogc/wmts/14?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=14&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJImageMap&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
                 url.append(".tianditu.com/DataServer?T=cia_c&X=").append(this.col).append("&Y=").append(this.row).append("&L=").append(this.level);
                 break;
             case IMG_C:
-//                url = "http://www.bjmap.gov.cn/services/ogc/wmts/15?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=15&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJImageAnno&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
+//                directionurl = "http://www.bjmap.gov.cn/services/ogc/wmts/15?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=15&STYLE=default&TILEMATRIXSET=CustomCRS4326ScaleBJImageAnno&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=image/png";
                 url.append(".tianditu.com/DataServer?T=img_c&X=").append(this.col).append("&Y=").append(this.row).append("&L=").append(this.level);
                 break;
         }
         url.append("&tk="+ PubConst.tiandituKey);
-//        Log.i("TAG",url.toString());
+//        Log.i("TAG",directionurl.toString());
         return url.toString();
     }
 

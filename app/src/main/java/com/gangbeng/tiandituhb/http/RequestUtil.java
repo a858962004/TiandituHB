@@ -248,7 +248,7 @@ public class RequestUtil {
 //        envelope.bodyOut = soapObject ;
 //        envelope.dotNet = true ;
 //        envelope.setOutputSoapObject(soapObject) ;
-//        HttpTransportSE trans = new HttpTransportSE(url,100000) ;
+//        HttpTransportSE trans = new HttpTransportSE(directionurl,100000) ;
 //        trans.debug = true ;	// 使用调试功能
 //
 //        try {
@@ -275,7 +275,7 @@ public class RequestUtil {
         String newurl = "";
         try {
             newurl = urlstr.substring(0,index)+"/"+ URLEncoder.encode(urlstr.substring(index+1,urlstr.length()),"UTF-8");
-            Log.i("TAG","url"+newurl);
+            Log.i("TAG","directionurl"+newurl);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
