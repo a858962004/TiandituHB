@@ -15,8 +15,11 @@
     </RelativeLayout>
 
     <TextView
-        android:text="未搜索到驾车路线，建议乘坐公交或步行"
+        android:text="未搜索到驾车路线,请检查起始点和终止点是否在廊坊境内"
         android:visibility="gone"
+        android:gravity="center"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_centerInParent="true"
         android:id="@+id/tv_nodata"
         android:layout_width="wrap_content"

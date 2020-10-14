@@ -28,7 +28,6 @@ import com.gangbeng.tiandituhb.base.BaseFragment;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.DriveRouteBean;
-import com.gangbeng.tiandituhb.bean.NewDriveRouteBean;
 import com.gangbeng.tiandituhb.constant.Contant;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
 import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
@@ -37,7 +36,6 @@ import com.gangbeng.tiandituhb.tiandituMap.TianDiTuLFServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceLayer;
 import com.gangbeng.tiandituhb.tiandituMap.TianDiTuTiledMapServiceType;
 import com.gangbeng.tiandituhb.utils.DensityUtil;
-import com.gangbeng.tiandituhb.utils.Util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -160,13 +158,12 @@ public class CarFragment extends BaseFragment implements BaseView {
 
 
     private void getData() {
-        Gps startgps = PositionUtil.gps84_To_Gcj02(points.get(0).getWgLat(), points.get(0).getWgLon());
-        Gps endgps = PositionUtil.gps84_To_Gcj02(points.get(1).getWgLat(), points.get(1).getWgLon());
-        String origin=startgps.getWgLon() + "," + startgps.getWgLat();
-        String destination=endgps.getWgLon() + "," + endgps.getWgLat();
+//        Gps startgps = PositionUtil.gps84_To_Gcj02(points.get(0).getWgLat(), points.get(0).getWgLon());
+//        Gps endgps = PositionUtil.gps84_To_Gcj02(points.get(1).getWgLat(), points.get(1).getWgLon());
+        String origin=points.get(0).getWgLon() + "," + points.get(0).getWgLat();
+        String destination=points.get(1).getWgLon() + "," + points.get(1).getWgLat();
         Map<String, Object> parameter = new HashMap<>();
-        parameter.put("origin", origin);
-        parameter.put("destination",destination);
+        parameter.put("points",origin+";"+destination);
         presenter.setRequest(parameter);
     }
 
@@ -203,34 +200,26 @@ public class CarFragment extends BaseFragment implements BaseView {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void setData(Object data) {
-        if (data instanceof NewDriveRouteBean) {
-            NewDriveRouteBean bean = (NewDriveRouteBean) data;
-            if (bean.getStatus().equals("1")&&Integer.valueOf(bean.getCount())>0){
+        if (data instanceof DriveRouteBean) {
+            DriveRouteBean bean = (DriveRouteBean) data;
+            if (bean.getExceptionCode().equals("200")&&bean.getStreetLatLon().size()>0){
                 mapCarfragment.setVisibility(View.VISIBLE);
                 rlBottom.setVisibility(View.VISIBLE);
                 tvNodata.setVisibility(View.GONE);
                 Polyline polyline = new Polyline();
                 Polyline polyline2 = new Polyline();
-
-                for (int i = 0; i < bean.getRoute().getPaths().get(0).getSteps().size() - 1; i++) {
-                    String polylinestring=bean.getRoute().getPaths().get(0).getSteps().get(i).getPolyline();
-                    String[] split = polylinestring.split(";");
-                    for (int i1 = 0; i1 < split.length; i1++) {
-                        if (i1<split.length-2){
-                            String[] startpoint = split[i1].split(",");
-                            String[] endpoint=split[i1+1].split(",");
-                            Gps startgps = PositionUtil.gcj_To_Gps84(Double.valueOf(startpoint[1]), Double.valueOf(startpoint[0]));
-                            Gps endgps = PositionUtil.gcj_To_Gps84(Double.valueOf(endpoint[1]), Double.valueOf(endpoint[0]));
-                            Point start = new Point(startgps.getWgLon(),startgps.getWgLat());
-                            Point end = new Point(endgps.getWgLon(),endgps.getWgLat());
-                            Line line = new Line();
-                            line.setStart(start);
-                            line.setEnd(end);
-                            polyline.addSegment(line, false);
-                            polyline2.addSegment(line, false);
-                        }
+                for (int i = 0; i < bean.getStreetLatLon().size(); i++) {
+                    if (i<bean.getStreetLatLon().size()-1){
+                        DriveRouteBean.StreetLatLonBean startBean = bean.getStreetLatLon().get(i);
+                        DriveRouteBean.StreetLatLonBean endBean = bean.getStreetLatLon().get(i+1);
+                        Point start = new Point(startBean.getX(),startBean.getY());
+                        Point end = new Point(endBean.getX(),endBean.getY());
+                        Line line = new Line();
+                        line.setStart(start);
+                        line.setEnd(end);
+                        polyline.addSegment(line, false);
+                        polyline2.addSegment(line, false);
                     }
-
                 }
                 SimpleLineSymbol lineSymbol = new SimpleLineSymbol(getActivity().getColor(R.color.rout), 10, SimpleLineSymbol.STYLE.SOLID);
                 SimpleLineSymbol lineSymbol2 = new SimpleLineSymbol(Color.BLACK, 3, SimpleLineSymbol.STYLE.DOT);
@@ -253,17 +242,14 @@ public class CarFragment extends BaseFragment implements BaseView {
                 pointLayer.addGraphic(startgraphic);
                 pointLayer.addGraphic(startgraphic2);
                 mapCarfragment.setExtent(polyline);
-                String distance = bean.getRoute().getPaths().get(0).getDistance();
-                String duration = bean.getRoute().getPaths().get(0).getDuration();
-                String time = Util.secondToHour(duration);
-                String dis=Util.saveTwoU(Double.valueOf(distance)/1000+"");
-                tvDistence.setText("全程需" + time + ",共" + dis + "公里");
+                String decs = bean.getDesc();
+                tvDistence.setText(decs);
 
             }else {
                 mapCarfragment.setVisibility(View.GONE);
                 rlBottom.setVisibility(View.GONE);
                 tvNodata.setVisibility(View.VISIBLE);
-                showMsg("未搜索到驾车路线");
+                showMsg("未搜索到驾车路线,请检查您所选取的起始点和终止点是否在廊坊境内");
             }
         }
     }

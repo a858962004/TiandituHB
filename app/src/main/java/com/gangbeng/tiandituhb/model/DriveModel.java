@@ -3,7 +3,6 @@ package com.gangbeng.tiandituhb.model;
 import com.gangbeng.tiandituhb.base.BaseModel;
 import com.gangbeng.tiandituhb.base.OnCallBack;
 import com.gangbeng.tiandituhb.bean.DriveRouteBean;
-import com.gangbeng.tiandituhb.bean.NewDriveRouteBean;
 import com.gangbeng.tiandituhb.constant.PubConst;
 import com.gangbeng.tiandituhb.utils.MyLogUtil;
 import com.gangbeng.tiandituhb.xmlparser.ParserXMLWithPull;
@@ -22,14 +21,13 @@ import okhttp3.Call;
 public class DriveModel implements BaseModel {
     @Override
     public void setRequest(Map<String, Object> parameter, final OnCallBack back) {
-        String origin = String.valueOf(parameter.get("origin"));
-        String destination = String.valueOf(parameter.get("destination"));
+        String points = String.valueOf(parameter.get("points"));
         OkHttpUtils.get()
-                .url(PubConst.directionurl +"driving")
-                .addParams("origin",origin)
-                .addParams("destination",destination)
-                .addParams("output","json")
-                .addParams("key",PubConst.gaodeDirectionKey)
+                .url(PubConst.driveUrl)
+                .addParams("type","shortest")
+                .addParams("points",points)
+                .addParams("oneway","no")
+                .addParams("format","gpx-route")
                 .build()
                 .connTimeOut(50000)
                 .execute(new StringCallback() {
@@ -41,9 +39,15 @@ public class DriveModel implements BaseModel {
 
                     @Override
                     public void onResponse(String response, int id) {
-                        Gson gson=new Gson();
-                        NewDriveRouteBean newDriveRouteBean = gson.fromJson(response, NewDriveRouteBean.class);
-                        back.success(newDriveRouteBean);
+                        if (response.equals("{\"exceptionCode\":\"400\",\"exceptionText\":\"未得到结果\"}")){
+                            Gson gson=new Gson();
+                            DriveRouteBean bean = gson.fromJson(response, DriveRouteBean.class);
+                            back.success(bean);
+                        }else {
+                            DriveRouteBean newDriveRouteBean = ParserXMLWithPull.getXmlContentForPull(response);
+                            newDriveRouteBean.setExceptionCode("200");
+                            back.success(newDriveRouteBean);
+                        }
                     }
                 });
 

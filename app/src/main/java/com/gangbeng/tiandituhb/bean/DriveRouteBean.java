@@ -8,42 +8,33 @@ import java.util.List;
  */
 
 public class DriveRouteBean {
-    private String distance;//全长（单位：公里）
-    private String duration;//行驶总时间（单位：秒）
-    private String center;//全部结果同时显示的适宜中心经纬度
-    private String scale;//全部结果同时显示的适宜缩放比例
     private List<StreetLatLonBean> streetLatLon;
+    private String desc;
+    private String exceptionCode;
+    private String exceptionText;
 
-    public String getDistance() {
-        return distance;
+    public String getExceptionCode() {
+        return exceptionCode;
     }
 
-    public void setDistance(String distance) {
-        this.distance = distance;
+    public void setExceptionCode(String exceptionCode) {
+        this.exceptionCode = exceptionCode;
     }
 
-    public String getDuration() {
-        return duration;
+    public String getExceptionText() {
+        return exceptionText;
     }
 
-    public void setDuration(String duration) {
-        this.duration = duration;
+    public void setExceptionText(String exceptionText) {
+        this.exceptionText = exceptionText;
     }
 
-    public String getCenter() {
-        return center;
+    public String getDesc() {
+        return desc;
     }
 
-    public void setCenter(String center) {
-        this.center = center;
-    }
-
-    public String getScale() {
-        return scale;
-    }
-
-    public void setScale(String scale) {
-        this.scale = scale;
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public List<StreetLatLonBean> getStreetLatLon() {
@@ -57,6 +48,7 @@ public class DriveRouteBean {
     public static class StreetLatLonBean{
         private double x;
         private double y;
+
 
         public double getX() {
             return x;

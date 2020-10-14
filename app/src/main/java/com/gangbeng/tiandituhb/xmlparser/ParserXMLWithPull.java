@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.gangbeng.tiandituhb.bean.DriveRouteBean;
 import com.gangbeng.tiandituhb.bean.Goods;
+import com.gangbeng.tiandituhb.utils.MyLogUtil;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,6 +30,8 @@ public class ParserXMLWithPull {
     private static InputStream is;
 
     public static DriveRouteBean getXmlContentForPull(String xml) {
+        routeBean=new DriveRouteBean();
+        streetLatLon=new ArrayList<>();
         try {
             is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -40,39 +43,23 @@ public class ParserXMLWithPull {
                 switch (eventType) {
                     case XmlPullParser.START_DOCUMENT: {
                         //开始解析时的初始化
-                        routeBean=new DriveRouteBean();
-                        streetLatLon=new ArrayList<>();
 //                        goodsList = new ArrayList<Goods>();
                         Log.d("PULL", "开始解析");
                     }
                     break;
                     case XmlPullParser.START_TAG: {
                         switch (nodeName){
-                            case "distance":
-                                routeBean.setDistance(xmlPullParser.nextText());
+                            case "rtept":
+                                MyLogUtil.showLog(xmlPullParser.getAttributeValue(0));
+                                DriveRouteBean.StreetLatLonBean streetLatLonBean = new DriveRouteBean.StreetLatLonBean();
+                                streetLatLonBean.setX(Double.valueOf(xmlPullParser.getAttributeValue(1)));
+                                streetLatLonBean.setY(Double.valueOf(xmlPullParser.getAttributeValue(0)));
+                                streetLatLon.add(streetLatLonBean);
                                 break;
-                            case "duration":
-                                routeBean.setDuration(xmlPullParser.nextText());
-                                break;
-                            case "center":
-                                routeBean.setCenter(xmlPullParser.nextText());
-                                break;
-                            case "scale":
-                                routeBean.setScale(xmlPullParser.nextText());
-                                break;
-                            case "streetLatLon":
-                                String s = xmlPullParser.nextText();
-                                String[] split = s.split(";");
-                                if (split.length>0) {
-                                    for (int i = 0; i < split.length; i++) {
-                                        DriveRouteBean.StreetLatLonBean streetLatLonBean = new DriveRouteBean.StreetLatLonBean();
-                                        String s1 = split[i];
-                                        String[] split1 = s1.split(",");
-                                        streetLatLonBean.setX(Double.valueOf(split1[0]));
-                                        streetLatLonBean.setY(Double.valueOf(split1[1]));
-                                        streetLatLon.add(streetLatLonBean);
-                                    }
-                                }
+                            case "desc":
+//                                MyLogUtil.showLog(xmlPullParser.getText());
+                                String dest=xmlPullParser.nextText();
+                                routeBean.setDesc(dest);
                                 break;
                         }
                     }
