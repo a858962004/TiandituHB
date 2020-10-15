@@ -7,7 +7,7 @@ package com.gangbeng.tiandituhb.constant;
 
 public class PubConst {
     public final static String DATA = "data";// 跳转传值key值
-    public final static String directionurl = "https://restapi.amap.com/v3/direction/"; //高德路径规划域名
+    public final static String directionurl = "https://restapi.amap.com/v3/direction/transit/integrated"; //高德路径规划域名
     public final static String driveUrl="http://120.211.57.11:8719/newmap/rest/services/lftdtgx/luwang/networkserver/route";
     public static final int SHOW_PHOTO = 0;
     public static final int SHOW_PHOTO_ALBUM = 1;

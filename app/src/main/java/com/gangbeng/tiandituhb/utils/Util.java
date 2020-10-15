@@ -89,6 +89,23 @@ public class Util {
         return s;
     }
 
+    public static String saveSixU(String s) {
+        int i = s.length() - s.indexOf(".");
+        if (!"".equals(s)) {
+            if (s.indexOf(".") > 0 && i > 6) {
+                s = s.substring(0, s.indexOf(".") + 7);
+            } else if (s.indexOf(".") > 0 && i == 6) {
+                s = s + "0";
+            } else if (s.indexOf(".") < 0) {
+                s = s + ".0000000";
+            }
+        } else {
+            s = "0.0000000";
+        }
+        return s;
+    }
+
+
     public static String secondToHour(String second) {
         String time = "";
         double aDouble = Double.valueOf(second);

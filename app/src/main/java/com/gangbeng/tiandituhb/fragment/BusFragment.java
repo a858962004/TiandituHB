@@ -15,8 +15,11 @@ import com.gangbeng.tiandituhb.base.BaseFragment;
 import com.gangbeng.tiandituhb.base.BasePresenter;
 import com.gangbeng.tiandituhb.base.BaseView;
 import com.gangbeng.tiandituhb.bean.BusBean;
+import com.gangbeng.tiandituhb.bean.NewBusBean;
 import com.gangbeng.tiandituhb.gaodenaviutil.Gps;
+import com.gangbeng.tiandituhb.gaodenaviutil.PositionUtil;
 import com.gangbeng.tiandituhb.presenter.BusPresenter;
+import com.gangbeng.tiandituhb.utils.Util;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -61,15 +64,13 @@ public class BusFragment extends BaseFragment implements BaseView {
     @Override
     public void initView(View view, Bundle savedInstanceState) {
         presenter = new BusPresenter(this);
-        Gps startgps = points.get(0);
-        Gps endgps = points.get(1);
-        String postStr = "{'startposition':'" + startgps.getWgLon() + "," + startgps.getWgLat()
-                + "','endposition':'" + endgps.getWgLon() + "," + endgps.getWgLat() + "',linetype:'1'} ";
+        Gps startgps = PositionUtil.gps84_To_Gcj02(points.get(0).getWgLat(),points.get(0).getWgLon());
+        Gps endgps = PositionUtil.gps84_To_Gcj02(points.get(1).getWgLat(),points.get(1).getWgLon());
         Map<String, Object> parameter = new HashMap<>();
-        parameter.put("postStr", postStr);
+        parameter.put("origin", Util.saveSixU(startgps.getWgLon()+"")+","+Util.saveSixU(startgps.getWgLat()+""));
+        parameter.put("destination",Util.saveSixU(endgps.getWgLon()+"")+","+Util.saveSixU(endgps.getWgLat()+""));
         presenter.setRequest(parameter);
-
-        lvBusrout.setOnItemClickListener(onItemClickListener);
+//        lvBusrout.setOnItemClickListener(onItemClickListener);
     }
 
     @Override
@@ -94,14 +95,16 @@ public class BusFragment extends BaseFragment implements BaseView {
 
     @Override
     public void setData(Object data) {
-//        if (data instanceof BusBean) {
-//            BusBean bean = (BusBean) data;
-//            List<BusBean.ResultsBean> results = bean.getResults();
-//            BusBean.ResultsBean resultsBean = results.get(0);
-//            lines = resultsBean.getLines();
-//            BusResultAdapter adapter=new BusResultAdapter(getActivity(),lines);
-//            lvBusrout.setAdapter(adapter);
-//        }
+        if (data instanceof NewBusBean) {
+            NewBusBean bean = (NewBusBean) data;
+            if (bean.getStatus().equals("1")){
+                List<NewBusBean.SegmentsBean> segments = bean.getSegments();
+                BusResultAdapter adapter=new BusResultAdapter(getActivity(),segments);
+                lvBusrout.setAdapter(adapter);
+            }else {
+                showMsg("请求错误！");
+            }
+        }
     }
 
     /**

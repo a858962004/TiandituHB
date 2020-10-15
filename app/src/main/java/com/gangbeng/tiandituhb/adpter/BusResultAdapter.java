@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.gangbeng.tiandituhb.R;
-import com.gangbeng.tiandituhb.bean.BusBean;
+import com.gangbeng.tiandituhb.bean.NewBusBean;
 import com.gangbeng.tiandituhb.utils.Util;
 
 import java.util.List;
@@ -20,9 +20,9 @@ import java.util.List;
 
 public class BusResultAdapter extends BaseAdapter {
     private Context context;
-    private List<BusBean.ResultsBean.LinesBean> data;
+    private List<NewBusBean.SegmentsBean> data;
 
-    public BusResultAdapter(Context context, List<BusBean.ResultsBean.LinesBean> data) {
+    public BusResultAdapter(Context context, List<NewBusBean.SegmentsBean> data) {
         this.context = context;
         this.data = data;
     }
@@ -54,39 +54,37 @@ public class BusResultAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
+//        String name="";
+//        String lineName = data.get(position).getLineName();
+//        String[] split = lineName.split("|");
+//        for (int i = 0; i < split.length; i++) {
+//            if (split[i].equals("|")) {
+//                split[i]="→";
+//            }
+//            if (i!=split.length-1){
+//                name+=split[i];
+//            }
+//        }
         String name="";
-        String lineName = data.get(position).getLineName();
-        String[] split = lineName.split("|");
-        for (int i = 0; i < split.length; i++) {
-            if (split[i].equals("|")) {
-                split[i]="→";
+        String descriptin="";
+        if (data.get(position).getMode().equals("walking")){
+            name+="步行"+data.get(position).getDistance()+"米";
+            if (!data.get(position).getDeparture_stop().equals("[]")){
+                name+=data.get(position).getDeparture_stop()+"公交站";
             }
-            if (i!=split.length-1){
-                name+=split[i];
+            if (position==data.size()-1){
+                name+="，到达目的地";
             }
+            descriptin+="预计用时"+Util.secondToHour(data.get(position).getDuration());
+        }else if (data.get(position).getMode().equals("bus")){
+            name+="换乘"+data.get(position).getName()+"到"+data.get(position).getArrival_stop()+"下车";
+            if (position==data.size()-1){
+                name+="，到达目的地";
+            }
+            descriptin+="全程共计"+data.get(position).getVia_num()+"站，预计用时"+Util.secondToHour(data.get(position).getDuration());
         }
         viewHolder.textView.setText(name);
-        int stations = 0;
-        float distence = 0;
-        String length="";
-        for (BusBean.ResultsBean.LinesBean.SegmentsBean segmentsBean : data.get(position).getSegments()) {
-            if (segmentsBean.getSegmentLine().size() > 0) {
-                String segmentStationCount = segmentsBean.getSegmentLine().get(0).getSegmentStationCount();
-                if (!segmentStationCount.equals(""))
-                    stations += Integer.valueOf(segmentStationCount);
-                String segmentDistance = segmentsBean.getSegmentLine().get(0).getSegmentDistance();
-                if (!segmentDistance.equals(""))
-                    distence += Float.valueOf(segmentDistance);
-            }
-        }
-        if (distence > 1000) {
-            String string = String.valueOf(distence / 1000.0);
-            String s = Util.saveTwoU(string);
-            length = s + " 公里";
-        } else {
-            length = distence + " 米";
-        }
-        viewHolder.textView2.setText("总长"+length+";共"+stations+"站");
+        viewHolder.textView2.setText(descriptin);
         return convertView;
     }
 
